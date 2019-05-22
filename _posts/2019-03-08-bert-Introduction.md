@@ -9,6 +9,7 @@ tag: 文本分类
 
 # 1 使用介绍
 模型下载地址：[bert](https://github.com/google-research/bert)
+
 修改run_classifier.py文件，自定义分类器
 ```python
 import pandas as pd
@@ -64,7 +65,10 @@ def main():
 
 ```
 
-将数据文件夹split_cut和中文模型文件夹chinese_L-12_H-768_A-12与bert-master同一目录执行命令：
+将数据文件夹split_cut和中文模型文件夹
+chinese_L-12_H-768_A-12与bert-master同一目录
+
+执行命令：
 ```
 export BERT_BASE_DIR=../chinese_L-12_H-768_A-12
 export MY_DATASET=../split_cut 
