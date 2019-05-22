@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Google语言模型bert介绍"
-date: 2019-01-08
+date: 2019-03-08
 description: "简单介绍一下如何使用bert进行文本分类"
 tag: 文本分类
 
