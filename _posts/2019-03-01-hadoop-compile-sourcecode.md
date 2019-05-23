@@ -30,6 +30,9 @@ java -version
 ```
 [root]# tar -zxvf apache-maven-3.0.5-bin.tar.gz -C /opt/module/
 [root]# vi conf/settings.xml
+```
+修改xml文件
+```
 <mirrors>
     <!-- mirror
      | Specifies a repository mirror site to use instead of a given repository. The repository that
@@ -50,6 +53,9 @@ java -version
                 <url>http://maven.aliyun.com/nexus/content/groups/public</url>
         </mirror>
 </mirrors>
+```
+配置环境
+```
 [root]# vi /etc/profile
 #MAVEN_HOME
 export MAVEN_HOME=/opt/module/apache-maven-3.0.5
@@ -90,12 +96,10 @@ ant -version
 [root@hadoop101 protobuf-2.5.0]# make check 
 [root@hadoop101 protobuf-2.5.0]# make install 
 [root@hadoop101 protobuf-2.5.0]# ldconfig 
-
 [root@hadoop101 hadoop-dist]# vi /etc/profile
 #LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/opt/module/protobuf-2.5.0
 export PATH=$PATH:$LD_LIBRARY_PATH
-
 [root@hadoop101 software]#source /etc/profile
 验证命令：protoc --version
 ```
