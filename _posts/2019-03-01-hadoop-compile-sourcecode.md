@@ -101,7 +101,9 @@ protoc --version
 
 # 编译源码
 1. 解压源码到/opt/目录
-`[root]# tar -zxvf hadoop-2.7.2-src.tar.gz -C /opt/`
+```
+[root]# tar -zxvf hadoop-2.7.2-src.tar.gz -C /opt/
+```
 
 2. 通过maven执行编译命令，等待时间30分钟左右，最终成功是全部SUCCESS。
 ```
