@@ -38,12 +38,13 @@ export PATH=$PATH:$HADOOP_HOME/sbin
 
 # 修改配置文件
 ## 集群部署规划
+
 虚拟机 | hadoop101 | hadooop102 | hadoop103
 :-: | :-: | :-: | :-: 
 HDFS | NameNode&DataNode | DataNode | SecondaryNameNode&DataNode
 YARN | NodeManager | ResourceManager&NodeManager | NodeManager
 
-## hadoop-env.sh yarn-env.sh mapred-env.sh
+## hadoop-env.sh、yarn-env.sh、mapred-env.sh
 增加`export JAVA_HOME=/opt/module/jdk1.8.0_144`
 
 ## core-site.xml
@@ -51,7 +52,7 @@ YARN | NodeManager | ResourceManager&NodeManager | NodeManager
 <!-- 指定HDFS中NameNode的地址 -->
 <property>
 		<name>fs.defaultFS</name>
-      <value>hdfs://hadoop101:9000</value>
+		<value>hdfs://hadoop101:9000</value>
 </property>
 
 <!-- 指定Hadoop运行时产生文件的存储目录 -->
@@ -70,8 +71,8 @@ YARN | NodeManager | ResourceManager&NodeManager | NodeManager
 
 <!-- 指定Hadoop辅助名称节点主机配置 -->
 <property>
-      <name>dfs.namenode.secondary.http-address</name>
-      <value>hadoop103:50090</value>
+		<name>dfs.namenode.secondary.http-address</name>
+		<value>hadoop103:50090</value>
 </property>
 ```
 
