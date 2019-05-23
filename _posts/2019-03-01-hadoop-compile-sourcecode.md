@@ -32,7 +32,7 @@ java -version
 [root]# vi conf/settings.xml
 ```
 
-修改xml文件
+2. 修改xml文件
 ```
 <mirrors>
     <!-- mirror
@@ -56,7 +56,7 @@ java -version
 </mirrors>
 ```
 
-配置环境
+2. 配置环境
 ```
 [root]# vi /etc/profile
 #MAVEN_HOME
@@ -103,22 +103,21 @@ ant -version
 export LD_LIBRARY_PATH=/opt/module/protobuf-2.5.0
 export PATH=$PATH:$LD_LIBRARY_PATH
 [root@hadoop101 software]#source /etc/profile
-验证命令：protoc --version
+protoc --version
 ```
 
-7.	安装openssl库
+7. 安装openssl库
 `[root@hadoop101 software]#yum install openssl-devel`
 
-8.	安装 ncurses-devel库
+8. 安装 ncurses-devel库
 `[root@hadoop101 software]#yum install ncurses-devel`
 
 # 编译源码
 1. 解压源码到/opt/目录
-`[root@hadoop101 software]# tar -zxvf hadoop-2.7.2-src.tar.gz -C /opt/`
+`[root]# tar -zxvf hadoop-2.7.2-src.tar.gz -C /opt/`
 
-2. 通过maven执行编译命令
-`[root@hadoop101 hadoop-2.7.2-src]#mvn package -Pdist,native -DskipTests -Dtar`
-等待时间30分钟左右，最终成功是全部SUCCESS。
+2. 通过maven执行编译命令，等待时间30分钟左右，最终成功是全部SUCCESS。
+`[hadoop-2.7.2-src]#mvn package -Pdist,native -DskipTests -Dtar`
  
 3. 成功的64位hadoop包在/opt/hadoop-2.7.2-src/hadoop-dist/target下
 
