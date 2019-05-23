@@ -85,15 +85,15 @@ ant -version
 #LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/opt/module/protobuf-2.5.0
 export PATH=$PATH:$LD_LIBRARY_PATH
-[root@hadoop101 software]#source /etc/profile
+[root@hadoop101 software]# source /etc/profile
 protoc --version
 ```
 
 8. 安装openssl库
-`[root@hadoop101 software]#yum install openssl-devel`
+`[root@hadoop101 software]# yum install openssl-devel`
 
 9. 安装 ncurses-devel库
-`[root@hadoop101 software]#yum install ncurses-devel`
+`[root@hadoop101 software]# yum install ncurses-devel`
 
 # 编译源码
 1. 解压源码到/opt/目录
