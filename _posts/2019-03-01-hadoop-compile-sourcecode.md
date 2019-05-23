@@ -31,7 +31,7 @@ java -version
 [root]# tar -zxvf apache-maven-3.0.5-bin.tar.gz -C /opt/module/
 [root]# vi conf/settings.xml
 ```
-```xml
+```
 <mirrors>
     <!-- mirror
      | Specifies a repository mirror site to use instead of a given repository. The repository that
