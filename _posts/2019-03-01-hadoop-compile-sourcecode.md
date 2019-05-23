@@ -27,7 +27,7 @@ java -version
 ```
 
 2. Maven解压、配置MAVEN_HOME和PATH
-- 解压
+解压
 ```
 [root]# tar -zxvf apache-maven-3.0.5-bin.tar.gz -C /opt/module/
 [root]# vi conf/settings.xml
