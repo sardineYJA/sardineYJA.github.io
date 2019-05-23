@@ -69,7 +69,7 @@ mvn -version
 #ANT_HOME
 export ANT_HOME=/opt/module/apache-ant-1.9.9
 export PATH=$PATH:$ANT_HOME/bin
-[root]#source /etc/profile
+[root]# source /etc/profile
 ant -version
 ```
 
