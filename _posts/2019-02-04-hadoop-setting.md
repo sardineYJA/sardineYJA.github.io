@@ -38,10 +38,13 @@ export PATH=$PATH:$HADOOP_HOME/sbin
 
 # 修改配置文件
 ## 集群部署规划
-||hadoop101|hadooop102|hadoop103|
-|:-:|:-:|:-:|:-:|
-|HDFS|NameNode&DataNode|DataNode|SecondaryNameNode&DataNode|
-|YARN|NodeManager|ResourceManager&NodeManager|NodeManager|
+虚拟机 | hadoop101 | hadooop102 | hadoop103
+:-: | :-: | :-: | :-: 
+HDFS | NameNode&DataNode | DataNode | SecondaryNameNode&DataNode
+YARN | NodeManager | ResourceManager&NodeManager | NodeManager
+
+## hadoop-env.sh yarn-env.sh mapred-env.sh
+增加`export JAVA_HOME=/opt/module/jdk1.8.0_144`
 
 ## core-site.xml
 ```
@@ -57,9 +60,6 @@ export PATH=$PATH:$HADOOP_HOME/sbin
 		<value>/opt/module/hadoop-2.7.2/data/tmp</value>
 </property>
 ```
-
-## hadoop-env.sh yarn-env.sh mapred-env.sh
-增加`export JAVA_HOME=/opt/module/jdk1.8.0_144`
 
 ## hdfs-site.xml
 ```
