@@ -89,17 +89,16 @@ export PATH=$PATH:$LD_LIBRARY_PATH
 protoc --version
 ```
 
-8. 安装openssl库
-`[root@hadoop101 software]# yum install openssl-devel`
+8. 安装openssl库:`[root@hadoop101 software]# yum install openssl-devel`
 
-9. 安装 ncurses-devel库
-`[root@hadoop101 software]# yum install ncurses-devel`
+9. 安装 ncurses-devel库:`[root@hadoop101 software]# yum install ncurses-devel`
 
 # 编译源码
 1. 解压源码到/opt/目录
 `[root]# tar -zxvf hadoop-2.7.2-src.tar.gz -C /opt/`
 
 2. 通过maven执行编译命令，等待时间30分钟左右，最终成功是全部SUCCESS。
+
 `[hadoop-2.7.2-src]#mvn package -Pdist,native -DskipTests -Dtar`
  
 3. 成功的64位hadoop包在/opt/hadoop-2.7.2-src/hadoop-dist/target下
