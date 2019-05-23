@@ -37,15 +37,13 @@ export MAVEN_HOME=/opt/module/apache-maven-3.0.5
 export PATH=$PATH:$MAVEN_HOME/bin
 [root]#source /etc/profile
 mvn -version
-```
-
-```
-    <mirror>
-            <id>nexus-aliyun</id>
-            <mirrorOf>central</mirrorOf>
-            <name>Nexus aliyun</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
-    </mirror>
+settings.xml文件修改：
+<mirror>
+        <id>nexus-aliyun</id>
+        <mirrorOf>central</mirrorOf>
+        <name>Nexus aliyun</name>
+        <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+</mirror>
 ```
 
 3. ant解压、配置ANT_HOME和PATH
