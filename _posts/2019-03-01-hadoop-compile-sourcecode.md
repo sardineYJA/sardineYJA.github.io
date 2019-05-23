@@ -27,12 +27,13 @@ java -version
 ```
 
 2. Maven解压、配置MAVEN_HOME和PATH
+- 解压
 ```
 [root]# tar -zxvf apache-maven-3.0.5-bin.tar.gz -C /opt/module/
 [root]# vi conf/settings.xml
 ```
 
-2. 修改xml文件
+- 修改xml文件
 ```
 <mirrors>
     <!-- mirror
@@ -56,7 +57,7 @@ java -version
 </mirrors>
 ```
 
-2. 配置环境
+- 配置环境
 ```
 [root]# vi /etc/profile
 #MAVEN_HOME
@@ -66,7 +67,7 @@ export PATH=$PATH:$MAVEN_HOME/bin
 mvn -version
 ```
 
-3. ant解压、配置ANT_HOME和PATH
+- ant解压、配置ANT_HOME和PATH
 ```
 [root]# tar -zxvf apache-ant-1.9.9-bin.tar.gz -C /opt/module/
 [root]# vi /etc/profile
