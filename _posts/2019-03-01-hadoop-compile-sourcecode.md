@@ -31,6 +31,7 @@ java -version
 [root]# tar -zxvf apache-maven-3.0.5-bin.tar.gz -C /opt/module/
 [root]# vi conf/settings.xml
 ```
+
 修改xml文件
 ```
 <mirrors>
@@ -54,6 +55,7 @@ java -version
         </mirror>
 </mirrors>
 ```
+
 配置环境
 ```
 [root]# vi /etc/profile
