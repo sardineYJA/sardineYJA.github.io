@@ -17,7 +17,7 @@ tag: 大数据
 # jar包安装
 1. JDK解压、配置环境变量 JAVA_HOME和PATH，验证java-version
 ```
-[root] # tar -zxf jdk-8u144-linux-x64.tar.gz -C /opt/module/
+[root]# tar -zxf jdk-8u144-linux-x64.tar.gz -C /opt/module/
 [root]# vi /etc/profile
 #JAVA_HOME：
 export JAVA_HOME=/opt/module/jdk1.8.0_144
@@ -30,6 +30,8 @@ java -version
 ```
 [root]# tar -zxvf apache-maven-3.0.5-bin.tar.gz -C /opt/module/
 [root]# vi conf/settings.xml
+```
+```xml
 <mirrors>
     <!-- mirror
      | Specifies a repository mirror site to use instead of a given repository. The repository that
@@ -50,7 +52,8 @@ java -version
                 <url>http://maven.aliyun.com/nexus/content/groups/public</url>
         </mirror>
 </mirrors>
-
+```
+```
 [root]# vi /etc/profile
 #MAVEN_HOME
 export MAVEN_HOME=/opt/module/apache-maven-3.0.5
