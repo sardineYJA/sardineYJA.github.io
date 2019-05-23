@@ -37,7 +37,10 @@ export MAVEN_HOME=/opt/module/apache-maven-3.0.5
 export PATH=$PATH:$MAVEN_HOME/bin
 [root]#source /etc/profile
 mvn -version
-settings.xml文件修改：
+```
+
+3. settings.xml文件修改：
+```
 <mirror>
         <id>nexus-aliyun</id>
         <mirrorOf>central</mirrorOf>
@@ -46,7 +49,7 @@ settings.xml文件修改：
 </mirror>
 ```
 
-3. ant解压、配置ANT_HOME和PATH
+4. ant解压、配置ANT_HOME和PATH
 ```
 [root]# tar -zxvf apache-ant-1.9.9-bin.tar.gz -C /opt/module/
 [root]# vi /etc/profile
@@ -57,19 +60,19 @@ export PATH=$PATH:$ANT_HOME/bin
 ant -version
 ```
 
-4. 安装glibc-headers和g++命令如下
+5. 安装glibc-headers和g++命令如下
 ```
 [root@hadoop101 apache-ant-1.9.9]# yum install glibc-headers
 [root@hadoop101 apache-ant-1.9.9]# yum install gcc-c++
 ```
 
-5. 安装make和cmake
+6. 安装make和cmake
 ```
 [root@hadoop101 apache-ant-1.9.9]# yum install make
 [root@hadoop101 apache-ant-1.9.9]# yum install cmake
 ```
 
-6. 解压protobuf ，进入到解压后protobuf主目录，然后相继执行命令
+7. 解压protobuf ，进入到解压后protobuf主目录，然后相继执行命令
 ```
 [root@hadoop101 software]# tar -zxvf protobuf-2.5.0.tar.gz -C /opt/module/
 [root@hadoop101 opt]# cd /opt/module/protobuf-2.5.0/
@@ -86,10 +89,10 @@ export PATH=$PATH:$LD_LIBRARY_PATH
 protoc --version
 ```
 
-7. 安装openssl库
+8. 安装openssl库
 `[root@hadoop101 software]#yum install openssl-devel`
 
-8. 安装 ncurses-devel库
+9. 安装 ncurses-devel库
 `[root@hadoop101 software]#yum install ncurses-devel`
 
 # 编译源码
