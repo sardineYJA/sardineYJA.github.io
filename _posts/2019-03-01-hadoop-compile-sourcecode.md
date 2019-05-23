@@ -31,6 +31,7 @@ java -version
 [root]# tar -zxvf apache-maven-3.0.5-bin.tar.gz -C /opt/module/
 [root]# vi conf/settings.xml
 ```
+
 ```
 <mirrors>
     <!-- mirror
@@ -53,6 +54,7 @@ java -version
         </mirror>
 </mirrors>
 ```
+
 ```
 [root]# vi /etc/profile
 #MAVEN_HOME
