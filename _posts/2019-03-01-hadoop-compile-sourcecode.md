@@ -41,12 +41,12 @@ mvn -version
 
 3. settings.xml文件修改：
 ```
-<mirror>
-        <id>nexus-aliyun</id>
-        <mirrorOf>central</mirrorOf>
-        <name>Nexus aliyun</name>
-        <url>http://maven.aliyun.com/nexus/content/groups/public</url>
-</mirror>
+mirror
+        id nexus-aliyun id
+        mirrorOf central mirrorOf
+        name Nexus aliyun name
+        url http://maven.aliyun.com/nexus/content/groups/public url
+mirror
 ```
 
 4. ant解压、配置ANT_HOME和PATH
