@@ -30,9 +30,6 @@ java -version
 ```
 [root]# tar -zxvf apache-maven-3.0.5-bin.tar.gz -C /opt/module/
 [root]# vi conf/settings.xml
-```
-
-```
 <mirrors>
     <!-- mirror
      | Specifies a repository mirror site to use instead of a given repository. The repository that
@@ -53,9 +50,6 @@ java -version
                 <url>http://maven.aliyun.com/nexus/content/groups/public</url>
         </mirror>
 </mirrors>
-```
-
-```
 [root]# vi /etc/profile
 #MAVEN_HOME
 export MAVEN_HOME=/opt/module/apache-maven-3.0.5
