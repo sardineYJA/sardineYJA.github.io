@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "大数据生态技术体系介绍"
-date: 2019-02-05
+date: 2019-02-03
 description: "简单介绍一下大数据生态技术"
 tag: 大数据
 
