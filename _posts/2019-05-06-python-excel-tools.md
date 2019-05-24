@@ -3,7 +3,7 @@ layout: post
 title: "python读取Excel常用包，可插入删除一行一列"
 date: 2019-05-06
 description: "介绍python读取Excel常用的包，包含插入如何一行一列"
-tag: 工具
+tag: python
 
 ---
 
