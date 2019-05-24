@@ -32,8 +32,8 @@ C:\testenv\Scripts>
 ```
 
 ##　PyCharm使用virtualenv环境：
-1. 在新建项目中Base interpreter选择编译版本
-2. 新建项目后，在File中Settings的Project Interpreter中添加即可
+在新建项目中Base interpreter选择编译版本<br>
+新建项目后，在File中Settings的Project Interpreter中添加即可
 
 
 # 参考
