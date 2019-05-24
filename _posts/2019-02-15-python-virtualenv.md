@@ -15,9 +15,13 @@ pip install virtualenv
 
 ## 新建虚拟环境
 ```
-C:\>virtualenv testenv                            // 默认
+C:\>virtualenv testenv                            // 默认版本
 C:\>virtualenv -p D:\\Python27\\python testenv    // 指定2.7
-
+// 默认情况下，虚拟环境会依赖系统环境中的site packages，
+// 就是说系统中已经安装好的第三方package也会安装在虚拟环境中，
+// 如果不想依赖这些package，那么可以加上参数 --no-site-packages建立虚拟环境
+ 
+virtualenv --no-site-packages [虚拟环境名称]
 C:\testenv\Scripts>activate    //激活
 (testenv) C:\testenv\Scripts>  //注意终端发生了变化
 (testenv) C:\testenv\Scripts>pip3 list
