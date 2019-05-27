@@ -7,6 +7,9 @@ tag: python
 
 ---
 
+# 简介
+以前学习过一些python分析的知识和书籍：《python数据分析与挖掘实战》
+
 ```python
 import warnings
 warnings.filterwarnings('ignore')
