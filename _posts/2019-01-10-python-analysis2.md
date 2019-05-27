@@ -246,9 +246,7 @@ plt.show()
     E:\Anaconda3\lib\site-packages\scipy\stats\_distn_infrastructure.py:1818: RuntimeWarning: invalid value encountered in less_equal
       cond2 = cond0 & (x <= self.a)
 ```  
-
-
-![png](/images/posts/2019-02-03/output_24_2.png)
+<img src="/images/posts/2019-02-03/output_24_2.png">
 
 
 
@@ -303,9 +301,8 @@ sns.heatmap(piv_tb, vmax = 1, vmin = 0,                  # 最大值1，最小�
            cmap=sns.color_palette('Reds',n_colors=256))  # 颜色随值大而变深
 plt.show()
 ```
+<img src="/images/posts/2019-02-03/output_27_0.png">
 
-
-![png](/images/posts/2019-02-03/output_27_0.png)
 
 
 
@@ -314,7 +311,7 @@ plt.show()
 sns.barplot(x="salary",y="left",hue="department",data=df)
 plt.show()
 ```
-![png](/images/posts/2019-02-03/output_28_1.png)
+<img src="/images/posts/2019-02-03/output_28_1.png">
 
 
 
@@ -336,5 +333,4 @@ sns.barplot([0,1,2,3,4,5,6,7,8,9],d.sort_values())
 plt.show()
 
 ```
-![png](/images/posts/2019-02-03/output_29_1.png)
-
+<img src="/images/posts/2019-02-03/output_29_1.png">
