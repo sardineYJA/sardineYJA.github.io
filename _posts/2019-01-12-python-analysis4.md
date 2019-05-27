@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "python数据分析篇3"
+title: "python数据分析篇4"
 date: 2019-01-12
 description: "简单介绍一下python数据分析"
 tag: python
