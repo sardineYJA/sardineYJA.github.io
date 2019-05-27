@@ -18,24 +18,11 @@ from statsmodels.graphics.api import qqplot
 from matplotlib import pyplot as plt
 ```
 
-    E:\Anaconda3\lib\site-packages\statsmodels\compat\pandas.py:56: FutureWarning: The pandas.core.datetools module is deprecated and will be removed in a future version. Please use the pandas.tseries module instead.
-      from pandas.core import datetools
-    
-
 
 ```python
 norm_dist = ss.norm.rvs(size=20)   # 标准正态分布
 print(norm_dist)
-```
 
-    [-1.9096815   1.53831966 -0.45807726 -0.51218298  1.57571658 -1.29485442
-     -1.1592398  -1.34961315 -0.32934266  0.59678203  0.01751763 -1.58488268
-      0.0397743  -1.81376292  0.02926109  0.84544125 -0.71588176  1.10858921
-      1.21382756  0.83690329]
-    
-
-
-```python
 # 检查是否符合正太分布
 # returns a 2-tuple of the chi-squared statistic(卡方统计量), and the associated p-value(相关P值).
 # If the p-val is very small, it means it is unlikely that the data came from a normal distribution.
@@ -45,134 +32,84 @@ print(ss.normaltest(ss.uniform.rvs(size = 100)))
 print(ss.normaltest(norm_dist))
 ```
 
-    NormaltestResult(statistic=26.324735009186401, pvalue=1.92157094760205e-06)
-    NormaltestResult(statistic=3.1799326649700697, pvalue=0.20393247751837457)
+>NormaltestResult(statistic=26.324735009186401, pvalue=1.92157094760205e-06)
+>NormaltestResult(statistic=3.1799326649700697, pvalue=0.20393247751837457)
     
 
+
 # 卡方检验
-
-
 ```python
 # 想对两个或两个以上因子彼此之间是否相互独立做检验时，用卡方检验
 ss.chi2_contingency([[15,95],[85,5]])
 # 卡方值，P值，自由度，与原数据数组同维度的对应理论值
 ```
-
-
-
-
-    (126.08080808080808, 2.9521414005078985e-29, 1, array([[ 55.,  55.],
-            [ 45.,  45.]]))
-
+>(126.08080808080808, 2.9521414005078985e-29, 1, array([[ 55.,  55.],[ 45.,  45.]]))
 
 
 # t 检验
-
-
 ```python
 # t 检验：正态均值的比较，X,Y
 ss.ttest_ind(ss.norm.rvs(size=10), ss.norm.rvs(size=20))
 ```
-
-
-
-
-    Ttest_indResult(statistic=0.95450529436678189, pvalue=0.34799646860843469)
-
-
+>Ttest_indResult(statistic=0.95450529436678189, pvalue=0.34799646860843469)
 
 
 ```python
 ss.ttest_ind([65,68,72,75,82,85,91,95], [50,59,71,80])
 ```
-
-
-
-
-    Ttest_indResult(statistic=1.9860353294081732, pvalue=0.07511465244258364)
-
+>Ttest_indResult(statistic=1.9860353294081732, pvalue=0.07511465244258364)
 
 
 # F 检验（方差检验）
-
-
 ```python
 # F 检验（方差检验）：多个正态总体方差的比较
 ss.f_oneway([49,50,39,40,43], [28,32,30,26,34], [38,40,45,42,48])
 ```
-
-
-
-
-    F_onewayResult(statistic=17.619417475728156, pvalue=0.00026871530798216412)
-
-
-
+>F_onewayResult(statistic=17.619417475728156, pvalue=0.00026871530798216412)
 
 ```python
 ss.f_oneway([1071,1076,1070,1083,1082,1067,1078,1080,1084,1075,1080,1075],
            [1074,1069,1067,1068,1079,1075,1082,1064,1073,1070,1072,1075])
 ```
-
-
-
-
-    F_onewayResult(statistic=4.2148410858000274, pvalue=0.052152007956100782)
-
-
-
+>F_onewayResult(statistic=4.2148410858000274, pvalue=0.052152007956100782)
 
 ```python
 ss.f_oneway([5.5,4.6,4.4,3.4,1.9,1.6,1.1,0.8,0.1,-0.1],
             [3.7,3.4,2.0,2.0,0.8,0.7,0,-0.1,-0.2,-1.6])
 ```
-
-
-
-
-    F_onewayResult(statistic=2.3187173412093087, pvalue=0.14520038876939032)
+>F_onewayResult(statistic=2.3187173412093087, pvalue=0.14520038876939032)
 
 
 
 # QQ图
-
-
 ```python
 # qq图默认检查是否符合正态分布
 plt.show(qqplot(ss.norm.rvs(size=100)))
 ```
-
-
 ![png](/images/posts/2019-01-10/output_13_0.png)
 
 
 # 相关系数
-
-
 ```python
 s1 = pd.Series([1,2,3,4,5])
 s2 = pd.Series([2,3,7,9,12])
 print(s1.corr(s2))
 print(s1.corr(s2, method='spearman'))
 ```
-
-    0.988371697651
-    1.0
+>0.988371697651
+>1.0
     
 
 # 线性回归
-
-
 ```python
 x = np.arange(10).astype(np.float).reshape((10,1))
 y = x*3 + 4 + np.random.random((10,1))  # 加上0-1的噪声
 print(x.T)
 print(y.T)
 ```
-
-    [[ 0.  1.  2.  3.  4.  5.  6.  7.  8.  9.]]
-    [[  4.6851856    7.89541776  10.86978756  13.63687922  16.12832461
-       19.41637768  22.21882588  25.26868984  28.41653041  31.94667092]]
+>[[ 0.  1.  2.  3.  4.  5.  6.  7.  8.  9.]]
+>[[  4.6851856    7.89541776  10.86978756  13.63687922  16.12832461
+>   19.41637768  22.21882588  25.26868984  28.41653041  31.94667092]]
     
 
 
@@ -184,7 +121,7 @@ print(reg.predict(x))  # 估计值
 print(reg.coef_)       # 参数
 print(reg.intercept_)  # 截距
 ```
-
+```
     [[  4.68382638]
      [  7.65370251]
      [ 10.62357863]
@@ -197,7 +134,8 @@ print(reg.intercept_)  # 截距
      [ 31.41271151]]
     [[ 2.96987613]]
     [ 4.68382638]
-    
+ ```   
+
 
 # PCA降维
 默认使用奇异分解降维
@@ -223,7 +161,7 @@ print('主成分方差值：',    lower_dim.explained_variance_)       # 主成�
 print('最大方差的成分：\n',lower_dim.components_)               # 最大方差的成分
 print('降维后：\n',        lower_dim.fit_transform(data))       # 降维后数据
 ```
-
+```
     [[ 2.5  2.4  2.2  1.2]
      [ 0.5  0.7  0.3  1.3]
      [ 2.2  2.9  2.3  2.2]
@@ -250,11 +188,10 @@ print('降维后：\n',        lower_dim.fit_transform(data))       # 降维后�
      [ 1.09456752  0.33160393]
      [ 0.77221389 -0.03629123]
      [ 1.05445864  1.17195621]]
-    
+```  
+
 
 # 交叉分析
-
-
 ```python
 df=pd.read_csv("data\\HR.csv")
 dp_indices=df.groupby(by="department").indices              # 获取到所有部门的分类索引，如 marketing,sales等部门
@@ -265,12 +202,6 @@ technical_values=df["left"].iloc[dp_indices["technical"]].values # technical 部
 print(technical_values)
 print(ss.ttest_ind(sales_values,technical_values))          # t 检验，比较均值
 ```
-
-    [1 1 1 ..., 1 1 1]
-    [1 1 1 ..., 1 1 1]
-    Ttest_indResult(statistic=-1.0601649378624074, pvalue=0.28910690461744781)
-    
-
 
 ```python
 # 计算每个部门，两两之间的 t 检验，部门与部门之间的离职率是否有显著差异；原假设u=u0
@@ -293,7 +224,7 @@ plt.figure(figsize=(18, 6))
 sns.heatmap(dp_t_mat,xticklabels=dp_keys,yticklabels=dp_keys)
 plt.show()
 ```
-
+```
     ['marketing', 'support', 'RandD', 'technical', 'management', 'hr', 'accounting', 'IT', 'product_mng', 'sale', 'sales']
     [[ 0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
      [ 0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
@@ -314,7 +245,7 @@ plt.show()
       return (self.a < x) & (x < self.b)
     E:\Anaconda3\lib\site-packages\scipy\stats\_distn_infrastructure.py:1818: RuntimeWarning: invalid value encountered in less_equal
       cond2 = cond0 & (x <= self.a)
-    
+```  
 
 
 ![png](/images/posts/2019-02-03/output_24_2.png)
@@ -337,7 +268,7 @@ piv_tb = pd.pivot_table(df, values="left",
 print(piv_tb) #可以看出5年没有升职，没有工作事故，工资较低的人离职率高（0.3319）
               # nme 应该是异常值
 ```
-
+```
     Work_accident                        0         1
     promotion_last_5years salary                    
     0                     high    0.082996  0.000000
@@ -347,7 +278,7 @@ print(piv_tb) #可以看出5年没有升职，没有工作事故，工资较低�
     1                     high    0.000000  0.000000
                           low     0.229167  0.166667
                           medium  0.028986  0.023256
-    
+```
 
 
 ```python
@@ -355,7 +286,7 @@ print(piv_tb) #可以看出5年没有升职，没有工作事故，工资较低�
 piv_tb.drop(piv_tb.index[[3]],inplace=True)  # inplace=True表示直接在原数据上修改
 print(piv_tb)
 ```
-
+```
     Work_accident                        0         1
     promotion_last_5years salary                    
     0                     high    0.082996  0.000000
@@ -364,7 +295,7 @@ print(piv_tb)
     1                     high    0.000000  0.000000
                           low     0.229167  0.166667
                           medium  0.028986  0.023256
-    
+ ```   
 
 
 ```python
@@ -383,12 +314,6 @@ plt.show()
 sns.barplot(x="salary",y="left",hue="department",data=df)
 plt.show()
 ```
-
-    E:\Anaconda3\lib\site-packages\seaborn\categorical.py:1508: FutureWarning: remove_na is deprecated and is a private function. Do not use.
-      stat_data = remove_na(group_data[hue_mask])
-    
-
-
 ![png](/images/posts/2019-02-03/output_28_1.png)
 
 
@@ -411,11 +336,5 @@ sns.barplot([0,1,2,3,4,5,6,7,8,9],d.sort_values())
 plt.show()
 
 ```
-
-    E:\Anaconda3\lib\site-packages\seaborn\categorical.py:1460: FutureWarning: remove_na is deprecated and is a private function. Do not use.
-      stat_data = remove_na(group_data)
-    
-
-
 ![png](/images/posts/2019-02-03/output_29_1.png)
 
