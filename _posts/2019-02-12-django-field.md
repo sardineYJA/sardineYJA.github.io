@@ -47,10 +47,10 @@ tag: Web框架
 11. FileField
 # 要求一个必须有的参数: upload_to, 一个用于保存上载文件的本地文件系统路径. 这个路径必须包含 strftime #formatting, 
 
-URLField
+12. URLField
 # 保存 URL. 若verify_exists 参数为 True (默认), 给定的 URL 会预先检查是否存在(没有返回404响应).
 
-IPAddressField
+13. IPAddressField
 # 一个字符串形式的 IP 地址, (i.e. "24.124.1.30").
 
 ```
