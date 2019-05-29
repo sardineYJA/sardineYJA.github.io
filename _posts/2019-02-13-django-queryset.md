@@ -39,7 +39,7 @@ update_or_create 接口：同get_or_create，只是用来做更新操作。
 
 count 接口：用于返回Queryset有多少条记录。
 
-1atest 接口：用于返回最新的一条记录，但是需要在Model的Meta中定义：get_latest by=<用来排序的字段>。
+latest 接口：用于返回最新的一条记录，但是需要在Model的Meta中定义：get_latest by=<用来排序的字段>。
 
 earliest接口：同上，返回最早的一条记录。
 
