@@ -34,6 +34,16 @@ C:\testenv\Scripts>
 (venv) $ pip freeze > requirements.txt      # 导出
 (venv) $ pip install -r requirements.txt    # 安装
 ```
+requirements.txt文本,其中第一行可指定源，
+最后一行表示从当前的setup.py中查找其他依赖项：
+```
+-i http://pypi.doubanio.com/simple/
+Django==2.0
+django-ranged-response==0.2.0
+django-simple-captcha==0.5.11
+fasttext==0.8.22
+-e .
+```
 
 ## PyCharm使用virtualenv环境：
 在新建项目中Base interpreter选择编译版本<br>
