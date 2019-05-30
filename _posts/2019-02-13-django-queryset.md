@@ -75,7 +75,7 @@ range：范围查询，多用于时间范围，如Post.objects.filter（created_
 
 
 # 例子
-```
+```python
 A.objects.create(id=1,name='yang')
 A(name='yang', email='').save()
 A.objects.get_or_create(...)
@@ -86,5 +86,13 @@ Post.objects.filter(id=1).values('title')
 
 Person.objects.filter(name__iexact="abc")   # 名称为 abc 但是不区分大小写，可以找到 ABC, Abc, aBC，这些都符合条件
 Person.objects.filter(name__contains="abc") # 名称中包含 "abc"的人
+
+from django.db.models import Q, F
+Post.objects.filter(Q(id=1) | Q(id=2))  # or
+Post.objects.filter(Q(id=1) & Q(id=2))  # and
+
+post = Post.objects.get(id=1)
+post.pv = F('pv') + 1     # 在数据库层面执行原子性操作
+post.save()               # 解决多线程不同步问题
 ```
 
