@@ -1,3 +1,5 @@
+[TOC]
+
 ---
 layout: post
 title: "关于QuerySet的优化"
@@ -6,8 +8,6 @@ description: "介绍关于QuerySet的优化"
 tag: Web框架
 
 ---
-
-@[TOC]目录
 
 
 # 介绍
