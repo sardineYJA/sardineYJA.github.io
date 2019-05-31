@@ -7,6 +7,9 @@ tag: Web框架
 
 ---
 
+@[TOC]目录
+
+
 # 介绍
 
 ## 懒加载
@@ -106,7 +109,7 @@ print(news_list)
 ```
 
 
-# 直接使用外键的值
+## 直接使用外键的值
 ```python
 # 获取频道的id
 news.channel_id
