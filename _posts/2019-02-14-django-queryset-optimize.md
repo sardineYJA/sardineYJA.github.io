@@ -1,5 +1,3 @@
-[TOC]
-
 ---
 layout: post
 title: "关于QuerySet的优化"
