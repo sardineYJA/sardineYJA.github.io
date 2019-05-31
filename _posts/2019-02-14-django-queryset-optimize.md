@@ -106,6 +106,14 @@ print(news_list)
 ```
 
 
+# 直接使用外键的值
+```python
+# 获取频道的id
+news.channel_id
+new.channel.id     # 不要这样
+```
+
+
 ## 使用 QuerySet.count()
 如果你只是想要获取有多少数据，不要使用 len(queryset) 。
 
