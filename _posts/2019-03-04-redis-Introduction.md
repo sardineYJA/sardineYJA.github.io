@@ -26,6 +26,7 @@ NoSQL技术，这是一种基于内存的数据库，并且提供一定的持久
 
 # 安装
 window下载安装：https://github.com/microsoftarchive/redis/releases
+
 直接安装msi软件，并增加环境路径
 
 ## 启动错误
