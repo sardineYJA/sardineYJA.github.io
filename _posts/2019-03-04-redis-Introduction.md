@@ -63,6 +63,8 @@ redis-server e:\Redis\redis.windows.conf
 
 > 注意关闭cmd命令即关闭Redis
 
+新的窗口连接: `redis-cli -h 127.0.0.1 -p 6379`
+
 ## 部署Redis
 命令：`redis-server --service-install e:\Redis\redis.windows.conf`
 
@@ -80,5 +82,4 @@ redis-server --service-stop           // 停止服务
 1. https://www.cnblogs.com/lixihuan/p/6815730.html
 2. https://www.cnblogs.com/angelyan/p/10449892.html
 3. https://www.cnblogs.com/bigben0123/p/9115597.html
-
-
+4. https://www.runoob.com/redis/redis-backup.html
