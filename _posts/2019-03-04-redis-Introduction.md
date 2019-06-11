@@ -45,12 +45,14 @@ window下载安装：https://github.com/microsoftarchive/redis/releases
 
 提示：
 > Creating Server TCP listening socket *:6379: bind: No error
+
 解决：
 ```
 redis-cli.exe
 shutdown
 exit
 ```
+
 此时启动命令可以：
 ```
 reids-server
@@ -62,17 +64,20 @@ redis-server e:\Redis\redis.windows.conf
 
 ## 部署Redis
 命令：`redis-server --service-install e:\Redis\redis.windows.conf`
+
 提示：
 > HandleServiceCommands: system error caught. error code=1073, message = CreateService failed: unknown error
-原因：系统服务中已经存在
-卸载再安装：`redis-server --service-uninstall`
-启动服务：`redis-server --service-start`
-停止服务：`redis-server --service-stop`
 
+原因：系统服务中已经存在
+```
+redis-server --service-uninstall      // 卸载再安装
+redis-server --service-start          // 启动服务
+redis-server --service-stop           // 停止服务
+```
 
 # 参考：
-https://www.cnblogs.com/lixihuan/p/6815730.html
-https://www.cnblogs.com/angelyan/p/10449892.html
-https://www.cnblogs.com/bigben0123/p/9115597.html
+1. https://www.cnblogs.com/lixihuan/p/6815730.html
+2. https://www.cnblogs.com/angelyan/p/10449892.html
+3. https://www.cnblogs.com/bigben0123/p/9115597.html
 
 
