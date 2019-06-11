@@ -61,7 +61,7 @@ redis-server.exe
 redis-server e:\Redis\redis.windows.conf
 ```
 
-> 注意关闭cmd命令即关闭Redis
+> 注意关闭cmd窗口即关闭Redis
 
 新的窗口连接: `redis-cli -h 127.0.0.1 -p 6379`
 
