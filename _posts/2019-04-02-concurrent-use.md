@@ -9,7 +9,7 @@ tag: python
 
 # 简介
 
-将常用的 multiprocessing 和 threding 模块进行进一步封装 concurrent.futures，达成较好的支持异步操作，最终在 Python 3.2 中被引入 。
+将常用的 multiprocessing 和 threding 模块进行进一步封装 concurrent.futures，达成较好的支持异步操作，最终在 Python 3.2 中被引入 。该做法会以子程序的形式，平行地运行多个解释器，从而令python程序能够利用多核心CPU来提升执行速度。由于子进程与主解释器相分离，所以，他们的全局解释器锁也是相互独立的。每个子进程都可以完整的利用一个CPU内核，而且这些子进程都与主进程之间有着联系，通过这条联系渠道，子进程可以接收主进程发过来的指令，并把计算结果返回给主进程。
 
 # concurrent.futures 模块详解
 
