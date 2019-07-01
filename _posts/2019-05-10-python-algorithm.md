@@ -24,7 +24,7 @@ class HashTable:
         print(key)
         address = self.hash(key)   # 散列地址
         print(address)
-        while self.elem[address] != None:   # 发生冲突
+        while self.elem[address] is not None:   # 发生冲突
             address = (address+1) % self.count
         print(address)
         self.elem[address] = key
@@ -162,14 +162,14 @@ class SingleLinkList(object):
     def length(self):         # 链表长度
         cur = self.__head     # cur游标，遍历节点
         count = 0
-        while cur != None:
+        while cur is not None:
             count += 1
             cur = cur.next
         return count
 
     def travel(self):         # 遍历整个链表
         cur = self.__head
-        while cur != None:
+        while cur is not None:
             print(cur.elem, end=' ')
             cur = cur.next
         print('\n')
