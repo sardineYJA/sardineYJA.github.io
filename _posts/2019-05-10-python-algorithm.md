@@ -6,8 +6,17 @@ description: "简单复习python数据结构"
 tag: python
 
 ---
+# 目录
+1. 队列
+2. 堆栈
+3. 哈希表
+4. 单链表
+5. 二叉树
+6. 排序伪代码
 
-# 队列
+
+
+## 队列
 
 ```python
 class Queue:
@@ -52,7 +61,7 @@ if __name__ == '__main__':
 
 ```
 
-# 堆栈
+## 堆栈
 
 ```python
 # 堆栈
@@ -95,7 +104,7 @@ if __name__ == '__main__':
     s.show_stack()
 ```
 
-# 哈希表
+## 哈希表
 
 ```python
 class HashTable:
@@ -138,7 +147,7 @@ if __name__ == '__main__':
     print(hash_table.search_hash(33))
 ```
 
-# 单链表
+## 单链表
 
 ```python
 
@@ -262,7 +271,7 @@ if __name__ == '__main__':
 
 ```
 
-# 二叉树
+## 二叉树
 
 ```python
 class Node(object):
@@ -345,7 +354,7 @@ if __name__ == '__main__':
 
 ```
 
-# 排序伪代码
+## 排序伪代码
 ```python
 ## 每轮在最右找比temp小的，在最左找比temp大的
 def quick_sort(data, low, high):
