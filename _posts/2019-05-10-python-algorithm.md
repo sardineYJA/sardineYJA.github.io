@@ -7,95 +7,6 @@ tag: python
 
 ---
 
-
-# 哈希表
-
-```python
-class HashTable:
-    def __init__(self, size):
-        self.count = size      # 最大表长
-        # 使用list作为哈希表元素保存方法
-        self.elem = [None for i in range(size)]
-
-    def hash(self, key):
-        return key % self.count    # 散列函数采用除留余数法
-
-    def insert_hash(self, key):    # 插入关键字到哈希表
-        print(key)
-        address = self.hash(key)   # 散列地址
-        print(address)
-        while self.elem[address] is not None:   # 发生冲突
-            address = (address+1) % self.count
-        print(address)
-        self.elem[address] = key
-        print(self.elem)
-
-    def search_hash(self, key):    # 查找关键字
-        start = address = self.hash(key)
-        while self.elem[address] != key:
-            address = (address+1) % self.count
-            if not self.elem[address] or address == start:
-                return False    # 说明没找到或者循环到了开始的位置
-        return True
-
-if __name__ == '__main__':
-    list_a = [0, 12, 67, 56, 16, 25, 37, 22, 29, 15, 47, 48, 34]
-    hash_table = HashTable(len(list_a))
-    for i in list_a:
-        hash_table.insert_hash(i)
-
-    for i in hash_table.elem:
-        print((i, hash_table.elem.index(i)))
-
-    print(hash_table.search_hash(15))
-    print(hash_table.search_hash(33))
-```
-
-
-# 堆栈
-
-```python
-# 堆栈
-class Stack:
-    def __init__(self, size):
-        self.size = size   # 堆栈容量
-        self.stack = []    # 列表表示堆栈
-        self.top = -1      # 栈顶索引
-
-    def push(self, x):     # 入栈
-        if self.is_full():
-            raise Exception('stack is full')
-        else:
-            self.stack.append(x)
-            self.top += 1
-
-    def pop(self):        # 出栈
-        if self.is_empty():
-            raise Exception('stack is empty')
-        else:
-            self.top -= 1
-            self.stack.pop()
-
-    def is_full(self):
-        return self.top+1 == self.size
-
-    def is_empty(self):
-        return self.top == -1
-
-    def show_stack(self):
-        print(self.stack)
-
-if __name__ == '__main__':
-    s = Stack(10)
-    for i in range(6):
-        s.push(i)
-    s.show_stack()
-    for i in range(3):
-        s.pop()
-    s.show_stack()
-```
-
-
 # 队列
 
 ```python
@@ -141,6 +52,91 @@ if __name__ == '__main__':
 
 ```
 
+# 堆栈
+
+```python
+# 堆栈
+class Stack:
+    def __init__(self, size):
+        self.size = size   # 堆栈容量
+        self.stack = []    # 列表表示堆栈
+        self.top = -1      # 栈顶索引
+
+    def push(self, x):     # 入栈
+        if self.is_full():
+            raise Exception('stack is full')
+        else:
+            self.stack.append(x)
+            self.top += 1
+
+    def pop(self):        # 出栈
+        if self.is_empty():
+            raise Exception('stack is empty')
+        else:
+            self.top -= 1
+            self.stack.pop()
+
+    def is_full(self):
+        return self.top+1 == self.size
+
+    def is_empty(self):
+        return self.top == -1
+
+    def show_stack(self):
+        print(self.stack)
+
+if __name__ == '__main__':
+    s = Stack(10)
+    for i in range(6):
+        s.push(i)
+    s.show_stack()
+    for i in range(3):
+        s.pop()
+    s.show_stack()
+```
+
+# 哈希表
+
+```python
+class HashTable:
+    def __init__(self, size):
+        self.count = size      # 最大表长
+        # 使用list作为哈希表元素保存方法
+        self.elem = [None for i in range(size)]
+
+    def hash(self, key):
+        return key % self.count    # 散列函数采用除留余数法
+
+    def insert_hash(self, key):    # 插入关键字到哈希表
+        print(key)
+        address = self.hash(key)   # 散列地址
+        print(address)
+        while self.elem[address] is not None:   # 发生冲突
+            address = (address+1) % self.count
+        print(address)
+        self.elem[address] = key
+        print(self.elem)
+
+    def search_hash(self, key):    # 查找关键字
+        start = address = self.hash(key)
+        while self.elem[address] != key:
+            address = (address+1) % self.count
+            if not self.elem[address] or address == start:
+                return False    # 说明没找到或者循环到了开始的位置
+        return True
+
+if __name__ == '__main__':
+    list_a = [0, 12, 67, 56, 16, 25, 37, 22, 29, 15, 47, 48, 34]
+    hash_table = HashTable(len(list_a))
+    for i in list_a:
+        hash_table.insert_hash(i)
+
+    for i in hash_table.elem:
+        print((i, hash_table.elem.index(i)))
+
+    print(hash_table.search_hash(15))
+    print(hash_table.search_hash(33))
+```
 
 # 单链表
 
@@ -266,7 +262,6 @@ if __name__ == '__main__':
 
 ```
 
-
 # 二叉树
 
 ```python
@@ -347,5 +342,85 @@ if __name__ == '__main__':
     tree.postorder_traversal(tree.root)
     print()
     tree.level_travelsal(tree.root)
+
+```
+
+# 排序伪代码
+```python
+## 每轮在最右找比temp小的，在最左找比temp大的
+def quick_sort(data, low, high):
+    i , j = low, high
+    temp = data[i]
+    while i < j:
+        while(i < j && temp <= data[j]):
+            j-=1
+        if i < j:
+            data[i] = data[j]
+            i+=1
+        while(i < j && data[i] < temp):
+            i+=1
+        if i < j:
+            data[j] = data[i]
+            j-=1
+    data[i] = temp
+    if low < i:
+        quick_sort(data, low, i-1)
+    if i < high:
+        quick_sort(data, j+1, high)
+
+
+# 在 n 轮中每轮有 n-i 轮前后两两比较
+def bubble_sort(data):
+    n = len(data)
+    for i in range(n):
+        for j in range(n-i):
+            if data[j] > data[j+1]:
+                temp = data[j]
+                data[j] = data[j+1]
+                data[j+1] = temp 
+
+
+# 归并排序
+def merge(data, swap, k):
+    m = 0
+    n = len(data)
+    l1 = 0
+    while (l1+k <= n-1):
+        l2 = l1 + k
+        u1 = l2 - 1
+        u2 = (l2+k-1 <= n-1) ? l2+k-1 : n-1
+
+        # 两个有序合并,小数先进swap
+        for (i=l1, j=l2; i<=u1, j<=u2; m++)
+            if data[i] <= data[j]:
+                swap[m] = data[i]
+                i += 1
+            else:
+                swap[m] = data[j]
+                j += 1
+
+        # 组2先归并完
+        while i <= u1:
+            swap[m] = data[i]
+            m++
+            i++
+        # 组1先归并完
+        while j <=u2:
+            swap[m] = data[j]
+            m++
+            j++
+
+        l1 = u2+1   # 接下两组进行归并
+
+    for (i=l1; i<n; i++, m++) # 奇数，剩余最后一组
+        swap[m] = data[i]
+
+
+def merge_sort(data):
+    n = len(data)
+    k = 1         # 每组数据的个数
+    while k < n:
+        merge(data, swap, k)
+        k = 2*k   # 每组数据个数2倍增长
 
 ```
