@@ -11,6 +11,7 @@ tag: 大数据
 
 1. 创建Maven项目
 2. xml依赖以及打包
+
 ```xml
 <dependencies>
 		<dependency>
@@ -76,6 +77,7 @@ tag: 大数据
  </build>
 
 ```
+
 注意：`<mainClass>mapreduceDemo.WordcountDriver</mainClass>`换成自己的类
 是包名+类名的完整路径
 
