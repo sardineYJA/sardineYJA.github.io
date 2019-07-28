@@ -10,7 +10,9 @@ tag: 大数据
 # hdfs客户端
 
 1. 创建Maven项目
+
 2. xml依赖
+
 ```xml
 <dependencies>
 		<dependency>
@@ -42,6 +44,7 @@ tag: 大数据
 ```
 
 3. 创建src/main/resources/log4j.properties
+
 ```
 log4j.rootLogger=INFO, stdout
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
@@ -63,6 +66,7 @@ log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
 > Failed to locate the winutils binary in the hadoop binary path
 
 7. 测试代码
+
 ```java
 package test;
 
