@@ -10,6 +10,7 @@ tag: 大数据
 # MapReduce项目环境搭建
 
 1. 创建Maven项目
+
 2. xml依赖以及打包
 
 ```xml
@@ -82,6 +83,7 @@ tag: 大数据
 是包名+类名的完整路径
 
 3. 创建src/main/resources/log4j.properties
+
 ```
 log4j.rootLogger=INFO, stdout
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
@@ -97,7 +99,7 @@ log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
 
 5. 打包：右键 -> Run as -> maven install，target目录下生成，使用不带依赖的jar
 
-6. 在hadoop测试hadoop jar wc.jar  XXXX.WordcountDriver /input /output
+6. 在hadoop测试：`hadoop jar wc.jar  XXXX.WordcountDriver /input /output`
 > Exception in thread "main" java.lang.UnsupportedClassVersionError: mapreduceDemo/WordcountDriver : Unsupported major.minor version 52.0
 (Maven打包的1.8版本，而测试系统jdk是1.7版本，建议自己重装1.8)
 解决：将项目Maven的jdk版本换成1.7，重新打包
@@ -107,6 +109,7 @@ log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
 # InputFormat 数据输入
 
 ## FileInputFormat 切片
+
 1. 简单地按照文件的内容长度进行切片
 2. 切片大小默认等于Block大小
 3. 切片时不考虑数据集整体，而是逐个针对每一个文件单独切片
@@ -114,10 +117,12 @@ log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
 # FileInputFormat实现类
 
 ## TextInputFormat
+
 1. 每读取一行
 2. 键是该行在整个文件中的起始字节偏移量：<LongWritable, Text>
 
 ## KeyValueTextInputFormat
+
 1. 每读取一行，被（第一个）分隔符切分key, value
 2. 驱动类设置分隔符：(默认tab)
 ```java
@@ -125,9 +130,10 @@ conf.set(KeyValueLineRecordReader.KEY_VALUE_SEPERATOR, "\t");
 // 设置输入格式
 job.setInputFormatClass(KeyValueTextInputFormat.class);
 ```
-3. <Text, Text>
+3. 输入的Map的格式<Text, Text, ..., ...>
 
 ## NLineInputFormat
+
 1. 文件总行数/N = 切片数（向上取整）
 2. 切片数就是MapTask数
 3. <LongWritable, Text>(kv与TextInputFormat一样)
@@ -155,6 +161,7 @@ CombineTextInputFormat.setMaxInputSplitSize(job, 4194304);
 
 
 # 自定义InputFormat
+
 1. 继承FileInputFormat
 2. 改写RecordReader
 3. 设置Driver
@@ -181,23 +188,27 @@ job.setNumReduceTasks(5);
 MapTask和ReduceTask默认按照字典排序
 
 MapTask：结果暂存到环形缓冲区，当达到阈值后，对缓冲区的数据进行一次快排，并溢写到磁盘上，当数据处理完毕后对磁盘上所有文件进行归并排序。
+
 ReduceTask：从每个MapTask上远程拷贝相应的数据文件，文件大小超过阈值则溢写到磁盘。磁盘文件数量达到阈值则归并排序合并成大文件。内存文件大小达到阈值则合并溢写到磁盘。所有数据拷贝完毕，对内存和磁盘所有数据进行一次归并排序。
 
 1. 全排序：输出结果只有一个文件，内部有序
 2. 部分排序：输出的每个文件内部有序
-3. 分组排序：
-4. 二次排序：
+3. 分组排序：对key进行分组排序
+
 
 ## WritableComparable全排序
+
 1. 实现WritableComparable接口重写compareTo()
 2. Mapper输出的Key是自定义排序的类型
 3. Reducer输出应该循环，避免相同情况
 
 ## WritableComparable区内排序
+
 1. 基于全排序，增加自定义分区Partitioner即可
 
 
 # Combiner合并
+
 1. 意义在于对每一MapTask的输出进行局部汇总，减少网络传输量
 2. Combiner的输出kv与Reducer的输入kv对应
 
@@ -216,8 +227,10 @@ job.setCombinerClass(CustomReducer.class);
 ```
 
 
-# GroupingComparator 分组排序（辅助排序）
+# GroupingComparator 分组（辅助）排序
+
 分组排序：对Reduce阶段的数据根据某一个或多个字段进行分组
+
 1. 自定义继承WritableComparator
 2. 重写compare()
 3. 创建一个构造将比较对象的类传给父类
@@ -231,21 +244,22 @@ job.setGroupingComparatorClass(OrderSortGroupingComparator.class);
 # WritableComparable与WritableComparator区别
 
 Writable：
-接口，进行序列化
-重写：write(), readFields()
-MR执行位置：数据传输/方法间传输
+接口，进行序列化；
+重写：write(), readFields()；
+MR执行位置：数据传输/方法间传输；
 
 WritableComparable：
-接口，进行序列化、排序，extends Writable, Comparable
-重写：write(), readFields(), compareTo()
-MR执行位置：map()后，缓冲区排序
+接口，进行序列化、排序，extends Writable, Comparable；
+重写：write(), readFields(), compareTo()；
+MR执行位置：map()后，缓冲区排序；
 
 WritableComparator：
-类，给key分组，将同组的Key传给reduce()执行，implements RawComparator, Configurable
-重写：compare()
-MR执行位置：reduce()执行前
+类，给key分组，将同组的Key传给reduce()执行，implements RawComparator, Configurable；
+重写：compare()；
+MR执行位置：reduce()执行前；
 
-WritableComparable 是对Key排序
+总结：
+WritableComparable 是对Key排序；
 WritableComparator 是对Key分组（在接收的key是bean对象时，想让一个或几个字段相同的key进入到同一个reduce）
 
 
@@ -253,6 +267,8 @@ WritableComparator 是对Key分组（在接收的key是bean对象时，想让一
 # OutputFormat
 
 ## TextOutputFormat
+
+默认TextOutputFormat
 
 ## SequenceFileOutputFormat
 
@@ -280,6 +296,8 @@ job.setOutputFormatClass(CustomOutputFormat.class);
 1. 在map()过滤
 2. job.setNumReduceTasks(0);
 
+
+# Mapper 和 Reducer
 
 Mapper :
 ```java
@@ -315,10 +333,12 @@ public void run(Context context) throws IOException, InterruptedException {
 ```
 
 基类Mapper类和Reducer类中都是只包含四个方法：setup方法，cleanup方法，run方法，map方法。
+
 在run方法中调用了上面的三个方法：setup方法，map方法，cleanup方法。其中setup方法和cleanup方法默认是不做任何操作，且它们只被执行一次。
 
 
 # 数据倾斜
+
 大量的相同key被partition分配到一个分区里，map /reduce程序执行时，reduce节点大部分执行完毕，但是有一个或者几个reduce节点运行很慢，导致整个程序的处理时间很长.
 
 1. 增加jvm内存
@@ -329,7 +349,9 @@ public void run(Context context) throws IOException, InterruptedException {
 6. Join尽量使用Map Join
 
 # 参数调优
+
 mapred-default.xml
+
 ```xml
 mapreduce.map.memory.mb
 一个MapTask可使用的资源上限（单位:MB），默认为1024。如果MapTask实际使用的资源量超过该值，则会被强制杀死。
@@ -362,6 +384,7 @@ Task超时时间，经常需要设置的一个参数，该参数表达的意思�
 ```
 
 yarn-default.xml
+
 ```xml
 yarn.scheduler.minimum-allocation-mb	  	
 给应用程序Container分配的最小内存，默认值：1024
@@ -379,11 +402,15 @@ yarn.nodemanager.resource.memory-mb
 
 
 # hdfs小文件处理
-HDFS小文件解决方案
+
 小文件的优化方式：
+
 （1）在数据采集的时候，就将小文件或小批数据合成大文件再上传HDFS。
+
 （2）在业务处理之前，在HDFS上使用MapReduce程序对小文件进行合并。
+
 （3）在MapReduce处理时，可采用CombineTextInputFormat提高效率。
+
 
 1. Hadoop Archive：是一个高效地将小文件放入HDFS块中的文件存档工具，能将多个小文件打包成HAR文件，减少了NameNode的内存使用。
 2. Sequence File：由一系列的二进制key/value组成，如果key为文件名，value为文件内容，则可以将大批小文件合并成一个大文件。
@@ -394,41 +421,69 @@ HDFS小文件解决方案
 
 # MapReduce 流程
 
-InputFormat
-FileInputFormat
-TextInputFormat（默认）
-KeyValueTextInputFormat
-NLineInputFormat
-CombineTextInputFormat
+InputFormat；
+FileInputFormat；
+TextInputFormat（默认）；
+KeyValueTextInputFormat；
+NLineInputFormat；
+CombineTextInputFormat；
+
       |
+
       ↓
+
 RecordReader 自定义InputFormat
+
       |
+
       ↓
+
 Mapper: map(), setup(), cleanup()
+
       |
+
       ↓
+
 WirtableComparable 排序
+
       |
+
       ↓
+
   Combiner 合并
+
       |
+
       ↓
+
 GroupingComparator 分组
+
       |
+
       ↓
+
 Reducer: reduce(), setup(), cleanup()
+
       |
+
       ↓
-OutputFormat
-TextOutputFormat
-SequenceFileOutputFormat
+
+OutputFormat；
+TextOutputFormat（默认）；
+SequenceFileOutputFormat；
+
       |
+
       ↓
+
 RecordWriter 自定义OutputFormat
+
       |
+
       ↓
+
 Partitioner 分区
+
 
 
 
