@@ -182,10 +182,13 @@ hadoop103
 ## 添加黑名单：
 
 1. 创建hadoop-2.7.2/etc/hadoop/dfs.hosts.exclude文件
+
 2. 增加黑名单的主机名：
+
 ```
 hadoop104
 ```
+
 3. hdfs-site.xml增加dfs.hosts.exclude属性
 
 ```xml
@@ -196,7 +199,9 @@ hadoop104
 ```
 
 4. 同步配置文件，刷新
+
 5. 注意服役节点小于副本数是不能退役成功的
+
 6. 数据均衡
 
 
