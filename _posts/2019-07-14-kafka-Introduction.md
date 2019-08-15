@@ -223,6 +223,12 @@ get /brokers/ids/0
     <artifactId>kafka-clients</artifactId>
     <version>2.1.1</version>
 </dependency>
+
+<dependency>
+    <groupId>org.apache.kafka</groupId>
+    <artifactId>kafka-streams</artifactId>
+    <version>1.0.1</version>
+</dependency>
 ```
 
 ## Producer

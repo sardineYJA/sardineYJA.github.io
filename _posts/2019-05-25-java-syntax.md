@@ -24,8 +24,8 @@ Boolean, Character, Byte, Short, Integer, Long, Float, Double
 
 
 ## 访问控制修饰符：
-default    同一包内可见
 private    同一类内可见
+default    同一包内可见
 protected  同一包内和所有子类可见
 public     所有类可见
 
