@@ -17,10 +17,22 @@ tag: 大数据
 
 
 ## 部署模式
-Local 和 Local-Cluster (单机模式)
-Standalone    （使用自带的独立调度器）
-Yarn          （使用YARN）
-Mesos          (使用Mesos)
+
+### 单机模式
+
+local: 所有计算都运行在一个线程当中，没有任何并行计算。
+
+local[K]: 指定使用几个线程来运行计算。
+
+local[\*]: 直接帮你按照cpu最多cores来设置线程数了。
+
+### 集群模式
+
+Standalone 模式：Spark会自己负责资源的管理调度
+
+Yarn 模式化：采用yarn来管理资源调度
+
+Mesos 模式：使用mesos来管理资源调度
 
 
 # RDD
