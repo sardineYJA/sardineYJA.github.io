@@ -53,7 +53,7 @@ tag: 大数据
 			</configuration>
 		</plugin>
 		<plugin>
-			<artifactId>maven-assembly-plugin </artifactId>
+			<artifactId>maven-assembly-plugin</artifactId>
 			<configuration>
 				<descriptorRefs>
 					<descriptorRef>jar-with-dependencies</descriptorRef>

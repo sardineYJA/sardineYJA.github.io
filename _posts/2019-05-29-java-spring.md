@@ -6,24 +6,39 @@ description: "简单介绍Spring"
 tag: java
 
 ---
+
 # Spring 简介：
-IoC(Inversion of Control, 控制反转)
+
+IOC(Inversion of Control, 控制反转)
+
 AOP(Aspect Oriented Programming, 面向切片)
+
 不用new方式创建对象，而是使用配置的方式。
+
 bean 配置形式：1、基于XML文件，2、基于注解方式。
 
 # 安装配置
-下载对于eclipse相应版本的Spring：https://spring.io/tools3/sts/all
-打开eclipse的Help的install new software，选择下载好的压缩包。
-创建java项目（非Spring项目），创建lib将jar包放入，右键Bulid Path->Configura bulid path导入jar包到Referenced Libraries，后期可换成maven导入
+
+1. 下载对于eclipse相应版本的Spring：https://spring.io/tools3/sts/all
+
+2. 打开eclipse的Help的install new software，选择下载好的压缩包。
+
+3. 创建java项目（非Spring项目），创建lib将jar包放入，右键Bulid Path->Configura bulid path导入jar包到Referenced Libraries，后期可换成maven导入
+
+4. 在src目录创建Spring Bean Configuration File即XML配置文件
+
+```
 commons-logging-1.1.1.jar
 spring-beans-4.0.0.RELEASE.jar
 spring-context-4.0.0.RELEASE.jar
 spring-core-4.0.0.RELEASE.jar
 spring-expression-4.0.0.RELEASE.jar
-在src目录创建Spring Bean Configuration File即XML配置文件
+```
+
+
 
 # 实例
+
 ```java
 public class HelloWorld {
 	private String name;
@@ -38,6 +53,7 @@ public class HelloWorld {
 	}
 }
 ```
+
 ```java
 public class Main {
 	public static void main(String[] args) {
@@ -54,6 +70,7 @@ public class Main {
 	}
 }
 ```
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -71,11 +88,15 @@ public class Main {
 	</bean>
 </beans>
 ```
-注意事项：
-HelloWorld类需要提起默认的构造器；
-setXXX()必须存在,property才可用；
 
-# 获取对象函数
+注意事项：
+
+1. HelloWorld类需要提起默认的构造器；
+
+2. setXXX()必须存在,property才可用；
+
+## 获取对象函数
+
 ```java
 ApplicationContext ctx = new ClassPathXmlApplicationContext("testSpring.xml");
 // 1、从IOC容器中获取对象，需要强制转换
@@ -85,13 +106,20 @@ HelloWorld hello = ctx.getBean(HelloWorld.class);
 // 3、结合以上两种
 HelloWorld hello = ctx.getBean("helloWorld", HelloWorld.class);
 ```
-注意事项：
-xml文件中的bean都会实例化；
 
-# 依赖注入的方式
+注意事项：
+
+1. xml文件中的bean都会实例化；
+
+
+## 依赖注入的方式
+
 1. 属性注入（setXXX方法）
+
 2. 构造器注入
+
 3. 工厂方法注入（不推荐）
+
 ```xml
 <!-- set注入的前提是先调用无参数的构造函数创建对象-->
 <bean id="car" class="test.Car">
@@ -100,6 +128,7 @@ xml文件中的bean都会实例化；
 	<property name="price" value="400000"></property>
 </bean>
 ```
+
 ```xml
 <!-- 构造器注入
 	value:注入值
@@ -113,7 +142,8 @@ xml文件中的bean都会实例化；
 </bean>
 ```
 
-# 特殊字符注入
+## 特殊字符注入
+
 ```xml
 <!-- set注入的前提是先调用无参数的构造函数创建对象-->
 <bean id="car" class="test.Car">
@@ -130,7 +160,8 @@ xml文件中的bean都会实例化；
 </bean>
 ```
 
-# 引用其他bean
+## 引用其他bean
+
 ```xml
 <bean id="person" class="test.Person">
 	<property name="name" value="yang"></property>
@@ -139,7 +170,9 @@ xml文件中的bean都会实例化；
 	<property name="car" ref="car"></property>
 </bean>
 ```
-使用内部bean
+
+## 使用内部bean
+
 ```xml
 <bean id="person" class="test.Person">
 	<property name="name" value="yang"></property>
@@ -149,9 +182,11 @@ xml文件中的bean都会实例化；
 			<property name="price" value="400000"></property>
 		</bean>
 	</property>
-</bean>
+</bean>s
 ```
-注入list, set, array类型
+
+## 注入list, set, array类型
+
 ```xml
 <bean id="personList" class="test.Person">
 	<property name="name" value="yang"></property>
@@ -176,8 +211,12 @@ xml文件中的bean都会实例化；
 </bean>
 ```
 
-# p命名空间
+## p命名空间
+
 在xml配置文件下方点击Namespaces，勾选p导入命名空间
+
+p:属性名 或 p:属性名-ref 的方式进行值的注入
+
 ```xml
 <bean id="personP" class="test.Person"
 	p:name="yang" p:age="24" p:car-ref="car">
@@ -189,8 +228,8 @@ xml文件中的bean都会实例化；
 ```
 
 
+## 自动装配
 
-# 自动装配
 ```java
 public class Person {
 	private String name;
@@ -198,8 +237,10 @@ public class Person {
 	private Car car;
 }
 ```
+
 自动装配car和address属性；
 但是一般基于XML的注入不建议使用自动装配。
+
 ```xml
 <bean id="address" class="autowireTest.Address">
 	<property name="city" value="ShenZhen"></property>
@@ -219,8 +260,10 @@ public class Person {
 </bean>
 ```
 
-# bean的继承
+## bean的继承
+
 属性：autowire，abstract等不会被继承
+
 ```xml
 <!-- bean之间的继承：
 	parent:指定父类bean的id，实现继承
@@ -236,3 +279,53 @@ public class Person {
 </bean>
 ```
 
+
+## bean的作用域
+
+1. singleton：单例（默认值），在IOC容器中，只有一个该bean的实例对象，并且该bean的对象会在IOC容器初始化的时候创建
+
+2. prototype：原型，在IOC容器中，有多个该bean的实例对象，不会在IOC容器初始化的时候创建，而是在每次getBean的时候才会创建一个新的对象返回
+
+3. request：一次请求期间
+
+4. session：一次会话期间
+
+## 引入外部化的配置文件
+
+```
+jdbc.driver=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/test
+jdbc.user=root
+jdbc.password=123456
+```
+
+```xml
+<!-- 配置连接池 数据库 -->
+<!-- 引入外部化的配置文件 -->
+<context:property-placeholder location="classpath:db.properties" />
+<bean id="dataSource" class="TestComboPooledDataSource">
+	<property name="driver" value="${jdbc.driver}"></property>
+	<property name="url" value="${jdbc.url}"></property>
+	<property name="user" value="${jdbc.user}"></property>
+	<property name="password" value="${jdbc.password}"></property>
+</bean>
+```
+
+## bean的生命周期
+
+1. 调用构造器创建对象
+
+2. 给对象的属性设置值
+
+3. 调用init方法进行初始化
+
+4. 使用对象
+
+5. 调用destroy方法进行对象的销毁
+
+
+```xml
+<bean id="car" class="Test.Car" init-method="yourInit" destroy-method="yourDestroy">
+	<property name="price" value="300000"></property>
+</bean>
+```
