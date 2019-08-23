@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "java Spring教程"
+title: "Spring：基于xml"
 date: 2019-05-29
 description: "简单介绍Spring"
 tag: java
@@ -303,7 +303,7 @@ jdbc.password=123456
 <!-- 配置连接池 数据库 -->
 <!-- 引入外部化的配置文件 -->
 <context:property-placeholder location="classpath:db.properties" />
-<bean id="dataSource" class="TestComboPooledDataSource">
+<bean id="dataSource" class="dao.ComboPooledDataSource">
 	<property name="driver" value="${jdbc.driver}"></property>
 	<property name="url" value="${jdbc.url}"></property>
 	<property name="user" value="${jdbc.user}"></property>
@@ -329,3 +329,58 @@ jdbc.password=123456
 	<property name="price" value="300000"></property>
 </bean>
 ```
+
+## 基于xml的AOP代理模式
+
+```xml
+<!-- 配置切面 -->
+<bean id="loggingAspectJ" class="test.LoggingAspectJ"></bean>
+<!-- 配置目标bean -->
+<bean id="userService" class="service.UserSErvice"></bean>
+
+<!-- 配置aop -->
+<aop:config>
+	<!-- 配置切入点表达式 -->
+	<aop:pointcut expression="execution(* com.sxdt.spring.*.*(..))" id="myPointCut"/>
+
+	<!-- 配置切面通知 -->
+	<aop:aspect ref="loggingAspectJ", order="3">
+		<aop:before method="beforeMethod" pointcut-ref="myPointCut" />
+		<aop:after method="afterMethod" pointcut-ref="myPointCut" />
+		<aop:after-returning method="returnMethod" pointcut-ref="myPointCut" returning="result" />
+		<aop:after-throwing method="throwingMethod" pointcut-ref="myPointCut" throwing="ex" />
+	</aop:aspect>>
+</aop:config>
+```
+
+## 基于xml的事务管理
+
+```xml
+<!-- 配置事物管理器 -->
+<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<property name="dataSource"ref="dataSource"></property>
+</bean>
+
+<!-- 配置事务属性 -->
+
+<tx:advice id="txAdvice" transaction-manager="transactionManager">
+	<tx:attributes>
+		<tx:method name="buyBook" propagation="REQUIRES_NEW" isolation="READ_COMMITTED" read-only="false" timeout="3"/>
+		<tx:method name="checkOut"/>
+		<tx:method name="update*" propagation="REQUIRES NEW"/>
+		<tx:method name="insert*" propagation="REQUIRED"/>
+		<tx:method name="delete*" propagation="REQUIRED"/>
+		<tx:method name="get*" read-only="true"/>
+		<!-- 代表除了上述指定的方法之外的方法-->
+		<tx:method name="*"/>
+	</tx:attributes>
+</tx:advice>
+
+<!-- 配置事务切入点，以及事务切入点和事务属性关联起来 -->
+<aop:config>
+	<aop:pointcut expression="execution（*com.atguigu.spring.tx.service.*.*（..））"id="txPointCut"/>
+	<aop:advisor advice-ref="txAdvice" pointcut-ref="txPointCut"/>
+</aop:config>
+```
+
+
