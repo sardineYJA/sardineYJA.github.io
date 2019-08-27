@@ -35,6 +35,17 @@ tag: 大数据
 11. ZooKeeper：Zookeeper是Google的Chubby一个开源的实现。它是一个针对大型分布式系统的可靠协调系统，提供的功能包括：配置维护、名字服务、 分布式同步、组服务等。ZooKeeper的目标就是封装好复杂易出错的关键服务，将简单易用的接口和性能高效、功能稳定的系统提供给用户。
 
 
+## 版本下载
+
+1. Apache版本直接下载：http://archive.apache.org/dist/
+
+2. CDH版本下载：http://archive.cloudera.com/cdh5/cdh/5/
+
+找到要的版本，后加上 .tar.gz 下载即可。
+例如：http://archive.cloudera.com/cdh5/cdh/5/hadoop-2.6.0-cdh5.14.0.tar.gz
+
+
+
 # 参考
 
 尚硅谷大数据教程
