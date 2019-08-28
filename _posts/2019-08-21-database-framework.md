@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "数据库架构知识"
-date: 2019-8-21
+date: 2019-08-21
 description: "简单介绍数据库架构知识"
 tag: 数据库
 
