@@ -1,16 +1,18 @@
 ---
 layout: post
-title: "Google语言模型bert介绍"
+title: "Google语言模型bert进行简单分类"
 date: 2019-03-08
 description: "简单介绍一下如何使用bert进行文本分类"
 tag: 文本分类
 
 ---
 
-# 1 使用介绍
-模型下载地址：[bert](https://github.com/google-research/bert)
+# 使用介绍
 
-修改run_classifier.py文件，自定义分类器
+模型下载地址：[bert模型](https://github.com/google-research/bert)
+
+修改run_classifier.py文件，并自定义分类器
+
 ```python
 import pandas as pd
 class SimProcessor(DataProcessor):
@@ -56,6 +58,7 @@ class SimProcessor(DataProcessor):
 ```
 
 添加自定义分类器
+
 ```python
 def main():
 	tf.logging.set_verbosity(tf.logging.INFO)
@@ -65,8 +68,7 @@ def main():
 
 ```
 
-将数据文件夹split_cut和中文模型文件夹
-chinese_L-12_H-768_A-12与bert-master同一目录
+将数据文件夹、中文模型chinese_L-12_H-768_A-12文件夹、bert-master同一目录
 
 执行命令：
 ```
@@ -103,5 +105,8 @@ python3 run_classifier.py \
 该文件包含了测试用例和相似度probabilities
 
 # 参考
-1. https://www.jiqizhixin.com/articles/2019-02-18-12?from=synced&keyword=bert
-2. https://github.com/google-research/bert
+
+https://www.jiqizhixin.com/articles/2019-02-18-12?from=synced&keyword=bert
+
+https://github.com/google-research/bert
+
