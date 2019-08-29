@@ -104,9 +104,6 @@ log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
 解决：将项目Maven的jdk版本换成1.7，重新打包（建议重装1.8）
 
 
-
-
-
 # InputFormat 数据输入
 
 ## FileInputFormat 切片
@@ -474,4 +471,7 @@ RecordWriter 自定义OutputFormat
 Partitioner 分区
 
 
+# 参考
+
+[代码地址]:https://github.com/sardineYJA/Hadoop-MapReduce
 
