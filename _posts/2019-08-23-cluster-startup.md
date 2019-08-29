@@ -7,6 +7,8 @@ tag: 工具
 
 ---
 
+# 启动命令
+
 ## Hadoop
 
 ```
@@ -46,9 +48,9 @@ bin/start-hbase.sh
 ```
 
 
-## 脚本
+# 脚本
 
-### 集群启动脚本
+## 集群启动脚本
 
 ```sh
 echo "+++++++++++++++++ 集群启动 ++++++++++++++++++"
@@ -80,7 +82,7 @@ echo "============== 启动 JobHistoryServer ============="
 ssh yangja@hadoop101 '.../sbin/mr-jobhistory-daemon.sh start historyserver'
 ```
 
-### 同步文件脚本
+## 同步文件脚本
 
 ```sh
 #!/bin/bash
