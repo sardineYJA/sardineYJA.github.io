@@ -473,5 +473,5 @@ Partitioner 分区
 
 # 参考
 
-[代码地址]:https://github.com/sardineYJA/Hadoop-MapReduce
+[代码地址](https://github.com/sardineYJA/Hadoop-MapReduce)
 
