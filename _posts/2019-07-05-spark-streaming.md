@@ -239,7 +239,7 @@ Transformations(转化) 分： 无状态（stateless） 和 有状态（stateful
 
 ## UpdateStateByKey 追踪状态变化
 
-实现统计每次输入的词数的总和，而不是统计每次输入的
+实现统计每次输入的词数的总和，而不是统计所有次数输入的
 
 ```java
 import org.apache.spark.SparkConf
@@ -281,7 +281,7 @@ object StateWordCount {
 
 ## Window Operations 基于滑动窗口
 
-实现统计每个窗口输入的词数的总和，而不是统计每次输入的
+实现统计每个窗口输入的词数的总和，而不是统计所有次数输入的
 
 ```java
 import org.apache.spark.SparkConf
