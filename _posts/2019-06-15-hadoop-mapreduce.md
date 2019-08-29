@@ -435,62 +435,43 @@ KeyValueTextInputFormat；
 NLineInputFormat；
 CombineTextInputFormat；
 
-      |
-
-      ↓
+   ↓
 
 RecordReader 自定义InputFormat
 
-      |
-
-      ↓
+   ↓
 
 Mapper: map(), setup(), cleanup()
 
-      |
-
-      ↓
+   ↓
 
 WirtableComparable 排序
 
-      |
+   ↓
 
-      ↓
-
-  Combiner 合并
-
-      |
-
-      ↓
+Combiner 合并
+   
+   ↓
 
 GroupingComparator 分组
 
-      |
-
-      ↓
+   ↓
 
 Reducer: reduce(), setup(), cleanup()
 
-      |
-
-      ↓
+   ↓
 
 OutputFormat；
 TextOutputFormat（默认）；
 SequenceFileOutputFormat；
 
-      |
-
-      ↓
+   ↓
 
 RecordWriter 自定义OutputFormat
 
-      |
-
-      ↓
+   ↓
 
 Partitioner 分区
-
 
 
 
