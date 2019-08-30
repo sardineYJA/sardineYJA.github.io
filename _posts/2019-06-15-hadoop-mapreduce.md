@@ -118,7 +118,7 @@ log4j.appender.console.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{1}: 
 
 下载：https://github.com/sardineYJA/sardineYJA.github.io/tree/master/MySource
 
-E:\hadoop-2.7.2\bin下增加：hadoop.dll和winutils.exe
+E:\hadoop-2.7.2\bin下增加：hadoop.dll和winutils.exe（尽量使用Windows下编译的hadoop）
 
 C:\Windows\System32下增加：hadoop.dll（不需要此步骤）
 
