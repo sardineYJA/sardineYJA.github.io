@@ -92,6 +92,15 @@ log4j.appender.logfile.layout=org.apache.log4j.PatternLayout
 log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
 ```
 
+```
+log4j.rootCategory=WARN, console
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.target=System.err
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n
+```
+
+
 如果显示红叉，右键->maven->update project
 
 打包：右键 -> Run as -> maven install，target目录下生成，使用不带依赖的jar
@@ -102,6 +111,45 @@ log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
 原因：Maven打包的1.8版本，而测试系统jdk是1.7版本
 
 解决：将项目Maven的jdk版本换成1.7，重新打包（建议重装1.8）
+
+# Windows下IDEA本地测试
+
+配置系统环境：新增HADOOP_HOME值为E:\hadoop-2.7.2，在Path增加%HADOOP_HOME%\bin
+
+下载：https://github.com/sardineYJA/sardineYJA.github.io/tree/master/MySource
+
+E:\hadoop-2.7.2\bin下增加：hadoop.dll和winutils.exe
+
+C:\Windows\System32下增加：hadoop.dll（不需要此步骤）
+
+## 问题
+
+`public static void main(String[] args)`少写了static，IDEA的运行按钮不可用，打包到hadoop运行会报空指针错误
+
+本地测试，为配置HADOOP_HOME，运行会空指针错误
+
+> Exception in thread "main" java.lang.NullPointerException
+
+配置，新增hadoop.dll和winutils.exe，本地测试还是报错
+
+> Exception in thread "main" java.lang.UnsatisfiedLinkError: org.apache.hadoop.io.nativeio.NativeIO$Windows.createDirectoryWithMode0(Ljava/lang/String;I)V
+at org.apache.hadoop.io.nativeio.NativeIO$Windows.createDirectoryWithMode0(Native Method)
+
+原来hadoop.dll和winutils.exe(也需要相同的版本)，之前用2.6所以不行。windows下编译的hadoop，bin目录有winutils.exe之类的
+
+强制加载hadoop.dll（不是必须此步骤）
+
+```java
+static {
+	try {
+		System.load("E:\\hadoop-2.7.2\\bin\\hadoop.dll");
+		System.out.println("load is OK");
+	} catch (UnsatisfiedLinkError e) {
+		System.err.println("Native code library failed to load.\n" + e);
+		System.exit(1);
+	}
+}
+```
 
 
 # InputFormat 数据输入
