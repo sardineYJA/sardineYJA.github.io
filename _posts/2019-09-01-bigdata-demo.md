@@ -42,7 +42,7 @@ followee_2:follower_4 follower_5 ....
 ....
 ```
 
-### 目的
+### 需求
 
 判断粉丝相似度：有共同偶像n个，则两两粉丝之间的相似度为n
 
@@ -96,7 +96,7 @@ Reduce 对 key 的所有相似度进行排序写出
 
 ## 数据
 
-## 数据格式
+### 数据格式
 
 冒号前是一个用户，冒号后是该用户的所有好友（数据中的好友关系是单向的）
 
@@ -155,7 +155,7 @@ A-F	O B C D E
 
 ## 代码地址
 
-github
+github：https://github.com/sardineYJA/Hadoop-MapReduce
 
 ## 粉丝相似度 spark
 
