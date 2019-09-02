@@ -3,7 +3,7 @@ layout: post
 title: "Java 数据结构"
 date: 2019-08-25
 description: "介绍Java 数据结构"
-tag: Java
+tag: java
 
 ---
 
@@ -13,14 +13,23 @@ tag: Java
 ## Collection
 
 Collection
+
 ├List
+
 │├LinkedList
+
 │├ArrayList
+
 │└Vector
+
 │　└Stack
+
 └Set
+
  ├HashSet
+
  └TreeSet
+
 
 
 类均在java.util包
@@ -40,9 +49,13 @@ Set 无序，不含重复元素
 ## Map
 
 Map
+
 ├Hashtable
+
 ├HashMap
+
 └WeakHashMap
+
 
 Map 提供 key-value 映射，键唯一，值不唯一
 
