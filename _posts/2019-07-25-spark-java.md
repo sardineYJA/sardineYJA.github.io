@@ -76,6 +76,9 @@ PairFunction<String, String, String> myPairFunc = new PairFunction<String, Strin
     }
 };
 JavaPairRDD<String, String> pariRdd = rdd.mapToPair(myPairFunc);
+
+// 设置为一个分区
+rdd.coalesce(1).saveAsTextFile("D://rdd");
 ```
 
 ##累加器、广播变量
