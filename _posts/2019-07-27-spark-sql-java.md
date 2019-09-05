@@ -11,12 +11,34 @@ tag: 大数据
 
 ## SparkSession
 
+SparkSession是spark2.0新引入的概念，提供了对Hive功能的内置支持。
+
+parkSession内部封装了sparkContext，所以计算实际上是由sparkContext完成的。
+
 ```java
 SparkSession ssc = SparkSession
         .builder()
         .master("local")
         .appName("SparkSQL")
         .getOrCreate();
+```
+
+```java
+Dataset<Row> dataset = ssc.read().json("D:\\person.json");
+dataset.show();
+dataset.select("age").show();
+
+//  创建临时表
+dataset.createOrReplaceTempView("person");
+Dataset<Row> result = ssc.sql("select * from person");
+result.show(true);    // 右对齐
+result.show(false);   // 左对齐
+
+//创建全局临时视图
+dataset.createGlobalTempView("user");
+//全局临时视图绑定到系统保存的数据库“global_temp”
+Dataset<Row> globalUser = ssc.sql("SELECT * FROM global_temp.user");
+ssc.newSession().sql("SELECT * FROM global_temp.user").show();
 ```
 
 ## 关于 SparkConf 参数
@@ -54,7 +76,6 @@ spark.executor.memory, 1g   // 执行内存
 spark.driver.cores, 1       // driver的cpu核数
 spark.driver.memory, 512m   // driver的内存
 spark.executor.memory, 512m // 每个executor内存
-
 ```
 
 ## 例子
@@ -66,7 +87,7 @@ spark.executor.memory, 512m // 每个executor内存
 ```
 
 ```java
-// 需要实现 Serializable
+// 需要实现 Serializable，toString, setXxx, getXxx
 public class Person implements Serializable {
     public String name;
     public Integer age;
@@ -94,39 +115,45 @@ public class Person implements Serializable {
 ```
 
 
+## Encoder
+
+RDD 序列化是使用 Serializable
+
+DataSet 使用的Encoder来实现对象的序列化和在网络中的传输
+
+encoder 有个动态的特性, Spark 在执行比如 sorting 之类的操作时无需再把字节反序列化成对象
 
 ```java
-Dataset<Row> dataset = ssc.read().json("D:\\person.json");
-dataset.show();
-dataset.select("age").show();
-//  创建临时表
-dataset.createOrReplaceTempView("person");
-Dataset<Row> result = ssc.sql("select * from person");
-result.show(true);    // 右对齐
-result.show(false);   // 左对齐
-//创建全局临时视图
-dataset.createGlobalTempView("user");
-//全局临时视图绑定到系统保存的数据库“global_temp”
-Dataset<Row> globalUser = ssc.sql("SELECT * FROM global_temp.user");
-ssc.newSession().sql("SELECT * FROM global_temp.user").show();
+// Person 类无需实现 Serializable
+Encoder<Person> encoder = Encoders.bean(Person.class);    // Person对应的Encoder
 
+Person person = new Person("yang", 24); 
+Dataset<Person> d1 = ssc.createDataset(Collections.singletonList(person), encoder);
+d1.show();
 
+Dataset<Person> d2 = ssc.read().json("D:/test/person.json").as(encoder);
+d2.show();
 ```
+
 
 ## RDD 通过反射将类转为 DataFrame
 
 Person类需实现Serializable，Setter和Getter
 
 ```java
-JavaRDD<Person> personJavaRDD = ssc.read().textFile("D:\\2.txt")
-        .javaRDD().map(new Function<String, Person>() {
-            @Override
-            public Person call(String s) throws Exception {
-                String[] sp = s.split(" ");
-                Person p = new Person(sp[0], Integer.valueOf(sp[1]));
-                return p;
-            }
-        });
+Dataset<String> line = ssc.read().textFile("D:/test/2.txt");  
+line.show();  // 读取Dataset，但只有一列，列值为 row，下面进行结构化
+
+JavaRDD<String> stringJavaRDD = line.javaRDD(); //javaRDD() 将Dataset转JavaRDD ==> [row, row, ...]
+JavaRDD<Person> personJavaRDD = stringJavaRDD.map(new Function<String, Person>() {
+    @Override
+    public Person call(String s) throws Exception {
+        String[] sp = s.split(" ");
+        Person p = new Person(sp[0], Integer.valueOf(sp[1]));
+        return p;
+    }
+});
+
 List<Person> pList = personJavaRDD.collect();
 for (Person person : pList) {
     System.out.println(person.name+" : "+person.age);
@@ -152,10 +179,7 @@ JavaRDD<Row> javaRdd = rdd.map(new Function<String, Row>() {
 		String msg_id = str[1];
 		String sp_number = str[5];
 		String errorCode = str[35];
-		return RowFactory.create(
-				msg_id,
-				sp_number,
-				errorCode);
+		return RowFactory.create(id,number,code);
 	}
 });
 
@@ -163,9 +187,9 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 List<StructField> fields = new ArrayList<>();
-fields.add(DataTypes.createStructField("msg_id", DataTypes.StringType, true));
-fields.add(DataTypes.createStructField("sp_number", DataTypes.StringType, true));
-fields.add(DataTypes.createStructField("errorCode", DataTypes.StringType, true));
+fields.add(DataTypes.createStructField("id", DataTypes.StringType, true));
+fields.add(DataTypes.createStructField("number", DataTypes.StringType, true));
+fields.add(DataTypes.createStructField("code", DataTypes.StringType, true));
 StructType schema = DataTypes.createStructType(fields);
 Dataset<Row> successRateDataDataset = sparkSession.createDataFrame(rdd, schema);
 ```
@@ -185,5 +209,6 @@ Dataset<Row> dataset = sparkSession.sql(yourSQL);
 dataset.write().mode(SaveMode.Append).jdbc(url, "table_name", jdbcpro); // 保存到数据库
 sparkSession.read().jdbc(url, "yourSQL", jdbcpro).createOrReplaceTempView(tableName); // 读取
 ```
+
 
 

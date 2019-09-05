@@ -97,6 +97,24 @@ System.out.println(pariRdd1.rightOuterJoin(pariRdd2).collect());   // 有连接
 ```
 
 
+```java
+// Row 和 RowFactory 切分每一行 [[...], [...], [...], ......]
+JavaRDD<Row> javaRdd = line.map(new Function<String, Row>() {
+    @Override
+    public Row call(String v) throws Exception {
+        String followee_followers[] = v.split(":");
+        if(followee_followers.length<2) {
+            return null;
+        }
+        String followee = followee_followers[0];
+        String[] followers = followee_followers[1].split(" ");
+        return RowFactory.create(followee, followers[0], followers[1], ...);
+    }
+});
+```
+
+
+
 # 例子
 
 
