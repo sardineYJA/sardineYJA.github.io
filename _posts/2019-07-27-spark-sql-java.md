@@ -195,7 +195,31 @@ Dataset<Row> successRateDataDataset = sparkSession.createDataFrame(rdd, schema);
 ```
 
 
-## Dataset 保存/读取数据库
+## Dataset 保存/读取
+
+```java
+dataset.select("name", "age").write().save("D:/1.parquet");
+dataset.select("name", "age").write().format("json").save("D:/1.json");
+dataset.write().format("json").mode(SaveMode.Append).save("D:/1.json");
+```
+
+保存模式
+
+```
+SaveMode.ErrorIFExists(default)  将DataFrame保存到(数据源)时,.如果数据已经存在,则抛出异常
+SaveMode.Append                  如果数据存在,则追加
+SaveMode.Overwrite               如果数据存在则覆盖
+SaveMode.Ignore                  如果数据存在,则忽略,不影响原先数据,也不会保存现在的数据
+```
+
+数据库
+
+```
+driverClassName=oracle.jdbc.OracleDriver
+url=jdbc:oracle:thin:@172.16.7.14:1521:ora10ha
+username=root
+password=123456
+```
 
 ```java
 Properties jdbcpro = new Properties();

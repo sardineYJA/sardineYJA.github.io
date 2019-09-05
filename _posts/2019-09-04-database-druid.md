@@ -47,6 +47,27 @@ druidDataSource.setMaxActive(10);
 druidDataSource.setFilters("stat");
 ```
 
+db.propertie oracle数据库
+
+```
+driverClassName=oracle.jdbc.OracleDriver
+url=jdbc:oracle:thin:@172.16.7.14:1521:ora10ha
+username=root
+password=123456
+filters=stat
+initialSize=2
+maxActive=300
+maxWait=60000
+timeBetweenEvictionRunsMillis=60000
+minEvictableIdleTimeMillis=300000
+validationQuery=select 1 from dual
+testWhileIdle=true
+testOnBorrow=false
+testOnReturn=false
+poolPreparedStatements=false
+maxPoolPreparedStatementPerConnectionSize=200
+```
+
 ## 连接池用法
 
 ```java
