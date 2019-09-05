@@ -1,22 +1,158 @@
 ---
 layout: post
-title: "Spark java编程3"
-date: 2019-07-29
-description: "介绍一下Spark java编程3"
+title: "Spark Core Java编程"
+date: 2019-07-25
+description: "介绍一下Spark java编程"
 tag: 大数据
 
 ---
 
-## 例子
+# Spark Core
+
+
+## SparkConf 和 JavaSparkContext
 
 ```java
 SparkConf sparkConf = new SparkConf()
-        .setAppName("WordCount")
+        .setAppName("SparkApplication")
         .setMaster("local[*]");
+
 JavaSparkContext jsc = new JavaSparkContext(sparkConf);
+// jsc.setLogLevel("INFO");
+
+JavaRDD<Integer> rddInt = jsc.parallelize(Arrays.asList(1,2,3,4));
+JavaRDD<String> lines = jsc.textFile("D:\\1.txt");
+System.out.println(lines.collect());
+lines.foreach(v->System.out.println(v));
 ```
 
-aggregate 的使用
+## 函数
+
+```java
+// map [[1, a], [2, b], [3, c], ...]
+JavaRDD<List<String>> rdd1 = lines.map(line -> Arrays.asList(line.split(" ")));
+
+// map
+JavaRDD<String[]> rdd2 = lines.map(new Function<String, String[]>() {
+    @Override
+    public String[] call(String s) throws Exception {
+        return s.split(" ");
+    }
+});
+
+// flatMap [1, a, 2, b, 3, c, 4, d, 5, e, 1, aa, 2, bb, 3, cc]
+JavaRDD<String> rdd3 = lines.flatMap(new FlatMapFunction<String, String>() {
+    @Override
+    public Iterator<String> call(String s) throws Exception {
+        return Arrays.asList(s.split(" ")).iterator();
+    }
+});
+
+// mapToPair
+JavaPairRDD<Integer, String> rdd4 = lines.mapToPair(new PairFunction<String, Integer, String>() {
+    @Override
+    public Tuple2<Integer, String> call(String s) throws Exception {
+        String[] ts = s.split(" ");
+        return new Tuple2(ts[0], ts[1]);
+    }
+});
+
+// filter
+JavaRDD<String> filterRdd = list.filter(
+    new Function<String, Boolean>() {
+        @Override
+        public Boolean call(String s) throws Exception {
+            return s.contains("a");
+        }
+    });
+
+// reduce
+Integer totalAge = dataAgeInt.reduce(new Function2<Integer, Integer, Integer>() {
+    @Override
+    public Integer call(Integer x, Integer y) throws Exception {
+        return x+y;
+    }
+});
+
+// mapToPair
+PairFunction<String, String, String> myPairFunc = new PairFunction<String, String, String>() {
+    @Override
+    public Tuple2<String, String> call(String s) throws Exception {
+        return new Tuple2<>(s, s);
+    }
+};
+JavaPairRDD<String, String> pariRdd = rdd.mapToPair(myPairFunc);
+
+// 设置为一个分区，保存为一个文件
+rdd.coalesce(1).saveAsTextFile("D://rdd");
+```
+
+
+```java
+System.out.println(pariRdd1.groupByKey().collect());               // 分组
+System.out.println(pariRdd1.subtract(pariRdd2).collect());         // 差集
+System.out.println(pariRdd1.join(pariRdd2).collect());             // 内连接
+System.out.println(pariRdd1.leftOuterJoin(pariRdd2).collect());    // 左连接
+System.out.println(pariRdd1.rightOuterJoin(pariRdd2).collect());   // 有连接
+```
+
+
+# 例子
+
+
+## 累加器、广播变量
+
+```java
+
+final Accumulator lineNum = jsc.accumulator(0);
+lineNum.add(1);
+System.out.println(lineNum.value);   // 必须放action后面才可以
+
+```
+
+## Wordcount
+
+```java
+JavaPairRDD<String, Integer> result = jsc.textFile("D:/test/1.txt")
+                .flatMap(s -> Arrays.asList(s.split(" ")).iterator())
+                .mapToPair(s -> new Tuple2<>(s, 1))
+                .filter(t -> !t._1.isEmpty())
+                .reduceByKey((v1, v2) -> (v1+v2));
+```
+
+```java
+JavaRDD<String> lines = jsc.textFile("D:/test/1.txt");
+JavaRDD<String> rdd = lines.flatMap(new FlatMapFunction<String, String>() {
+    @Override
+    public Iterator<String> call(String s) throws Exception {
+        return Arrays.asList(s.split(" ")).iterator();
+    }
+});
+
+JavaRDD<String> notEmtryRdd = rdd.filter(new Function<String, Boolean>() {
+    @Override
+    public Boolean call(String s) throws Exception {
+        return !s.isEmpty();
+    }
+});
+
+JavaPairRDD<String, Integer> javaPairRDD = notEmtryRdd.mapToPair(new PairFunction<String, String, Integer>() {
+    @Override
+    public Tuple2<String, Integer> call(String s) throws Exception {
+        return new Tuple2<>(s, 1);
+    }
+});
+
+JavaPairRDD<String, Integer> result = javaPairRDD.reduceByKey(new Function2<Integer, Integer, Integer>() {
+    @Override
+    public Integer call(Integer v1, Integer v2) throws Exception {
+        return v1 + v2;
+    }
+});
+```
+
+
+## aggregate 的使用
 
 ```java
 class RddAvg implements Serializable {
@@ -74,9 +210,10 @@ RddAvg resultRddAvg = javaRDD.aggregate(rddAvg, rddAvg.avgSeqOp, rddAvg.avgCombO
 System.out.println(resultRddAvg.avg());
 ```
 
-自定义排序
+## 自定义排序
 
 ```java
+// 需要实现 Serializable
 class CustomComComparator implements Serializable, Comparator<Integer> {
     @Override
     public int compare(Integer o1, Integer o2) {
@@ -116,7 +253,7 @@ JavaPairRDD sortPairRDD2 = pairRDD.sortByKey(new CustomComComparatorS());
 System.out.println(sortPairRDD2.collect());
 ```
 
-每行切分后，返回多个Tuple2
+## 每行切分后，返回多个Tuple2
 
 ```java
 JavaRDD<String> line = jsc.textFile("D:/in/Small Dataset.txt");
