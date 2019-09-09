@@ -47,6 +47,11 @@ bin/hbase-daemon.sh start regionserver   (HRegionServer)
 bin/start-hbase.sh
 ```
 
+## Kafka
+
+```
+bin/kafka-server-start.sh config/server.properties &     (Kafka)
+```
 
 # 脚本
 

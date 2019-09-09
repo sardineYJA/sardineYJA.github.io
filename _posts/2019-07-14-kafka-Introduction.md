@@ -117,6 +117,10 @@ export PATH=$PATH:$KAFKA_HOME/bin
 
 6. 查看某个topic：`bin/kafka-topics.sh --topic topicName --describe --zookeeper hadoop101:2181`
 
+7. 启动一个消费者：bin/kafka-console-consumer.sh --zookeeper xxx.xxx.xxx.xxx:2181 --topic MyTopic
+
+8. 启动一个生产者：bin/kafka-console-producer.sh --broker-list xxx.xxx.xxx.xxx:9092 --topic MyTopic
+
 
 ## 生产
 
