@@ -142,3 +142,57 @@ result.foreachRDD(rdd -> {
 });
 ```
 
+## Streaming 基于 Receiver 读 Kafka
+
+
+```xml
+<dependency>
+    <groupId>org.apache.spark</groupId>
+    <artifactId>spark-streaming-kafka_2.11</artifactId>
+    <version>1.6.2</version>
+</dependency>
+```
+
+启动Kafka：`bin/kafka-server-start.sh config/server.properties &`
+
+启动生产者：`bin/kafka-console-producer.sh --broker-list xxx.xxx.xxx.xxx:9092 --topic MyTopic`
+
+group id 查看：config/consumer.properties
+
+缺少 spark-core_2.11-1.5.2.logging.jar 包，下载：https://github.com/sardineYJA/MySource
+
+```java
+SparkConf conf = new SparkConf().setAppName("KafkaWordCount").setMaster("local[*]");
+JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(3));
+jssc.checkpoint("D:/checkpoint");
+
+// 每个partition对应一个单独线程从kafka取数据到Spark Streaming
+Map<String, Integer> topicThread = new HashMap<>(1);
+topicThread.put("MyTopic", 1);
+JavaPairInputDStream<String, String> dStream = KafkaUtils.createStream(
+        jssc,
+        "172.16.7.124:2181",
+        "test-consumer-group",
+        topicThread);
+
+dStream.print();
+
+JavaDStream<String> words = dStream
+        .flatMap((FlatMapFunction<Tuple2<String, String>, String>) t -> Arrays.asList(SPACE.split(t._2)).iterator());
+
+JavaPairDStream<String, Integer> result = words
+        .mapToPair((PairFunction<String, String, Integer>) s -> new Tuple2<>(s, 1))
+        .reduceByKey((Function2<Integer, Integer, Integer>) (v1, v2) -> v1+v2);
+result.print();
+
+jssc.start();
+jssc.awaitTermination();
+```
+
+> ERROR ReceiverTracker: Deregistered receiver for stream 0: Error starting receiver 0 - org.I0Itec.zkclient.exception.ZkTimeoutException: Unable to connect to zookeeper server within timeout: 10000
+
+发现端口2181写成9092
+
+
+
+
