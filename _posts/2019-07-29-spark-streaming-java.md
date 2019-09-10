@@ -142,6 +142,28 @@ result.foreachRDD(rdd -> {
 });
 ```
 
+# Spark Streaming 读取 Kafka 两种方式
+
+## Receiver-base
+
+对于所有的接收器，从kafka接收来的数据会存储在spark的executor中，之后spark streaming提交的job会处理这些数据。
+
+Receiver-based的Kafka读取方式是基于Kafka高阶(high-level) api来实现对Kafka数据的消费。
+
+## Direct
+
+这种方式是延迟的，当action真正触发时才会去kafka里面接收数据
+
+无需经由ZooKeeper，driver来决定读取多少offsets，并将offsets交由checkpoints来维护。
+
+## 比较
+
+使用 Receiver 原因：
+
+1. 提高成本：Direct需要用户采用checkpoint或者第三方存储来维护offsets，而不像Receiver-based 那样，通过ZooKeeper来维护Offsets，此提高了用户的开发成本。
+
+2. 监控可视化：Receiver-based方式指定topic指定consumer的消费情况均能通过ZooKeeper来监控，而Direct则没有这种便利，如果做到监控并可视化，则需要投入人力开发。
+
 ## Streaming 基于 Receiver 读 Kafka
 
 

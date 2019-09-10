@@ -286,3 +286,58 @@ export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=4000
 
 # 配置Spark HA
 
+# spark on yarn 集群
+
+spark-env.sh
+
+注意路径必须在hdfs先创建，否则运行spark程序会报错
+
+cleaner.enabled 日志是否定时清除，true为定时清除，默认为false
+
+cleaner.maxAge 日志生命周期2天
+
+cleaner.interval 日志检查间隔，默认每一天会检查一下日志文件
+
+```sh
+## 指定hadoop的conf配置文件
+HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+## 此配置是所有模式中historyserver必须配置的
+SPARK_HISTORY_OPTS="-Dspark.history.fs.logDirectory=hdfs://master01:9000/spark/log -Dspark.history.ui.port=18080
+    -Dspark.history.fs.cleaner.enabled=true
+    -Dspark.history.fs.cleaner.maxAge=2d
+    -Dspark.history.fs.cleaner.interval=1d"
+```
+
+
+slaves
+
+```
+spark1
+spark2
+```
+
+spark-defaults.conf
+
+```sh
+## 打开日志收集功能
+spark.eventLog.enabled           true
+## 定义历史日志收集在hdfs上的路径 
+spark.eventLog.dir               hdfs://master01:9000/spark/log
+spark.yarn.historyServer.address http://spark3:18080
+```
+
+修改hadoop的yarn-site.xml配置文件，添加
+```xml
+<property>
+    <name>yarn.log.server.url</name>
+    <value>http://spark3:19888/jobhistory/logs/</value>
+</property>
+```
+
+同步其他节点
+
+重新启动hadoop中的yarn模块相关进程
+
+spark on yarn 模式:它调用是hadoop中的yarn资源框架，而spark的sbin目录下脚本，是为standalone模式服务的，所以不需要启动spark
+
+

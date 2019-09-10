@@ -263,3 +263,24 @@ public class WeiboFolloerSpark {
 }
 ```
 
+修改，打包，将含依赖jar上传
+
+```
+bin/spark-submit \
+--class test.WeiboFolloerSpark \
+--master spark://172.16.7.124:7077 \
+--executor-memory 1G \
+--total-executor-cores 2 \
+myJar/test-WeiboFolloerSpark-with-dependencies.jar \
+```
+```
+hdfs://172.16.7.124:9000/weibo/Small.txt \
+hdfs://172.16.7.124:9000/weibo/SmallOut
+```
+
+Large.txt 使用 1G 发生内存溢出
+
+```
+hdfs://172.16.7.124:9000/weibo/Large.txt \
+hdfs://172.16.7.124:9000/weibo/LargeOut
+```
