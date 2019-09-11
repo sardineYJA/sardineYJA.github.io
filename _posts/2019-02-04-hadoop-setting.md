@@ -47,6 +47,12 @@ YARN | NodeManager | ResourceManager&NodeManager | NodeManager
 ## hadoop-env.sh、yarn-env.sh、mapred-env.sh
 增加`export JAVA_HOME=/opt/module/jdk1.8.0_144`
 
+修改 hadoop-env.sh，增加：export HADOOP_PID_DIR=/.../pids
+
+修改 yarn-env.sh，增加：export YARN_PID_DIR=/.../pids
+
+修改 mapred-env.sh，增加：export HADOOP_MAPRED_PID_DIR=/.../pids
+
 ## core-site.xml
 ```
 <!-- 指定HDFS中NameNode的地址 -->

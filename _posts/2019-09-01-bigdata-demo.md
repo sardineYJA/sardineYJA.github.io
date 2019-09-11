@@ -277,10 +277,15 @@ myJar/test-WeiboFolloerSpark-with-dependencies.jar \
 hdfs://172.16.7.124:9000/weibo/Small.txt \
 hdfs://172.16.7.124:9000/weibo/SmallOut
 ```
-
-Large.txt 使用 1G 发生内存溢出
-
 ```
 hdfs://172.16.7.124:9000/weibo/Large.txt \
 hdfs://172.16.7.124:9000/weibo/LargeOut
 ```
+
+Large.txt 发生内存溢出
+
+> org.apache.spark.rpc.RpcTimeoutException: Futures timed out after [10 seconds]. This timeout is controlled by spark.executor.heartbeatInterval
+
+> java.lang.OutOfMemoryError: GC overhead limit exceeded
+
+

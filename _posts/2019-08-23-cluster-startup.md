@@ -7,10 +7,6 @@ tag: 工具
 
 ---
 
-# 端口
-
-
-
 
 # 启动命令
 
@@ -121,3 +117,6 @@ for((host=101; host<105; host++)); do
         rsync -rvl $pdir/$fname $user@hadoop$host:$pdir
 done
 ```
+
+
+

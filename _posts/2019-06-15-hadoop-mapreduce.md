@@ -108,7 +108,7 @@ log4j.appender.console.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{1}: 
 在hadoop测试：`hadoop jar wc.jar  XXXX.WordcountDriver /input /output`
 > Exception in thread "main" java.lang.UnsupportedClassVersionError: mapreduceDemo/WordcountDriver : Unsupported major.minor version 52.0
 
-原因：Maven打包的1.8版本，而测试系统jdk是1.7版本
+原因：Maven打包的1.8版本，而测试系统jdk是1.7版本（另外一种是依赖的问题，习惯将多个例子写成一个项目，xml文件写各种依赖，明明是1.8打包，1.8大数据环境测试运行，可报上面的错误，后来新建项目，只留需要的依赖，又可以运行）
 
 解决：将项目Maven的jdk版本换成1.7，重新打包（建议重装1.8）
 

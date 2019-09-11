@@ -31,14 +31,15 @@ export SPARK_HOME=/../spark
 export PATH=$PATH:$SPARK_HOME/bin
 ```
 
-2. cp spark-env.sh.template spark-env.sh（省略此步骤）
+2. cp spark-env.sh.template spark-env.sh
 ```
 export JAVA_HOME=/.../java
 export SPARK_HOME=/.../spark
 export SPARK_MASTER_IP=XXX.XX.XX.XXX  #自己ip
 ```
+修改pid目录位置：export SPARK_PID_DIR=/.../spark/pids
 
-3. cp slaves.template slaves（省略此步骤）
+3. cp slaves.template slaves
 ```
 localhost
 ```
@@ -284,11 +285,10 @@ export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=4000
 
 
 
-# 配置Spark HA
 
 # spark on yarn 集群
 
-spark-env.sh
+## spark-env.sh
 
 注意路径必须在hdfs先创建，否则运行spark程序会报错
 
@@ -302,21 +302,22 @@ cleaner.interval 日志检查间隔，默认每一天会检查一下日志文件
 ## 指定hadoop的conf配置文件
 HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 ## 此配置是所有模式中historyserver必须配置的
-SPARK_HISTORY_OPTS="-Dspark.history.fs.logDirectory=hdfs://master01:9000/spark/log -Dspark.history.ui.port=18080
+SPARK_HISTORY_OPTS="-Dspark.history.fs.logDirectory=hdfs://master01:9000/spark/log 
+    -Dspark.history.ui.port=18080
     -Dspark.history.fs.cleaner.enabled=true
     -Dspark.history.fs.cleaner.maxAge=2d
     -Dspark.history.fs.cleaner.interval=1d"
 ```
 
 
-slaves
+## slaves
 
 ```
 spark1
 spark2
 ```
 
-spark-defaults.conf
+## spark-defaults.conf
 
 ```sh
 ## 打开日志收集功能
@@ -326,18 +327,42 @@ spark.eventLog.dir               hdfs://master01:9000/spark/log
 spark.yarn.historyServer.address http://spark3:18080
 ```
 
+## yarn-site.xml
+
 修改hadoop的yarn-site.xml配置文件，添加
 ```xml
+<property>
+    <name>yarn.log-aggregation-enable</name>
+    <value>true</value>
+</property>
 <property>
     <name>yarn.log.server.url</name>
     <value>http://spark3:19888/jobhistory/logs/</value>
 </property>
 ```
 
+## 同步启动
+
 同步其他节点
 
 重新启动hadoop中的yarn模块相关进程
 
-spark on yarn 模式:它调用是hadoop中的yarn资源框架，而spark的sbin目录下脚本，是为standalone模式服务的，所以不需要启动spark
+spark on yarn 模式:它调用是hadoop中的yarn资源框架，而spark的sbin目录下脚本，是为standalone模式服务的，所以不需要启动spark（但是 start-history-server.sh 需要启动）
+
+## spark.eventLog.dir 和 spark.history.fs.logDirectory  区别
+
+设置了 spark.eventLog.dir ，start-history-server.sh 启动后面不带地址，还是使用默认地址
+
+设置 spark.history.fs.logDirectory 能不带参数启动
+
+## spark.yarn.historyServer.address 和 spark.history.ui.port 区别
+
+启动：spark.yarn.historyServer.address 设置的端口并没有生效，需要spark.history.ui.port设置才生效。
+
+如果不设置spark.yarn.historyServer.address，虽然直接在history-server中能直接看，但是在完成任务那里点击“History”，不会链接到history-server。在任务的"Environment"中也没看到这个属性。但是设置了，"Environment"中可以看到这个属性，那么大胆的认为，这个属性在任务运行中会记录下来，后面才可以链接。
+
+spark-env.sh 里面的 SPARK_HISTORY_OPTS 才是设置 history-server 启动的配置。
+
+spark-defaults.conf 任务中让 yarn RM 知道这些配置，给后面的链接用。
 
 
