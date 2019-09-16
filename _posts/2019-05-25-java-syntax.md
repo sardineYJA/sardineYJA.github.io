@@ -262,50 +262,6 @@ AWT和Swing之间的区别：
 2. AWT的控件在不同的平台可能表现不同，而Swing在所有平台表现一致。
 
 
-# JVM
-
-JVM = 类加载器 classloader + 执行引擎 execution engine + 运行时数据区域 runtime data area
-
-Main()方法是程序的起点，他被执行的线程初始化为程序的初始线程。程序中其他的线程都由他来启动。Java中的线程分为两种：守护线程 （daemon）和普通线程（non-daemon）。守护线程是Java虚拟机自己使用的线程，比如负责垃圾收集的线程就是一个守护线程。
-
-Java代码编译是由Java源码编译器来完成。
-Java字节码的执行是由JVM执行引擎来完成。
-
-
-## 内存回收
-
-Garbage Collection是后台的守护进程。是一个低优先级进程，但是可根据内存的使用情况动态的调整他的优先级。因此，它是在内存中低到一定限度时才会自动运行，从而实现对内存的回收。
-GenerationalCollecting(垃圾回收)原理是这样的：把对象分为年青代(Young)、年老代(Tenured)、持久代(Perm)，对不同生命周期的对象使用不同的算法。
-
-
-## classloader
-classloader 有两种装载class的方式 （时机）：
-隐式：运行过程中，碰到new方式生成对象时，隐式调用classLoader到JVM
-显式：通过class.forname()动态加载
-
-类的加载过程采用双亲委托机制，能更好的保证 Java 平台的安全。除了顶层的Bootstrap class loader启动类加载器外，其余的类加载器都应当有自己的父类加载器。子类加载器和父类加载器不是以继承（Inheritance）的关系来实现，而是通过组合（Composition）关系来复用父加载器的代码。
-
-双亲委派模型的工作过程为：
-1. 当前 ClassLoader 首先从自己已经加载的类中查询是否此类已经加载，如果已经加载则直接返回原来已经加载的类。
-每个类加载器都有自己的加载缓存，当一个类被加载了以后就会放入缓存，
-等下次加载的时候就可以直接返回了。
-2. 当前 classLoader 的缓存中没有找到被加载的类的时候，委托父类加载器去加载，父类加载器采用同样的策略，首先查看自己的缓存，然后委托父类的父类去加载，一直到 bootstrap ClassLoader.
-当所有的父类加载器都没有加载的时候，再由当前的类加载器加载，并将其放入它自己的缓存中，以便下次有加载请求的时候直接返回。
-
-自底向上检查：
-Bootstrap ClassLoader
-Extension ClassLoader
-App ClassLoader
-Custom ClassLoader
-
-## 执行引擎和运行数时数据区域
-
-执行引擎：执行字节码，或者执行本地方法。
-
-JVM 运行时数据区 (JVM Runtime Area) 其实就是指 JVM 在运行期间，其对JVM内存空间的划分和分配。JVM在运行时将数据划分为了6个区域来存储。
-所有程序都被加载到运行时数据区域中，不同类别存放在java heap, java stack, native method stack, PC register, method area.
-
-
 
 # 框架
 SSH:Spring, Struts, Hibernate

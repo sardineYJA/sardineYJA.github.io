@@ -269,8 +269,8 @@ public class WeiboFolloerSpark {
 bin/spark-submit \
 --class test.WeiboFolloerSpark \
 --master spark://172.16.7.124:7077 \
---executor-memory 1G \
---total-executor-cores 2 \
+--executor-memory 32G \
+--total-executor-cores 4 \
 myJar/test-WeiboFolloerSpark-with-dependencies.jar \
 ```
 ```
@@ -287,5 +287,8 @@ Large.txt 发生内存溢出
 > org.apache.spark.rpc.RpcTimeoutException: Futures timed out after [10 seconds]. This timeout is controlled by spark.executor.heartbeatInterval
 
 > java.lang.OutOfMemoryError: GC overhead limit exceeded
+
+
+> org.apache.spark.rpc.RpcTimeoutException: Futures timed out after [10 seconds]. This timeout is controlled by spark.executor.heartbeatInterval
 
 
