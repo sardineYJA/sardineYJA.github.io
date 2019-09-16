@@ -30,6 +30,24 @@ fis.close();
 fos.close();
 ```
 
+```java
+FileInputStream fis = new FileInputStream("D:/in/SxMt_Sts_02_0812110004");
+DataInputStream inputStream = new DataInputStream(fis);
+int read = 0;
+byte[] strMsg = new byte[538];
+int count = 0;
+while (true) {
+    read = inputStream.read(strMsg);
+    if (read < 0) {
+        System.out.println(read);
+        break;
+    }
+    System.out.println(new String(strMsg));
+    count++;
+}
+System.out.println("count = " + count);
+```
+
 ## 字符流
 
 Reader(抽象类) <- FileReader : int read(char[] b, int off, int len)
@@ -48,26 +66,6 @@ BufferedReader br = new BufferedReader(new FileReader("D:/from.txt"));
 line = br.readline();  // if line == null break
 ```
 
-## Iterator
-
-Iterator最高层 ———— hasNext() + next()
-
-Iterator <-- Collection <-- Set <-- HashSet
-
-Iterator <-- Collection <-- List <-- ArrayList
-
-Map <-- HasMap
-
-
-## 代码块
-
-1. 在`类中`不加任何修饰符为构造块，构造块优先构造方法执行，每创建一个对象，构造块就执行一次
-
-2. 在`方法中`不加任何修饰符为普通代码块，方法中代码过长，为避免变量重名，用普通代码块解决（限制变量作用域）
-
-3. static{}为静态块，优先构造块执行，不管创建多少个对象都只在第一次创建该类对象时执行一次（加载驱动如数据库）
-
-4. synchronized{}为同步代码块
 
 
 
