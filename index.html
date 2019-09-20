@@ -9,7 +9,7 @@ layout: default
     <li>
       <h2 class="post-list__post-title post-title"><a href="{{ post.url }}" title="访问 {{ post.title }}">{{ post.title }}</a></h2>
       <p class="excerpt">{{ post.content | strip_html | strip_newlines | truncate: 300 }}&hellip;</p>
-      <div class="post-list__meta">        
+      <div class="post-list__meta" style="text-align:right">        
         <time datetime="{{post.date | date: date_to_xmlschema}}" class="post-list__meta--date date">
           <img src="/images/calendar.png" width="20px" /> 
           {{ post.date | date: "%F"}}</time> 
@@ -24,7 +24,7 @@ layout: default
           <a class="btn-border-small" href={{ post.url }}> 》 点击我阅读全文 《 </a>
           </div>
       </div>
-      <!-- <hr class="post-list__divider" /> -->
+      <!-- <hr class="post-list__divider" /> 这是一条分割线-->
     </li>
     {% endfor %}
   </ol>
