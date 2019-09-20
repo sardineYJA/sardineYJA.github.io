@@ -9,7 +9,7 @@ layout: default
     <li>
       <h2 class="post-list__post-title post-title"><a href="{{ post.url }}" title="访问 {{ post.title }}">{{ post.title }}</a></h2>
       <p class="excerpt">{{ post.content | strip_html | strip_newlines | truncate: 300 }}&hellip;</p>
-      <div class="post-list__meta" style="text-align:right">        
+      <div class="post-list__meta" style="float:right">        
         <time datetime="{{post.date | date: date_to_xmlschema}}" class="post-list__meta--date date">
           <img src="/images/calendar.png" width="20px" /> 
           {{ post.date | date: "%F"}}</time> 
