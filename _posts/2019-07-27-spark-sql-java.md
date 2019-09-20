@@ -46,6 +46,8 @@ ssc.newSession().sql("SELECT * FROM global_temp.user").show();
 ```java
 SparkSession sparkSession = SparkSession.builder().appName("ServiceName")
 		.config("spark.sql.warehouse.dir", "/user/sxdt/spark-warehouse")
+        .config("spark.streaming.backpressure.enabled","true")
+        .config("spark.streaming.kafka.maxRatePerPartition","3000000")
 		.config("spark.testing.memory", "2147480000")
 		.master("local[*]")
 		.enableHiveSupport()

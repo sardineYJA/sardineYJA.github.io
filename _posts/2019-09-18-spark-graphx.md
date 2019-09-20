@@ -3,7 +3,7 @@ layout: post
 title: "Spark GraphX"
 date: 2019-09-18
 description: "Spark GraphX"
-tag: java
+tag: 大数据
 
 ---
 

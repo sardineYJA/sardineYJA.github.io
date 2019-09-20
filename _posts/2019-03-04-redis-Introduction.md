@@ -39,13 +39,13 @@ window下载安装：https://github.com/microsoftarchive/redis/releases
 
 提示：
 > Warning: no config file specified, using the default config. In order to specify a config file use redis-server.exe /path/to/redis.conf
-> Creating Server TCP listening socket *:6379: bind: No such file or directory
+> Creating Server TCP listening socket :6379: bind: No such file or directory
 
 
 命令：`redis-server e:\Redis\redis.windows.conf`
 
 提示：
-> Creating Server TCP listening socket *:6379: bind: No error
+> Creating Server TCP listening socket :6379: bind: No error
 
 解决：
 ```
