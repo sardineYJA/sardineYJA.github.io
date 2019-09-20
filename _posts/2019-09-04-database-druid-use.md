@@ -3,7 +3,7 @@ layout: post
 title: "阿里巴巴的Druid"
 date: 2019-09-04
 description: "介绍一下阿里巴巴的Druid"
-tag: 大数据
+tag: 数据库
 
 ---
 
