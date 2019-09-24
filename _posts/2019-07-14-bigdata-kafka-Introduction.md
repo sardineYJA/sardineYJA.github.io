@@ -13,6 +13,9 @@ tag: 大数据
 
 kafka 集群依赖于 zookeeper 集群保存一些meta信息
 
+kafka的内存是不经过JVM的，是基于Linux内核的Page
+
+
 
 ## 内部实现原理
 
