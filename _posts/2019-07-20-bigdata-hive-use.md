@@ -95,10 +95,12 @@ useradd mysql -g mysql -p mysql
 
 13. 退出重新登录
 
+14. Centos7 查看`systemctl stop|start|restart|status mysql`
+
 
 ## 设置远程登录
 
-配置只要是root+password，在任何主机都可登录MySQL
+配置只要是root+password，在任何主机都可登录MySQL，否则远程连接提示不允许连接
 
 ```SQL
 use mysql;
@@ -110,6 +112,36 @@ delete from user where host='127.0.0.1';
 delete from user where host='::1';
 flush privileges;	
 ```
+
+关闭防火墙或开放3306端口，否则远程连接报错：
+
+> 2003 - Can't connect to MySQL server on ' '(10038)
+
+```sh
+##Centos7 防火墙打开端口号
+firewall-cmd --zone=public --add-port=3306/tcp --permanent
+ 
+#下面3行是参数说明
+#–zone                                  #作用域
+#–add-port=80/tcp                       #添加端口，格式为：端口/通讯协议
+#–permanent                             #永久生效，没有此参数重启后失效
+ 
+#重启防火墙后看看是否生效
+firewall-cmd --reload           #重启firewall
+firewall-cmd --list-ports       #查看已经开放的端口
+ 
+ 
+#如果想永久停止防火墙，执行下面操作
+systemctl stop firewalld.service         #停止firewall
+systemctl disable firewalld.service      #禁止firewall开机启动
+ 
+#查看防火墙状态
+firewall-cmd --state            #查看默认防火墙状态（关闭后显示notrunning，开启后显示running）
+
+```
+
+
+
 
 ## Metastore元数据配置到MySQL
 

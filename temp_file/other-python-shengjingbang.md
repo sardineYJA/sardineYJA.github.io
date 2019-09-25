@@ -17,6 +17,16 @@
 
 ## 爬取首页全集id
 
+```python
+from urllib import request
+
+# 网络请求获取网页内容
+req = request.Request(url)
+req.add_header('User-Agent', 'Mozilla/5.0...')  # 用户代理
+response = request.ulropen(url, timeout=30)     # 超时设置，抛出异常
+html = response.read.decode('GBK')
+```
+
 
 ## 每集爬取
 

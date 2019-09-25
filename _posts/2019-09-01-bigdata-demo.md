@@ -309,5 +309,8 @@ Spark Web 监控
 
 4. 分区
 
+5. fastutil
+
+6. Kryo序列化
 
 
