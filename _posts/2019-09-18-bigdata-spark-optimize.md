@@ -115,24 +115,15 @@ RDD和DataFrame的区别。RDD强调的是不可变对象，每个RDD都是不�
 上面说到的这些RDD的弊端，有一部分就可以使用mapPartitions进行优化，mapPartitions可以同时替代rdd.map,rdd.filter,rdd.flatMap的作用，所以在长操作中，可以在mapPartitons中将RDD大量的操作写在一起，避免产生大量的中间rdd对象，另外是mapPartitions在一个partition中可以复用可变类型，这也能够避免频繁的创建新对象。使用mapPartitions的弊端就是牺牲了代码的易读性。
 
 
-map：一次处理一个元素的数据
 
-mapPartitions：一次处理一批数据(应用于每个分区)
 
-mapPartitions的优点：速度快，一次处理一批数据，即一次接收所有的partition数据，在map过程中需要频繁创建额外的对象(例如将rdd中的数据通过jdbc写入数据库，map需要为每个元素创建一个链接，而mapPartition为每个partition创建一个链接)，则mapPartitions效率比map高的多。
-
-mapPartitions()出现内存溢出时的解决方法：
-
-将数据切成较多的partition : repartition(100).mapPartitions(xx)
-
-设置较大的处理器内存 : --executor-memory 8g
 
 
 ## broadcast join和普通join
 
 在大数据分布式系统中，大量数据的移动对性能的影响也是巨大的。基于这个思想，在两个RDD进行join操作的时候，如果其中一个RDD相对小很多，可以将小的RDD进行collect操作然后设置为broadcast变量，这样做之后，另一个RDD就可以使用map操作进行join，这样能够有效的减少相对大很多的那个RDD的数据移动。
 
-## 先filter在join
+## 先filter再join
 
 filter之后再join，shuffle的数据量会减少，这里提一点是spark-sql的优化器已经对这部分有优化了，不需要用户显示的操作，个人实现rdd的计算的时候需要注意这个。
 
@@ -140,12 +131,7 @@ filter之后再join，shuffle的数据量会减少，这里提一点是spark-sql
 
 这一部分在另一篇文章《spark partitioner使用技巧》有详细介绍，这里不说了。
 
-## combineByKey的使用
 
-这个操作在Map-Reduce中也有，这里举个例子：`rdd.groupByKey().mapValue(_.sum)`比`rdd.reduceByKey`的效率低，原因如下两幅图所示 ,上下两幅图的区别就是上面那幅有combineByKey的过程减少了shuffle的数据量，下面的没有。combineByKey是key-value型rdd自带的API，可以直接使用。
-
-![png](/images/posts/all/ReduceByKey.png)
-![png](/images/posts/all/GroupByKey.png)
 
 
 ## 在内存不足的使用，使用`rdd.persist(StorageLevel.MEMORY_AND_DISK_SER)`代替`rdd.cache()`
