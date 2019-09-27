@@ -8,7 +8,8 @@ tag: 大数据
 ---
 
 # 大数据生态技术体系
-<img src="/images/posts/2019-02-03/大数据生态技术体系.JPG">
+
+![png](/images/posts/all/大数据生态技术体系.JPG)
 
 ## 简介
 

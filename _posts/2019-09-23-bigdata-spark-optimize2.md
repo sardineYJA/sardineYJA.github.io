@@ -290,6 +290,16 @@ Spark在Driver上，对Application的每一个stage的task，进行分配之前�
 
 但是因为大量的等待时长，spark作业的运行时间反而增加了，那就还是不要调节了
 
+## 项目实践
+
+一次电信数据项目中，如果15min/每次，数据量5G非常庞大，就不要LOCAL级别了，否则花费大量时间。
+直接在spark-submit参数中修改成0s。
+
+```sh
+bin/spark-submit \
+--conf "spark.locality.wait=0s" \
+```
+
 ## 修改参数
 
 默认情况下，下面3个的等待时长，都是跟上面那个是一样的，都是3s
