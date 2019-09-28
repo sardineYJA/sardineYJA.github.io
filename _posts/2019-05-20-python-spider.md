@@ -28,7 +28,7 @@ from urllib import request
 # 网络请求获取网页内容
 req = request.Request(url)
 req.add_header('User-Agent', 'Mozilla/5.0...')  # 用户代理
-response = request.ulropen(url, timeout=30)     # 超时设置，抛出异常
+response = request.urlopen(url, timeout=30)     # 超时设置，抛出异常
 html = response.read.decode('GBK')
 
 # 响应的相关信息
@@ -86,4 +86,36 @@ cjar = http.cookiejar.cookieJar()
 opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cjar))
 urllib.request.install_opener(opener)   # 将opener安装为全局
 data = opener.open(req).read()
+```
+
+# BeautifulSoup
+
+
+安装：pip install beautifulsoup4
+
+解析器使用：html.parser
+```python
+html = get_response(url).decode("utf-8")
+soup = BeautifulSoup(html, "html.parser")
+```
+
+获取某个class下的全部html
+```python
+id_html = soup.find(attrs={'class': 'chapter__list-box clearfix hide'})
+```
+
+解析每个Tag
+```python
+chapter_name = elem.find('a').get_text().strip()      # 获取标签内容
+chapter_id = elem.find('a').attrs["data-chapterid"]   # 获取标签属性
+```
+```
+<li class="j-chapter-item chapter__item id-486522">
+<a class="j-chapter-link" data-chapterid="486522" data-hreflink="/208692/486522.html">
+第50话 </a>
+</li>
+<li class="j-chapter-item chapter__item id-486521">
+<a class="j-chapter-link" data-chapterid="486521" data-hreflink="/208692/486521.html">
+第49话 </a>
+</li>
 ```
