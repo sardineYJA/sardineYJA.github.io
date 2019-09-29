@@ -107,5 +107,11 @@ if __name__ == "__main__":
 
 ```
 
+## 其他
 
+当然换个id，其他漫画也可以爬取，奇怪的是居然连VIP的漫画都可以。
+
+盘龙漫画：https://www.mkzhan.com/211769/
+
+偷星九月天：https://www.mkzhan.com/43/
 
