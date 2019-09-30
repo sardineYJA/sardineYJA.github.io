@@ -90,26 +90,6 @@ export PATH=$JAVA_HOME/bin:$PATH
 ```
 
 
-## 安装hadoop
-
-1. [Hadoop下载](https://archive.apache.org/dist/hadoop/common/hadoop-2.7.2/)
-
-2. 解压安装文件：`[hadoop101 software]$ tar -zxvf hadoop-2.7.2.tar.gz -C /opt/module/`
-
-3. 将Hadoop添加到环境变量：`[hadoop101 hadoop-2.7.2]$ sudo vi /etc/profile`
-
-```
-##HADOOP_HOME
-export HADOOP_HOME=/opt/module/hadoop-2.7.2
-export PATH=$PATH:$HADOOP_HOME/bin
-export PATH=$PATH:$HADOOP_HOME/sbin
-```
-
-4. 让修改后的文件生效：`[hadoop101 jdk1.8.0_144]$ source /etc/profile`
-
-5. 测试JDK是否安装成功：`[@hadoop101 jdk1.8.0_144]# hadoop -version`
-
-
 ## 远程拷贝
 
 scp（secure copy）安全拷贝：scp -r /test  root@hadoop102:/opt/test

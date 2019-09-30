@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "虚拟机搭建Hadoop集群"
+title: "搭建Hadoop集群"
 date: 2019-02-04
 description: "简单介绍一下如何用虚拟机搭建Hadoop集群"
 tag: Hadoop
@@ -8,20 +8,6 @@ tag: Hadoop
 ---
 
 # 安装准备
-## 安装JDK
-卸载现有JDK
-1. 查询是否安装Java软件：`[hadoop101 opt]$ rpm -qa | grep java`
-2. 如果安装的版本低于1.7，卸载该JDK：`[hadoop101 opt]$ sudo rpm -e 软件包`
-3. 查看JDK安装路径：`[hadoop101 ~]$ which java`
-4. 解压JDK：`[hadoop101 software]$ tar -zxvf jdk-8u144-linux-x64.tar.gz -C /opt/module/`
-5. 配置JDK环境变量：`[hadoop101 software]$ sudo vi /etc/profile`
-```
-#JAVA_HOME
-export JAVA_HOME=/opt/module/jdk1.8.0_144
-export PATH=$PATH:$JAVA_HOME/bin
-```
-6. 让修改后的文件生效：`[hadoop101 jdk1.8.0_144]$ source /etc/profile`
-7. 测试JDK是否安装成功：`[@hadoop101 jdk1.8.0_144]# java -version`
 
 ## 安装hadoop
 1. [Hadoop下载](https://archive.apache.org/dist/hadoop/common/hadoop-2.7.2/)
