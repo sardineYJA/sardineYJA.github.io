@@ -3,7 +3,7 @@ layout: post
 title: "词向量Word2Vec介绍"
 date: 2018-10-03
 description: "简单介绍一下word2vec"
-tag: NLP
+tag: Machine Learn
 
 ---
 
