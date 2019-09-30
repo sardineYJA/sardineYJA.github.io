@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "搭建大数据基础环境"
-date: 2019-06-05
+date: 2019-02-03
 description: "简单介绍一下搭建大数据基础环境"
 tag: Bigdata
 

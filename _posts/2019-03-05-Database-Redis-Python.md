@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Redis的使用教程"
+title: "Redis的python使用"
 date: 2019-03-05
 description: "简单介绍Redis使用教程"
 tag: Database
