@@ -3,7 +3,7 @@ layout: post
 title: "Hbase"
 date: 2019-09-09
 description: "Hbase"
-tag: 大数据
+tag: Bigdata
 
 ---
 
