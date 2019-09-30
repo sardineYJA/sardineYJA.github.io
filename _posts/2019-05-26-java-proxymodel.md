@@ -3,7 +3,7 @@ layout: post
 title: "代理模式"
 date: 2019-05-26
 description: "简单介绍代理模式"
-tag: java
+tag: Java
 
 ---
 # 简介

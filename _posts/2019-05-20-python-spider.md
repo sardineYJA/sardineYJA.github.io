@@ -3,7 +3,7 @@ layout: post
 title: "python爬虫基础"
 date: 2019-05-20
 description: "简单介绍python爬虫基础"
-tag: python
+tag: Python
 
 ---
 

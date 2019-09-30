@@ -3,7 +3,7 @@ layout: post
 title: "python装饰器介绍"
 date: 2019-02-05
 description: "简单介绍一下python装饰器"
-tag: python
+tag: Python
 
 ---
 

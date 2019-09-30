@@ -3,7 +3,7 @@ layout: post
 title: "集群常用脚本"
 date: 2019-08-23
 description: "简单介绍集群常用脚本"
-tag: 工具
+tag: Bigdata
 
 ---
 

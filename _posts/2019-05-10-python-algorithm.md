@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "python数据结构"
+title: "Python数据结构"
 date: 2019-05-10
 description: "简单复习python数据结构"
-tag: python
+tag: Python
 
 ---
 # 目录

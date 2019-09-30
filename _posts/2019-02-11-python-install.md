@@ -3,7 +3,7 @@ layout: post
 title: "新装的CentOS 7安装python3"
 date: 2019-02-11
 description: "介绍新装的CentOS 7安装python3"
-tag: python
+tag: Python
 
 ---
 

@@ -3,7 +3,7 @@ layout: post
 title: "集群关闭问题"
 date: 2019-09-17
 description: "集群关闭问题"
-tag: 大数据
+tag: Bigdata
 
 ---
 

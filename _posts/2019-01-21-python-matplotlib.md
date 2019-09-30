@@ -3,7 +3,7 @@ layout: post
 title: "matplotlib的使用"
 date: 2019-01-21
 description: "简单介绍一下matplotlib的使用"
-tag: python
+tag: Python
 
 ---
 # matplotlib基础

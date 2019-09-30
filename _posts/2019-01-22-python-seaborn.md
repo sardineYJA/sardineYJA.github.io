@@ -3,7 +3,7 @@ layout: post
 title: "seaborn的使用"
 date: 2019-01-22
 description: "简单介绍一下seaborn的使用"
-tag: python
+tag: Python
 
 ---
 

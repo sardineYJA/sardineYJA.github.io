@@ -3,7 +3,7 @@ layout: post
 title: "Redis的介绍"
 date: 2019-03-04
 description: "简单介绍Redis安装教程"
-tag: 数据库
+tag: Database
 
 ---
 # 简介

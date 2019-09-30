@@ -3,7 +3,7 @@ layout: post
 title: "java语法复习"
 date: 2019-05-25
 description: "简单介绍java语法复习"
-tag: java
+tag: Java
 
 ---
 

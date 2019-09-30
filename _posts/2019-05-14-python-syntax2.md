@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "python语法复习2"
+title: "Python语法复习2"
 date: 2019-05-14
 description: "简单复习python语法"
-tag: python
+tag: Python
 
 ---
 

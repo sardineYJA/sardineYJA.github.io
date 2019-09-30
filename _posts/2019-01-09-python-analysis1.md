@@ -3,7 +3,7 @@ layout: post
 title: "python数据分析篇1"
 date: 2019-01-09
 description: "简单介绍一下python数据分析"
-tag: 数据分析
+tag: Python
 
 ---
 

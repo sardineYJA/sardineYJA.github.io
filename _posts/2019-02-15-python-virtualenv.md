@@ -3,7 +3,7 @@ layout: post
 title: "virtualenv的使用"
 date: 2019-02-15
 description: "介绍virtualenv的使用"
-tag: python
+tag: Python
 
 ---
 
