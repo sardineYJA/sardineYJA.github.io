@@ -43,124 +43,108 @@ fastText是一个能用浅层网络取得和深度网络相媲美的精度（还
 
 同样，fastText也使用了`Hierarchical Softmax`来加速最后一层softmax的计算。
 
-# 实例
 
-## 安装
 
-安装fastText的python版本，如果要使用最新版，可以自行编译
+# 调用fasttext库
 
-```shell
-$ git clone https://github.com/facebookresearch/fastText.git
-$ cd fastText
-$ pip install .
+
+Linux安装：pip install fasttext
+
+Windows安装：pip install fasttext 会报错
+
+> Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools
+
+解决方案：
+1. 安装VS2017     
+2. https://www.lfd.uci.edu/~gohlke/pythonlibs/下载xxx.whl包使用pip install xxx.whl
+
+数据格式：
 ```
-
-也可以直接使用功能pip安装稳定版
-
-```shel
-pip install fastText
+颜值 担当      __label__1
+快递 速度      __label__2
 ```
-## 词向量训练
-
-数据准备,中文的话，分完词后空格隔开就行：
-
-> 联名储值卡 赠送 电子 标签 绑 银行 联名 记账 卡
-
-代码：
-```python
-def train_unsupervised(input, model="skipgram", lr=0.05, dim=100, 
-                   ws=5, epoch=5, minCount=5, 
-                   minCountLabel=0, minn=3, 
-                   maxn=6, neg=5, wordNgrams=1, 
-                   loss="ns", bucket=2000000, 
-                   thread=12, lrUpdateRate=100,
-                   t=1e-4, label="__label__", 
-                   verbose=2, pretrainedVectors=""):
-  """
-  训练词向量，返回模型对象
-  输入数据不要包含任何标签和使用标签前缀
-
-  @param model: 模型类型, cbow/skipgram两种
-  其他参数参考train_supervised()方法
-  @return model
-  """
-  pass
-```
-
-## 分类
-
-数据准备，和上面一样，只是每行多一个label
-
-> \_\_label__greet 你好 啊
-
-代码：
-```python
-def train_supervised(input, lr=0.1, dim=100, 
-                   ws=5, epoch=5, minCount=1, 
-                   minCountLabel=0, minn=0, 
-                   maxn=0, neg=5, wordNgrams=1, 
-                   loss="softmax", bucket=2000000, 
-                   thread=12, lrUpdateRate=100,
-                   t=1e-4, label="__label__", 
-                   verbose=2, pretrainedVectors=""):
-  """
-  训练一个监督模型, 返回一个模型对象
-
-  @param input: 训练数据文件路径
-  @param lr:              学习率
-  @param dim:             向量维度
-  @param ws:              cbow模型时使用
-  @param epoch:           次数
-  @param minCount:        词频阈值, 小于该值在初始化时会过滤掉
-  @param minCountLabel:   类别阈值，类别小于该值初始化时会过滤掉
-  @param minn:            构造subword时最小char个数
-  @param maxn:            构造subword时最大char个数
-  @param neg:             负采样
-  @param wordNgrams:      n-gram个数
-  @param loss:            损失函数类型, softmax, ns: 负采样, hs: 分层softmax
-  @param bucket:          词扩充大小, [A, B]: A语料中包含的词向量, B不在语料中的词向量
-  @param thread:          线程个数, 每个线程处理输入数据的一段, 0号线程负责loss输出
-  @param lrUpdateRate:    学习率更新
-  @param t:               负采样阈值
-  @param label:           类别前缀
-  @param verbose:         ??
-  @param pretrainedVectors: 预训练的词向量文件路径, 如果word出现在文件夹中初始化不再随机
-  @return model object
-
-  """
-  pass
-```
-
-## 推荐使用fasttext封装
-
-安装使用`pip install fasttext`就可以
 
 ```python
-import fasttext
-# 第一个参数是前面得到的 fasttex_train.txt ，第二个参数是将要保存模型的路径，默认会加上 .bin 
-# label_prefix 就是标签或类别的起始符号
-classifier = fasttext.supervised("fasttext_train.txt","fasttext.model",label_prefix = "__label__")
-```
+# Windows 版
+import fastText.FastText as ff
+classfier = ff.train_supervised("train.txt")
+classfier.save_model('model')
 
-加载和测试
+classifier = ff.load_model('model')
+result = classifier.test('test.txt')
+print('准确率：', result)
+# 准确率： (33417, 0.9593919262650746, 0.9593919262650746)
+str_list = ['我 要 一款 内存 大 运行 快 的 苹果 电脑']
+lab = classifier.predict(str_list, k=1)
+print(lab)  # (['__label__2'], array([0.95485353]))
+```
 
 ```python
-import fasttext
-# 加载模型
-classifier = fasttext.load_model("fasttext.model.bin",label_prefix = "__label__")
+import fasttext as ft
+ft.supervised('train', 'model', label_prefix='__label__')  # 保存模型后缀自动加'.bin'
 
-# 测试模型 其中 fasttext_test.txt 就是测试数据，格式和 fasttext_train.txt 一样
-result = classifier.test("fasttext_test.txt")
-print("准确率:", result.precision)
-print("回归率:", result.recall)
-
-result = classifier.predict_proba(['如何 办 卡 '], 5)# predict_proba同时返回label和置信度，第二个参数是返回置信度前几的结果
-
-print(result)
-
+c = ft.load_model('model.bin',label_prefix='__label__')
+result = c.test('test.txt')
+print(result.precision)
+print(result.recall)
+print(result.nexamples)
+lab = c.predict_proba(str_list, k=1)
+print(lab)  # [[('2', 0.976563)]]
 ```
 
-# github地址
+
+
+# 使用fasttext命令模式
+
+训练数据格式:
+
+1.如果是训练词向量，怎么文本分词以空格隔开就行
+
+2.如果是预测文本，格式如上
+
+
+
+下载：https://github.com/facebookresearch/fastText/
+
+解压，进入目录
+
+命令：make 进行安装
+
+
+## 词向量
+
+获取词向量：./fasttext skipgram -input data.txt -output model
+
+参数：skipgram  或者  cbow 
+
+data.txt 存储分词，词与词之间空格隔开（即一行），分行的话会有<\s>的词向量产生
+
+生成model.bin和model.vec(model为自定义命名)
+
+model.vec文件：第一句保存词向量个数（默认词出现次数大于等于5 才有词向量），与维度（默认100维）
+
+常用参数：-minCount 5最小出现次数 -dim词向量维度
+
+最后有无标签：__label__ 生成的词向量一样的
+
+
+训练出来的模型model.bin可以用来计算词典之外的单词的向量表示，直接打印出来
+
+命令：./fasttext print-word-vectors model.bin < queries.txt
+
+
+## 文本分类
+
+文本分类：./fasttext supervised -input train.txt -output model
+
+每行最后加上__label__1或者label__sport之类的，生成model.bin和model.vec文件
+
+预测最可能的标签：./fastttext predict model.bin my_test.txt
+
+也可打印前k=2个最可能的标签：./fasttext predict-prob model.bin my_test.txt 2
+
+
+## github地址
 
 [文本分类方法汇总](https://github.com/brightmart/text_classification)
 
