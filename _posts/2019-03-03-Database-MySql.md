@@ -7,6 +7,89 @@ tag: Database
 
 ---
 
+# mysql 
+
+## 安装
+
+数据库的安装登录需要root用户
+
+1. 查看：rpm -qa\|grep mysql
+
+2. 卸载所有：rpm -e --nodeps mysql-xxx.x86_64
+
+3. 下载：https://dev.mysql.com/downloads/mysql/
+
+4. centos7选择：Red Hat Enterprise Linux 7 / Oracle Linux 7 (x86, 64-bit)，(MySQL-5.6.45-1.el7.x86_64.rpm-bundle.tar)
+
+5. 解压：tar -xvf MySQL-5.6.45-1.el7.x86_64.rpm-bundle.tar
+
+6. 创建mysql用户和组(无需也可安装成功，只是警告mysql用户和mysql组不存在)
+```
+groupadd -g 1000 mysql        // GID为1000
+useradd mysql -g mysql -p mysql
+```
+
+7. 安装服务器：`rpm -ivh MySQL-server-5.6.45-1.el7.x86_64.rpm`
+
+8. 查看密码：`cat /root/.mysql_secret`
+
+9. 开启：`service sql start`
+
+10. 安装客户端：`rpm -ivh MySQL-client-5.6.45-1.el7.x86_64.rpm`
+
+11. 登录：`mysql -uroot -pYourPassword`
+
+12. 修改密码：`> set password=password('root123456');`
+
+13. 退出重新登录
+
+14. Centos7 查看`systemctl stop|start|restart|status mysql`
+
+
+## 设置远程登录
+
+配置只要是root+password，在任何主机都可登录MySQL，否则远程连接提示不允许连接
+
+```SQL
+use mysql;
+desc user;
+select user, host, password from user;
+update user set host='%' where host='localhost';
+delete from user where host='hadoop101';
+delete from user where host='127.0.0.1';
+delete from user where host='::1';
+flush privileges;	
+```
+
+关闭防火墙或开放3306端口，否则远程连接报错：
+
+> 2003 - Can't connect to MySQL server on ' '(10038)
+
+```sh
+##Centos7 防火墙打开端口号
+firewall-cmd --zone=public --add-port=3306/tcp --permanent
+ 
+#下面3行是参数说明
+#–zone                                  #作用域
+#–add-port=80/tcp                       #添加端口，格式为：端口/通讯协议
+#–permanent                             #永久生效，没有此参数重启后失效
+ 
+#重启防火墙后看看是否生效
+firewall-cmd --reload           #重启firewall
+firewall-cmd --list-ports       #查看已经开放的端口
+ 
+ 
+#如果想永久停止防火墙，执行下面操作
+systemctl stop firewalld.service         #停止firewall
+systemctl disable firewalld.service      #禁止firewall开机启动
+ 
+#查看防火墙状态
+firewall-cmd --state            #查看默认防火墙状态（关闭后显示notrunning，开启后显示running）
+
+```
+
+
+
 # 常用语句
 
 ```sql
@@ -119,17 +202,12 @@ group by score.student_id
 having avg(grade)>70;
 ```
 
-## 数据库
-
 ```sql
 select 1 from table;
 select anycol(任意一行） from table;
 select * from table; 
 ```
 
- 从作用上来说是没有差别的，都是查看是否有记录，一般是作条件查询用的。第一个的1是一常量（可以为任意数值），查到的所有行的值都是它，但从效率上来说，1>anycol>\*，因为不用查字典表。
+ 从作用上来说是没有差别的，都是查看是否有记录，一般是作条件查询用的。
+ 第一个的1是一常量（可以为任意数值），查到的所有行的值都是它，但从效率上来说，1>anycol>\*，因为不用查字典表。
 
-
-## oracle的滤空函数（通用函数）
-
-nvl(a,b)：表示a不为null返回本身，a为null返回b
