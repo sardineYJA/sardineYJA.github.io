@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Maven"
+title: "Maven 教程"
 date: 2018-02-20
 description: "Maven"
 tag: Java
