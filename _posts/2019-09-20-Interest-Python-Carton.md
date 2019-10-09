@@ -12,7 +12,7 @@ tag: Interest
 
 记得高中的时候，没有什么消遣娱乐，经常看同学买的《知音漫客》，里面有部漫画叫《神精榜》，虽然画风简单但故事比较有意思，自己也是从那时开始看，直到大学它连载完，如今重看了一遍，发现还是相当有意思的。
 
-## 链接
+## 链接分析
 
 神精榜漫画：https://www.mkzhan.com/208692
 
@@ -22,12 +22,12 @@ tag: Interest
 
 集数表明部分单集的id并不是连续的，不能递增id爬取，只能先获取首页全集id
 
-## 爬取全集
+## 爬取漫画
 
-解析html：pip install beautifulsoup4
+解析html需要的库：pip install beautifulsoup4
 
 
-基础版，可自行增加多线程
+基础版
 
 ```python
 from urllib import request
@@ -107,11 +107,16 @@ if __name__ == "__main__":
 
 ```
 
+
+多线程版（待补充）
+
+
+Redis分布式版（待补充）
+
+
 ## 其他
 
-当然换个id，其他漫画也可以爬取，奇怪的是居然连VIP的漫画都可以。
+当然换个id，也可以爬取其他漫画，奇怪的是居然连VIP的漫画都可以，链接没有加密，也没有任何的爬虫机制。
 
-盘龙漫画：https://www.mkzhan.com/211769/
 
-偷星九月天：https://www.mkzhan.com/43/
 
