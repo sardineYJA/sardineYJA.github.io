@@ -59,34 +59,118 @@ bin/kafka-server-start.sh config/server.properties &     (Kafka)
 ## 集群启动脚本
 
 ```sh
-echo "+++++++++++++++++ 集群启动 ++++++++++++++++++"
+#!/bin/bash
 
-echo "============== 启动 NameNode ============="
-ssh yangja@hadoop101 '.../sbin/hadoop-daemon.sh start namenode'
+################## 设置相关信息 ###################
+root_dir=/home/yangja/module/
+hadoop_dir=${root_dir}hadoop-2.7.2/
+spark_dir=${root_dir}spark-2.1.1-bin-hadoop2.7/
 
-echo "============== 启动 SecondaryNameNode ============="
-ssh yangja@hadoop102 '.../sbin/hadoop-daemon.sh start secondarynamenode'
-
-echo "============== 启动 DataNode ============="
-for i in yangja@hadoop101 yangja@hadoop102 yangja@hadoop103
-do
-	ssh $i '.../sbin/hadoop-daemon.sh start datanode'
-done
-
-
-echo "============== 启动 ResourceManager ============="
-ssh yangja@hadoop103 '.../sbin/yarn-daemon.sh start resourcemanager'
-
-echo "============== 启动 NodeManager ============="
-for i in yangja@hadoop101 yangja@hadoop102 yangja@hadoop103
-do
-	ssh $i '.../sbin/yarn-daemon.sh start nodemanager'
-done
+user_name=yangja
+namenode_ip=172.16.7.124
+secondarynamenode_ip=172.16.7.124
+resourcemanager_ip=172.16.7.124
+historyserve_ip=172.16.7.124
+datanode_ip=(172.16.7.124)
 
 
-echo "============== 启动 JobHistoryServer ============="
-ssh yangja@hadoop101 '.../sbin/mr-jobhistory-daemon.sh start historyserver'
+################## 下面尽量不要修改 ####################
+
+# 启动集群 hadoop 函数
+start_hadoop(){
+	echo -e "\n++++++++++++++++++++ 集群启动 +++++++++++++++++++++"
+
+	echo -e "\n============== 启动 NameNode ============="
+	# echo ssh ${user_name}@$namenode_ip ${hadoop_dir}sbin/hadoop-daemon.sh start namenode
+	ssh ${user_name}@$namenode_ip ${hadoop_dir}sbin/hadoop-daemon.sh start namenode
+
+	echo -e "\n============== 启动 SecondaryNameNode ============="
+	# echo ssh ${user_name}@$secondarynamenode_ip ${hadoop_dir}sbin/hadoop-daemon.sh start secondarynamenode
+	ssh ${user_name}@$secondarynamenode_ip ${hadoop_dir}sbin/hadoop-daemon.sh start secondarynamenode
+
+	echo -e "\n============== 启动所有 DataNode ============="
+	for i in ${datanode_ip[*]}
+	do
+		# echo ssh ${user_name}@$i ${hadoop_dir}sbin/hadoop-daemon.sh start datanode
+		ssh ${user_name}@$i ${hadoop_dir}sbin/hadoop-daemon.sh start datanode
+	done
+
+
+	echo -e "\n============== 启动 ResourceManager ============="
+	# echo ssh ${user_name}@$resourcemanager_ip ${hadoop_dir}sbin/yarn-daemon.sh start resourcemanager
+	ssh ${user_name}@$resourcemanager_ip ${hadoop_dir}sbin/yarn-daemon.sh start resourcemanager
+
+	echo -e "\n============== 启动所有 NodeManager ============="
+	for i in ${datanode_ip[*]}
+	do
+		# echo ssh ${user_name}@$i ${hadoop_dir}sbin/yarn-daemon.sh start nodemanager
+	    ssh ${user_name}@$i  ${hadoop_dir}sbin/yarn-daemon.sh start nodemanager
+	done
+
+	echo -e "\n============== 启动 JobHistoryServer ============="
+	# echo ssh ${user_name}@$historyserve_ip ${hadoop_dir}sbin/mr-jobhistory-daemon.sh start historyserver
+	ssh ${user_name}@$historyserve_ip ${hadoop_dir}sbin/mr-jobhistory-daemon.sh start historyserver
+}
+
+
+# 关闭集群 hadoop 函数
+stop_hadoop(){
+	echo -e "\n++++++++++++++++++++ 集群关闭 +++++++++++++++++++++"
+
+	echo -e "\n============== 关闭 NameNode ============="
+	# echo ssh ${user_name}@$namenode_ip ${hadoop_dir}sbin/hadoop-daemon.sh stop namenode
+	ssh ${user_name}@$namenode_ip ${hadoop_dir}sbin/hadoop-daemon.sh stop namenode
+
+	echo -e "\n============== 关闭 SecondaryNameNode ============="
+	# echo ssh ${user_name}@$secondarynamenode_ip ${hadoop_dir}sbin/hadoop-daemon.sh stop secondarynamenode
+	ssh ${user_name}@$secondarynamenode_ip ${hadoop_dir}sbin/hadoop-daemon.sh stop secondarynamenode
+
+	echo -e "\n============== 关闭所有 DataNode ============="
+	for i in ${datanode_ip[*]}
+	do
+		# echo ssh ${user_name}@$i ${hadoop_dir}sbin/hadoop-daemon.sh stop datanode
+		ssh ${user_name}@$i ${hadoop_dir}sbin/hadoop-daemon.sh stop datanode
+	done
+
+
+	echo -e "\n============== 关闭 ResourceManager ============="
+	# echo ssh ${user_name}@$resourcemanager_ip ${hadoop_dir}sbin/yarn-daemon.sh stop resourcemanager
+	ssh ${user_name}@$resourcemanager_ip ${hadoop_dir}sbin/yarn-daemon.sh stop resourcemanager
+
+	echo -e "\n============== 关闭所有 NodeManager ============="
+	for i in ${datanode_ip[*]}
+	do
+		# echo ssh ${user_name}@$i ${hadoop_dir}sbin/yarn-daemon.sh stop nodemanager
+	    ssh ${user_name}@$i  ${hadoop_dir}sbin/yarn-daemon.sh stop nodemanager
+	done
+
+	echo -e "\n============== 关闭 JobHistoryServer ============="
+	# echo ssh ${user_name}@$historyserve_ip ${hadoop_dir}sbin/mr-jobhistory-daemon.sh stop historyserver
+	ssh ${user_name}@$historyserve_ip ${hadoop_dir}sbin/mr-jobhistory-daemon.sh stop historyserver
+}
+
+
+# 获取输入参数个数，如果没有参数，直接退出
+pcount=$#
+if((pcount==0)); then
+	echo no args, example : $0 start/stop;
+	exit;
+
+elif [[ "$1" == "start" ]]; then
+	echo start;
+	start_hadoop
+
+
+elif [[ "$1" == "stop" ]]; then
+	echo stop;
+	stop_hadoop
+
+else
+	echo example : $0 start/stop;
+	exit;
+fi
 ```
+
 
 ## 同步文件脚本
 
@@ -119,4 +203,10 @@ done
 ```
 
 
+## sh脚本问题
 
+> $'\r': 未找到命令
+
+因为在dos/window下按一次回车键实际上输入的是“回车（CR)”和“换行（LF）”，而Linux/unix下按一次回车键只输入“换行（LF）”，所以文件在每行都会多了一个CR，所以Linux下运行时就会报错找不到命令，所以，解决问题之道，就是把dos文件格式转换为unix格式。
+
+使用notepad++在windows系统下使用notepad++编辑该sh文件，双击文件右下角编码区域选择"转换为UNIX格式"。
