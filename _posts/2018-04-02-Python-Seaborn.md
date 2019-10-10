@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "seaborn的使用"
+title: "seaborn 可视化"
 date: 2018-04-02
 description: "简单介绍一下seaborn的使用"
 tag: Python

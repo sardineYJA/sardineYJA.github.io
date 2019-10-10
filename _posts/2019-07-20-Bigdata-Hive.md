@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Hive 知识点"
+title: "Hive"
 date: 2019-07-20
 description: "介绍一下Hive 知识点"
 tag: Bigdata

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "使用virtualenv"
+title: "virtualenv 虚拟环境"
 date: 2018-06-05
 description: "介绍virtualenv的使用"
 tag: Python

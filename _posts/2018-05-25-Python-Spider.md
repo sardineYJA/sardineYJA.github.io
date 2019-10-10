@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "python爬虫基础"
+title: "Python 基础爬虫"
 date: 2018-05-25
 description: "简单介绍python爬虫基础"
 tag: Python

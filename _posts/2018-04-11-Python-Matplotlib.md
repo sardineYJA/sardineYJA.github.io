@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "matplotlib的使用"
+title: "matplotlib 可视化"
 date: 2018-04-11
 description: "简单介绍一下matplotlib的使用"
 tag: Python
