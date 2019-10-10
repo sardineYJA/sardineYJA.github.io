@@ -11,11 +11,19 @@ tag: Bigdata
 	
 ## Flume框架简介
 
-Flume、Kafka用来实时进行数据收集，Spark、Storm用来实时处理数据，impala用来实时查询。
+Flume(日志采集系统) 和 Kafka(消息中间件) 用来实时进行数据收集，Spark、Storm用来实时处理数据，impala用来实时查询。
 
 Flume提供一个分布式的，可靠的，对大数据量的日志进行高效收集、聚集、移动的服务，Flume只能在Unix环境下运行。
 
 Flume基于流式架构，容错性强，也很灵活简单，主要用于在线实时分析。
+
+## 场景使用
+
+Flume和Kafka应该结合来使用，Flume作为日志收集端，Kafka作为日志消费端
+
+线上数据 -> flume -> kafka -> hdfs -> MR离线计算
+
+线上数据 -> flume -> kafka -> storm
 
 ## 角色
 
@@ -28,75 +36,103 @@ Flume基于流式架构，容错性强，也很灵活简单，主要用于在线
 - Sink
 从Channel收集数据，将数据写到目标源（可以是下一个Source，也可以是HDFS或者HBase）。
 
+![png](/images/posts/all/flume角色图.png)
+
 - Event
 数据传输的基本单元，以事件的形式将数据从源头送至目的地
 
-## 传输过程
+![png](/images/posts/all/flume传输单元.png)
+
 
 source监控某个文件，文件产生新的数据，拿到该数据后，
 将数据封装在一个Event中，并put到channel后commit提交，
 channel队列先进先出，sink去channel队列中拉取数据，然后写入到hdfs或者HBase中。
 
+
 ## 安装配置FLume
 
-flume-env.sh
-	配置Java的环境变量
+解压：`tar -zxvf apache-flume-1.9.0-bin.tar.gz -C ../module/`
 
-Flume帮助命令
-	$ bin/flume-ng
+cp模板，flume-env.sh配置Java的环境变量：`export JAVA_HOME=...`
+
+Flume帮助命令：`$ bin/flume-ng`
+
 
 
 # 案例一：Flume监听端口，输出端口数据
 
-创建Flume Agent配置文件flume-telnet.conf
+cp模板：`cp flume-conf.properties.template flume-telnet.conf`
+
+注意文件`不可有中文注释`，注意文件`不可有中文注释`
 
 ```sh
 # Name the components on this agent
-a1.sources = r1
+a1.sources = r1    
 a1.sinks = k1
 a1.channels = c1
 
 # Describe/configure the source
-a1.sources.r1.type = netcat
+a1.sources.r1.type = netcat   
 a1.sources.r1.bind = localhost
-a1.sources.r1.port = 44444
+a1.sources.r1.port = 44444 
 
 # Describe the sink
 a1.sinks.k1.type = logger
 
 # Use a channel which buffers events in memory
-a1.channels.c1.type = memory
-a1.channels.c1.capacity = 1000
+a1.channels.c1.type = memory   
+a1.channels.c1.capacity = 1000 
 a1.channels.c1.transactionCapacity = 100
 
 # Bind the source and sink to the channel
-a1.sources.r1.channels = c1
+a1.sources.r1.channels = c1  
 a1.sinks.k1.channel = c1
 ```
 
+sources 可以发送到多个 channel 如：c1 c2 c3
+
+chnnel 只能发送到一个 sinks
+
+
+## 开启
+
+```sh
+bin/flume-ng agent --conf conf/      \
+--name a1                            \
+--conf-file conf/flume-telnet.conf   \
+-Dflume.root.logger==INFO,console
+```
+
+
 ## 安装telnet工具
+
+> telnet: connect to address 127.0.0.1: Connection refused
+
+需要安装telnet-server
 
 ```sh 
 $ sudo rpm -ivh telnet-server-0.17-59.el7.x86_64.rpm 
 $ sudo rpm -ivh telnet-0.17-59.el7.x86_64.rpm
 # 首先判断44444端口是否被占用
 $ netstat -an | grep 44444
-# 先开启flume先听端口
-$ bin/flume-ng agent --conf conf/ --name a1 --conf-file conf/flume-telnet.conf -Dflume.root.logger==INFO,console
 # 使用telnet工具向本机的44444端口发送内容
 $ telnet localhost 44444
+# flume 可以立刻获取数据
 ```
+
 
 # 案例二：监听上传Hive日志文件到HDFS
 
-1. 拷贝Hadoop相关jar到Flume的lib目录下
+拷贝Hadoop相关jar到Flume的lib目录下
 
+```
 share/hadoop/common/lib/hadoop-auth-2.5.0-cdh5.3.6.jar
 share/hadoop/common/lib/commons-configuration-1.6.jar
 share/hadoop/mapreduce1/lib/hadoop-hdfs-2.5.0-cdh5.3.6.jar
 share/hadoop/common/hadoop-common-2.5.0-cdh5.3.6.jar
+```
 
-2. 创建flume-hdfs.conf文件
+创建flume-hdfs.conf文件
 
 ```sh
 # Name the components on this agent
@@ -146,16 +182,16 @@ a2.sources.r2.channels = c2
 a2.sinks.k2.channel = c2
 ```
 
-3. 执行监控配置
+执行监控配置
 
 ```
 $ bin/flume-ng agent --conf conf/ --name a2 --conf-file conf/flume-hdfs.conf
 ```
 
+
 # 案例三：Flume监听整个目录
 
-创建配置文件flume-dir.conf
-`$ cp -a flume-hdfs.conf flume-dir.conf`
+配置文件flume-dir.conf
 
 ```sh
 a3.sources = r3
@@ -207,12 +243,15 @@ a3.sinks.k3.channel = c3
 
 执行测试
 `$ bin/flume-ng agent --conf conf/ --name a3 --conf-file conf/flume-dir.conf &`
-				
 
-总结：
-在使用Spooling Directory Source
 注意事项：
 1. 不要在监控目录中创建并持续修改文件
 2. 上传完成的文件会以.COMPLETED结尾
 3. 被监控文件夹每600毫秒扫描一次变动
+
+
+# reference
+
+http://flume.apache.org/releases/content/1.9.0/FlumeUserGuide.html
+
 
