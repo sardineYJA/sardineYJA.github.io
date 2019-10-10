@@ -59,11 +59,11 @@ Flume帮助命令：`$ bin/flume-ng`
 
 
 
-# 案例一：Flume监听端口，输出端口数据
+# 案例：Flume监听端口，输出端口数据
 
 cp模板：`cp flume-conf.properties.template flume-telnet.conf`
 
-注意文件`不可有中文注释`，注意文件`不可有中文注释`
+文件中配置行后面`不可有中文注释`
 
 ```sh
 # Name the components on this agent
@@ -121,16 +121,123 @@ $ telnet localhost 44444
 ```
 
 
-# 案例二：监听上传Hive日志文件到HDFS
+# 案例：Flume监听整个目录
 
-拷贝Hadoop相关jar到Flume的lib目录下
+配置文件flume-dir.conf
 
+```sh
+a3.sources = r3
+a3.sinks = k3
+a3.channels = c3
+
+# Describe/configure the source
+a3.sources.r3.type = spooldir
+a3.sources.r3.spoolDir = /home/yangja/data
+a3.sources.r3.fileHeader = true
+#忽略所有以.tmp结尾的文件，不上传
+a3.sources.r3.ignorePattern = ([^ ]*\.tmp)
+
+# Describe the sink
+a3.sinks.k3.type = hdfs
+a3.sinks.k3.hdfs.path = hdfs://172.16.7.124:9000/flume/%Y%m%d/%H
+#上传文件的前缀
+a3.sinks.k3.hdfs.filePrefix = upload-
+#是否按照时间滚动文件夹
+a3.sinks.k3.hdfs.round = true
+#多少时间单位创建一个新的文件夹
+a3.sinks.k3.hdfs.roundValue = 1
+#重新定义时间单位
+a3.sinks.k3.hdfs.roundUnit = hour
+#是否使用本地时间戳
+a3.sinks.k3.hdfs.useLocalTimeStamp = true
+#积攒多少个Event才flush到HDFS一次
+a3.sinks.k3.hdfs.batchSize = 100
+#设置文件类型，可支持压缩
+a3.sinks.k3.hdfs.fileType = DataStream
+#多久生成一个新的文件
+a3.sinks.k3.hdfs.rollInterval = 600
+#设置每个文件的滚动大小
+a3.sinks.k3.hdfs.rollSize = 134217700
+#文件的滚动与Event数量无关
+a3.sinks.k3.hdfs.rollCount = 0
+#最小冗余数
+a3.sinks.k3.hdfs.minBlockReplicas = 1
+
+# Use a channel which buffers events in memory
+a3.channels.c3.type = memory
+a3.channels.c3.capacity = 1000
+a3.channels.c3.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a3.sources.r3.channels = c3
+a3.sinks.k3.channel = c3
 ```
-share/hadoop/common/lib/hadoop-auth-2.5.0-cdh5.3.6.jar
-share/hadoop/common/lib/commons-configuration-1.6.jar
-share/hadoop/mapreduce1/lib/hadoop-hdfs-2.5.0-cdh5.3.6.jar
-share/hadoop/common/hadoop-common-2.5.0-cdh5.3.6.jar
+
+执行测试
+```sh
+bin/flume-ng agent --conf conf/    \
+--name a3                          \
+--conf-file conf/flume-dir.conf    \
+-Dflume.root.logger==INFO,console
 ```
+
+注意事项：
+1. 不要在监控目录中创建并持续修改文件
+2. 上传完成的文件会以.COMPLETED结尾
+3. 被监控文件夹每600毫秒扫描一次变动
+
+
+
+# 案例：Kafka消费Flume
+
+创建 flume-kafka.conf
+
+```sh
+agent.sources = s1  
+agent.channels = c1
+agent.sinks = k1
+
+agent.sources.s1.type = exec
+agent.sources.s1.command = tail -F /home/yangja/data/flume-kafka.txt
+agent.sources.s1.channels = c1
+
+agent.channels.c1.type = memory
+agent.channels.c1.capacity = 10000
+agent.channels.c1.transactionCapacity = 100
+
+#设置Kafka接收器
+agent.sinks.k1.type = org.apache.flume.sink.kafka.KafkaSink
+#设置Kafka的broker地址和端口号
+agent.sinks.k1.brokerList = 172.16.7.124:9092
+#设置Kafka的Topic 
+agent.sinks.k1.topic = MyTopic
+
+#设置序列化方式
+agent.sinks.k1.serializer.class = kafka.serializer.StringEncoder
+agent.sinks.k1.channel = c1
+```
+
+```sh
+bin/flume-ng agent --conf conf/    \
+--name agent                       \
+--conf-file conf/flume-kafka.conf  \
+-Dflume.root.logger==INFO,console
+```
+
+启动消费者，需要先开启Zookeeper和Kafka：
+
+`bin/zkServer.sh start`
+
+`bin/kafka-server-start.sh config/server.properties &`
+
+`kafka-console-consumer.sh --zookeeper 172.16.7.124:2181 --topic MyTopic --from-beginning`
+
+
+测试：echo helloWorld > flume-kafka.txt
+
+
+
+# 案例：监听上传Hive日志文件到HDFS
 
 创建flume-hdfs.conf文件
 
@@ -147,7 +254,7 @@ a2.sources.r2.shell = /bin/bash -c
 
 # Describe the sink
 a2.sinks.k2.type = hdfs
-a2.sinks.k2.hdfs.path = hdfs://192.168.122.20:8020/flume/%Y%m%d/%H
+a2.sinks.k2.hdfs.path = hdfs://172.16.7.124:9000/flume/%Y%m%d/%H
 #上传文件的前缀
 a2.sinks.k2.hdfs.filePrefix = events-hive-
 #是否按照时间滚动文件夹
@@ -159,7 +266,7 @@ a2.sinks.k2.hdfs.roundUnit = hour
 #是否使用本地时间戳
 a2.sinks.k2.hdfs.useLocalTimeStamp = true
 #积攒多少个Event才flush到HDFS一次
-a2.sinks.k2.hdfs.batchSize = 1000
+a2.sinks.k2.hdfs.batchSize = 100
 #设置文件类型，可支持压缩
 a2.sinks.k2.hdfs.fileType = DataStream
 #多久生成一个新的文件
@@ -184,74 +291,15 @@ a2.sinks.k2.channel = c2
 
 执行监控配置
 
-```
-$ bin/flume-ng agent --conf conf/ --name a2 --conf-file conf/flume-hdfs.conf
-```
-
-
-# 案例三：Flume监听整个目录
-
-配置文件flume-dir.conf
-
 ```sh
-a3.sources = r3
-a3.sinks = k3
-a3.channels = c3
-
-# Describe/configure the source
-a3.sources.r3.type = spooldir
-a3.sources.r3.spoolDir = /opt/modules/cdh/apache-flume-1.5.0-cdh5.3.6-bin/upload
-a3.sources.r3.fileHeader = true
-#忽略所有以.tmp结尾的文件，不上传
-a3.sources.r3.ignorePattern = ([^ ]*\.tmp)
-
-# Describe the sink
-a3.sinks.k3.type = hdfs
-a3.sinks.k3.hdfs.path = hdfs://192.168.122.20:8020/flume/upload/%Y%m%d/%H
-#上传文件的前缀
-a3.sinks.k3.hdfs.filePrefix = upload-
-#是否按照时间滚动文件夹
-a3.sinks.k3.hdfs.round = true
-#多少时间单位创建一个新的文件夹
-a3.sinks.k3.hdfs.roundValue = 1
-#重新定义时间单位
-a3.sinks.k3.hdfs.roundUnit = hour
-#是否使用本地时间戳
-a3.sinks.k3.hdfs.useLocalTimeStamp = true
-#积攒多少个Event才flush到HDFS一次
-a3.sinks.k3.hdfs.batchSize = 1000
-#设置文件类型，可支持压缩
-a3.sinks.k3.hdfs.fileType = DataStream
-#多久生成一个新的文件
-a3.sinks.k3.hdfs.rollInterval = 600
-#设置每个文件的滚动大小
-a3.sinks.k3.hdfs.rollSize = 134217700
-#文件的滚动与Event数量无关
-a3.sinks.k3.hdfs.rollCount = 0
-#最小冗余数
-a3.sinks.k3.hdfs.minBlockReplicas = 1
-
-# Use a channel which buffers events in memory
-a3.channels.c3.type = memory
-a3.channels.c3.capacity = 1000
-a3.channels.c3.transactionCapacity = 100
-
-# Bind the source and sink to the channel
-a3.sources.r3.channels = c3
-a3.sinks.k3.channel = c3
+bin/flume-ng agent --conf conf/   \
+--name a2                         \
+--conf-file conf/flume-hdfs.conf  \
+-Dflume.root.logger==INFO,console
 ```
-
-执行测试
-`$ bin/flume-ng agent --conf conf/ --name a3 --conf-file conf/flume-dir.conf &`
-
-注意事项：
-1. 不要在监控目录中创建并持续修改文件
-2. 上传完成的文件会以.COMPLETED结尾
-3. 被监控文件夹每600毫秒扫描一次变动
 
 
 # reference
 
 http://flume.apache.org/releases/content/1.9.0/FlumeUserGuide.html
-
 
