@@ -31,7 +31,6 @@ tag: Bigdata
 HBase运行在HDFS上，所以HBase中的数据以多副本形式存放，数据也服从分布式存放，数据的恢复也可以得到保障。HMaster和RegionServer也是多副本的。
 
 
-
 ## 架构
 
 
@@ -48,9 +47,11 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 
 * 对Region进行负载均衡，分配到合适的HRegionServer
 
+
 ## ZooKeeper
 
 选举HMaster，对HMaster，HRegionServer进行心跳检测。虽然HBase内置有zookeeper，但一般选择外置独立的Zookeeper集群来监管，效果更佳。
+
 
 ## HRegionServer
 
@@ -75,7 +76,9 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 
 * MemStore : 内存存储，保存当前的数据操作，所以当数据保存在WAL中之后，RegsionServer会在内存中存储键值对
 
-* Region : Hbase表的分片
+* Region : Hbase表的分片，Region是Hbase中分布式存储和负载均衡的最小单元。
+
+![png](/images/posts/allHBase的Region结构图.png)
 
 
 ## 使用场景
@@ -88,12 +91,14 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 * 需要大量的I/O
 * 几十亿列数据，同时在单位时间内有数以千、万记的读写操作
 
+
 ## 相对于Hadoop，HBase存在的必要
 
 * 可以快速检索数据，单纯的Hadoop文件系统HDFS所做不到的。
 * HBase作为列式数据库，有数据库的特性，满足急剧增长的应用负载。
 * HBase可以支持对数据的更新操作。
 * HBase弥补Hadoop不支持实时数据处理的缺陷。
+
 
 
 # 配置
@@ -107,7 +112,7 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 编辑 conf/hbase-env.sh
 ```sh
 export JAVA_HOME=/..
-export HBASE_MANAGES_ZK=true 
+export HBASE_MANAGES_ZK=true    # 使用自带Zookeeper
 ```
 
 编辑 hbase-site.xml，指定HBase数据的存储位置
@@ -228,7 +233,45 @@ java.io.IOException: Could not start ZK at requested port of 2181.  ZK was start
 
 
 
+# HBase 数据库操作
 
+HBase是由row key，column family，column和cell组成。
+row key确定唯一的一行，column family由若干column组成，column是表的字段，cell存储了实际的值或数据。
 
+开启：`bin/start-hbase.sh`
 
+进入：`bin/hbase shell`
+
+```sh
+status  # 数据库状态
+help    # 查看帮助
+list    # 数据库有哪些表
+```
+
+```sh
+create 'student','info' 
+put 'student','1001','info:name', 'yang'
+put 'student','1001','info:sex','male'
+put 'student','1001','info:age','28'
+
+get 'student','1001'
+get 'student','1001','info:name'
+```
+
+```sh
+scan 'student'        # 扫描数据
+scan 'student',{STARTROW=>'1001',STOPROW=>'1007'}  # 设置范围
+describe 'student'   # 表结构
+count 'student'      # 统计行数
+```
+
+```sh
+deleteall 'student','1001'           # 删除某一个rowKey全部的数据
+delete 'student','1001','info:sex'   # 删除掉某个rowKey中某一列的数据
+
+truncate 'student'     # 清空表数据
+
+disable 'student'  # 删除前需设置不可用
+drop 'student'     # 删除表
+```
 
