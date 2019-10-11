@@ -9,6 +9,7 @@ tag: Spark
 
 # shuffle 调优
 
+(待补充)
 
 # 算子调优
 
@@ -32,7 +33,7 @@ mapPartitions 则会把分区中所有数据都导入到函数执行。
 但是也有过出问题的经验，MapPartitions只要一用，直接OOM，内存溢出，崩溃。
 在项目中，先去估算一下RDD的数据量，以及每个partition的量，还有分配给每个executor的内存资源。
 看看一下子内存容纳所有的partition数据，行不行。如果行，可以试一下，能跑通就好。性能肯定是有提升的。
-但是试了一下以后，发现，不行，OOM了，那就放弃吧。
+但是试了以后，发现OOM了，那就放弃吧。
 
 - mapPartitions 出现 OOM 的解决方法：
 将数据切成较多的partition : `repartition(100).mapPartitions(xx)`；

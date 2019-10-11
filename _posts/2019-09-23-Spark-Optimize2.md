@@ -222,6 +222,21 @@ HDFS -> RDD1 -> RDD2 -> RDD3
 4. 为了数据的高可靠性，而且内存充足，可以使用双副本机制(存储级别末尾加上`_2`)
 
 
+## 为什么要 checkpoint
+
+为了保证数据安全性，需要对运行出的中间结果进行 checkpoint，最好将结果 checkpoint 到 hdfs，便于集群所有节点进行访问；checkpoint 之前先进行 cache（persist），将数据放在缓存中。
+
+## 什么时候 checkpoint
+
+在发生 shuffle 之后做 checkpoint
+```java
+sc.setCheckpointDir(“hdfs://XXX/ck”)
+rdd1.cache()
+rdd1.checkpoint()
+```
+
+
+
 
 
 # 广播变量优化
