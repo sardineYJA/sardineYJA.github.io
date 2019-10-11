@@ -78,7 +78,7 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 
 * Region : Hbase表的分片，Region是Hbase中分布式存储和负载均衡的最小单元。
 
-![png](/images/posts/allHBase的Region结构图.png)
+![png](/images/posts/all/HBase的Region结构图.png)
 
 
 ## 使用场景
