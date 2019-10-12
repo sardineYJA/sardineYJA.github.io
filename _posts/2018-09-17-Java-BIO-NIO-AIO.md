@@ -106,6 +106,86 @@ public class BIOClient {
 
 
 
+# 伪异步
+
+由于BIO一个客户端需要一个线程去处理，因此进行优化，后端使用线程池来处理多个客户端的请求接入，形成客户端个数M：线程池最大的线程数N的比例关系，其中M可以远远大于N，通过线程池可以灵活的调配线程资源，设置线程的最大值，防止由于海量并发接入导致线程耗尽。
+
+```java
+ExecutorService executorService = Executors.newCachedThreadPool();
+...
+while(true) {
+    ...   // 只需要将线程加入到线程池即可
+    executorService.execute(new Runnable() {...})
+    ...
+}
+```
+
+
+# NIO
+
+```java
+public class NIOServer {
+    public static void main(String[] args) throws IOException {
+        System.out.println("服务器开启");
+
+        ServerSocketChannel sChannel = ServerSocketChannel.open(); // 创建通道
+        sChannel.configureBlocking(false);                     // 切换成非阻塞模式
+        sChannel.bind(new InetSocketAddress(8888));       // 绑定连接
+        Selector selector = Selector.open();                    // 获取选择器
+        sChannel.register(selector, SelectionKey.OP_ACCEPT);    // 注册指定监听事件
+
+        while (selector.select() > 0) {   // 轮训式 获取选择"已经准备就绪"的事件
+            Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+
+            while (iterator.hasNext()) {
+                SelectionKey sk = iterator.next();    // 获取准备就绪的事件
+                if (sk.isAcceptable()) {
+                    SocketChannel socketChannel = sChannel.accept();  // 获取客户端连接
+                    socketChannel.configureBlocking(false);           // 设置阻塞模式
+                    socketChannel.register(selector, SelectionKey.OP_READ);  // 将通道注册到服务器上
+
+                } else if (sk.isReadable()) {
+                    SocketChannel socketChannel = (SocketChannel)sk.channel();
+                    ByteBuffer buffer = ByteBuffer.allocate(1024);
+                    int len=0;
+                    while ((len=socketChannel.read(buffer)) > 0) {    // 读取数据
+                        buffer.flip();
+                        System.out.println(new String(buffer.array(), 0, len));
+                        buffer.clear();
+                    }
+                }
+            }
+            iterator.remove();
+        }
+        sChannel.close();
+    }
+}
+```
+
+```java
+public class NIOClient {
+    public static void main(String[] args) throws IOException {
+        System.out.println("客户端启动");
+        SocketChannel sChannel = SocketChannel.open(     // 创建管道
+                new InetSocketAddress("127.0.0.1", 8888));
+        sChannel.configureBlocking(false);               // 切换成非阻塞
+        ByteBuffer allocate = ByteBuffer.allocate(1024); // 缓冲区大小
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("输入：");
+        while (scanner.hasNext()) {
+            System.out.println("输入：");
+            String str = scanner.next();
+            allocate.put((new Date().toString()+"\n"+str).getBytes());
+            allocate.flip();
+            sChannel.write(allocate);
+            allocate.clear();
+        }
+        sChannel.close();
+    }
+}
+```
+
 
 
 # reference
