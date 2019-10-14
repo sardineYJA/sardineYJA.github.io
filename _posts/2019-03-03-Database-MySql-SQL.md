@@ -1,13 +1,12 @@
 ---
 layout: post
-title: "MySQL的常用语句"
+title: "MySQL 安装及常用语句"
 date: 2019-03-03
 description: "简单介绍MySQL的常用语句"
 tag: Database
 
 ---
 
-# mysql 
 
 ## 安装
 
@@ -91,6 +90,7 @@ firewall-cmd --state            #查看默认防火墙状态（关闭后显示no
 
 
 # 常用语句
+
 
 ```sql
 show engine;           // 查看当前版本的MySQL支持的存储引擎
@@ -210,4 +210,17 @@ select * from table;
 
  从作用上来说是没有差别的，都是查看是否有记录，一般是作条件查询用的。
  第一个的1是一常量（可以为任意数值），查到的所有行的值都是它，但从效率上来说，1>anycol>\*，因为不用查字典表。
+
+
+## 优化
+
+查找表中的第800000条数据后面的20条数据。如何分页。
+
+方法一：直接通过limit start count分页语句：
+select * from Product limit 800000, 20;
+
+总结：方便，但是对记录很多的表并不适合直接使用。start越大，速度越慢，效率低。
+
+方法二：利用表的覆盖索引来加速分页查询：
+select * from Product where ID > (select ID from Product limit 800000, 1) limit 20
 

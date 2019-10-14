@@ -7,7 +7,7 @@ tag: Java
 
 ---
 
-# JProiler
+# JProfiler
 
 JProfiler监控软件下载安装：https://www.ej-technologies.com/download/jprofiler/files
 
