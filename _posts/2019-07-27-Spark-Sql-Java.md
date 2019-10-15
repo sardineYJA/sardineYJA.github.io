@@ -80,6 +80,10 @@ spark.driver.memory, 512m   // driver的内存
 spark.executor.memory, 512m // 每个executor内存
 ```
 
+spark.sql.warehouse.dir是spark.sql运行hive的默认路径，如果想运行在hdfs上，可以通过这个配置项来实现，但是一定要是部署好的hive才会生效，spark内置的hive是会将元信息放到spark_home/bin目录下
+
+
+
 ## 例子
 
 ```json

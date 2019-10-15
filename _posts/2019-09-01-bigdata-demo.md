@@ -294,6 +294,21 @@ hdfs://172.16.7.124:9000/weibo/Large.txt \
 hdfs://172.16.7.124:9000/weibo/LargeOut
 ```
 
+```
+bin/spark-submit \
+--class test.WeiboFolloerSpark \
+--master spark://172.16.7.124:7077 \
+--executor-memory 16G \
+--total-executor-cores 4 \
+--driver-cores 2 --driver-memory 8g \
+myJar/test-WeiboFolloerSpark-p0.jar \
+hdfs://172.16.7.124:9000/weibo/Small.txt \
+hdfs://172.16.7.124:9000/weibo/LargeOut
+```
+
+> WARN TaskSchedulerImpl: Initial job has not accepted any resources; check your cluster UI to ensure that workers are registered and have sufficient resources
+
+
 
 ## Error 
 
@@ -312,6 +327,10 @@ Spark Web 监控
 
 
 分析原因：flatMapToPair的时候两两之间产生new Tuple();数量过于庞大。本人只是用了一台机器测试。
+
+解决：
+flatMapToPair操作之前调用repartition方法，rdd.repartition(10000)重写分区成10000个，在不增加内存的情况下，通过减少每个Task的大小，以便达到每个Task即使产生大量的对象Executor的内存也能够装得下。
+
 
 进行优化：
 

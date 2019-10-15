@@ -88,6 +88,44 @@ firewall-cmd --state            #查看默认防火墙状态（关闭后显示no
 
 ```
 
+## 免认证登录
+
+> ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using passwor)
+
+问题分析：在安装完数据库之后，没有设置初始密码于是导致使用 mysql -u root -p xxx是无法登录的，因为没有密码，于是需要重新设置密码。
+
+修改mysql的配置文件 /etc/my.cnf   
+
+最后一行添加 `skip-grant-tables` 表示可以跳过权限去登录
+
+重启 mysql 数据库（虚拟机测试，建议直接免认证登录，方便多了）
+
+此时直接命令：mysql 即可登录，而且远程也可直接连接
+
+修改 mysql 表里面的用户，为其设置密码
+
+```sql
+use mysql;
+update user set password=PASSWORD("root123456") where user='root';
+flush privileges;
+```
+
+> Unknown column 'password' in 'field list'
+
+错误分析：新版本mysql采用authentication_string替代了password字段
+
+```sql
+use mysql;
+select user, host, authentication_string from user;    # 查看
+select version() from dual;                            # 查看版本
+select version();                                      # 查看版本
+
+
+update user set authentication_string=PASSWORD("root123456") where user='root';
+flush privileges;
+```
+
+删除 `skip-grant-tables`，重新启动
 
 
 # 常用语句
