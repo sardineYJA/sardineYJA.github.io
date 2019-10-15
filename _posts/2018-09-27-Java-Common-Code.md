@@ -39,11 +39,15 @@ import java.util.Date;
 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 System.out.println(df.format(new Date()));
 // 2019-08-19 17:50:46
-
-import java.sql.Timestamp;
-Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-System.out.println(currentTime);
-// 2019-08-19 17:50:46.452
+System.out.println(df.format(System.currentTimeMillis()));
+```
+```java
+// Date 源码就是System.currentTimeMillis() 单位ms
+// 可以将 new Date() 换成 System.currentTimeMillis() 更好
+public Date()
+{
+this(System.currentTimeMillis());
+}
 ```
 
 ## 批量转码

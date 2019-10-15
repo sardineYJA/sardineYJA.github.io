@@ -96,9 +96,10 @@ System.out.println(pariRdd1.leftOuterJoin(pariRdd2).collect());    // 左连接
 System.out.println(pariRdd1.rightOuterJoin(pariRdd2).collect());   // 有连接
 ```
 
+## RowFactory 和 Row 的使用
 
 ```java
-// Row 和 RowFactory 切分每一行 [[...], [...], [...], ......]
+// [[followee, followers], Row, Row, ......]
 JavaRDD<Row> javaRdd = line.map(new Function<String, Row>() {
     @Override
     public Row call(String v) throws Exception {
@@ -108,9 +109,27 @@ JavaRDD<Row> javaRdd = line.map(new Function<String, Row>() {
         }
         String followee = followee_followers[0];
         String[] followers = followee_followers[1].split(" ");
-        return RowFactory.create(followee, followers[0], followers[1], ...);
+        // [followee, followers] 做为一个Row
+        return RowFactory.create(followee, followers);
     }
+
 });
+
+// 过滤
+JavaRDD<Row> filterRDD = javaRdd.filter(filter -> {
+    return filter != null;
+});
+
+// 测试打印，(String[])row.get(1)需要转换会字符串List
+List<Row> rows = filterRDD.collect();
+for (Row row : rows) {
+    System.out.print(row.get(0) + " : ");
+    String[] followers = (String[])row.get(1);
+    for (String follower : followers) {
+        System.out.print(follower+" ");
+    }
+    System.out.println();
+}
 ```
 
 

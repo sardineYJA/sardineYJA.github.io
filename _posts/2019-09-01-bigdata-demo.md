@@ -163,14 +163,20 @@ github：https://github.com/sardineYJA/Hadoop-MapReduce
 public class WeiboFolloerSpark {
 
     public static void main(String[] args) {
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long startTimeMillis = System.currentTimeMillis();
+
+
+        args = new String[] {"D:\\in\\Small Dataset.txt", "D:\\out2"};
+
         SparkConf sparkConf= new SparkConf()
-                .setAppName("WordCount")
+                .setAppName("WeiboFolloerSpark")
                 .setMaster("local[*]");
         JavaSparkContext jsc = new JavaSparkContext(sparkConf);
+        JavaRDD<String> line = jsc.textFile(args[0]);
 
-        JavaRDD<String> line = jsc.textFile("D:/in/Small Dataset.txt");
-
-        // (646-482,1), (646-485,1)
+        // (646-482,1), (646-485,1), ...
         JavaPairRDD<String, Integer> allPairRdd = line.flatMapToPair(new PairFlatMapFunction<String, String, Integer>() {
             @Override
             public Iterator<Tuple2<String, Integer>> call(String s) throws Exception {
@@ -195,7 +201,7 @@ public class WeiboFolloerSpark {
             }
         });
 
-        // (121,851_1), (851,121_1)
+        // (121,851_2), (851,121_2)
         JavaPairRDD<String, String> pairResult = pairRdd.flatMapToPair(new PairFlatMapFunction<Tuple2<String, Integer>, String, String>() {
             @Override
             public Iterator<Tuple2<String, String>> call(Tuple2<String, Integer> tuple2) throws Exception {
@@ -208,7 +214,7 @@ public class WeiboFolloerSpark {
             }
         });
 
-        // value 进行连接
+        // value 进行连接：324_5 357_3 784_4 .....
         JavaPairRDD<String, String> connPairResult = pairResult.reduceByKey(new Function2<String, String, String>() {
             @Override
             public String call(String s, String s2) throws Exception {
@@ -216,7 +222,7 @@ public class WeiboFolloerSpark {
             }
         });
         
-        // value 切分排序
+        // value 切分排序：324_5 357_3 784_4 .....
         JavaPairRDD<String, String> mapResult = connPairResult.mapToPair(new PairFunction<Tuple2<String, String>, String, String>() {
             @Override
             public Tuple2<String, String> call(Tuple2<String, String> t) throws Exception {
@@ -258,7 +264,12 @@ public class WeiboFolloerSpark {
 
         JavaPairRDD<Integer, String> sortPairRDD = intPairRDD.sortByKey(true);  // 升序
         // 设置为一个分区
-        sortPairRDD.coalesce(1).saveAsTextFile("D://rdd");
+        sortPairRDD.coalesce(1).saveAsTextFile(args[1]);
+
+        long endTimeMillis = System.currentTimeMillis();
+        System.out.println("Start Time : " + df.format(startTimeMillis));
+        System.out.println("End Time : " + df.format(endTimeMillis));
+        System.out.println("Spend Time : " + (endTimeMillis - startTimeMillis)/1000.0 + "s");
     }
 }
 ```
@@ -300,12 +311,15 @@ Spark Web 监控
 > ExecutorLostFailure (executor driver exited caused by one of the running tasks) Reason: Executor heartbeat timed out after 123186 ms
 
 
+分析原因：flatMapToPair的时候两两之间产生new Tuple();数量过于庞大。本人只是用了一台机器测试。
+
+进行优化：
 
 1. driver 内存增大
 
 2. 切分成小文件
 
-3. new Tuple() 换成 字符串
+3. new Tuple() 换成 字符串（怎么统计数量？）
 
 4. 分区
 

@@ -160,8 +160,12 @@ List<Person> pList = personJavaRDD.collect();
 for (Person person : pList) {
     System.out.println(person.name+" : "+person.age);
 }
+
+// JavaRDD<Person> 转 Dataset<Row>
 Dataset<Row> pf = ssc.createDataFrame(personJavaRDD, Person.class);
 pf.show();
+
+// List<Person> 转 Dataset<Row>
 Dataset<Row> pl = ssc.createDataFrame(pList, Person.class);
 pl.show();
 ```
