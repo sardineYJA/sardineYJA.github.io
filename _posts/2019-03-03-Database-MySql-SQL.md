@@ -64,6 +64,7 @@ flush privileges;
 
 > 2003 - Can't connect to MySQL server on ' '(10038)
 
+
 ```sh
 ##Centos7 防火墙打开端口号
 firewall-cmd --zone=public --add-port=3306/tcp --permanent
