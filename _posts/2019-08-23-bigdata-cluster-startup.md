@@ -54,6 +54,19 @@ bin/start-hbase.sh
 bin/kafka-server-start.sh config/server.properties &     (Kafka)
 ```
 
+
+# Linux 命令
+
+```sh
+free -h                    # 内存
+
+systemctl status 程序名    # 状态
+
+netstat -an | grep 端口号  # 端口 
+
+```
+
+
 # 脚本
 
 ## 集群启动脚本

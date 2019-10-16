@@ -168,30 +168,32 @@ public class WeiboFolloerSpark {
         long startTimeMillis = System.currentTimeMillis();
 
 
-        args = new String[] {"D:\\in\\Small Dataset.txt", "D:\\out2"};
+        // args = new String[] {"D:\\in\\Small Dataset.txt", "D:\\out2"};
 
         SparkConf sparkConf= new SparkConf()
-                .setAppName("WeiboFolloerSpark")
-                .setMaster("local[*]");
+                .setAppName("WeiboFolloerSpark");
+                //.setMaster("local[*]");
         JavaSparkContext jsc = new JavaSparkContext(sparkConf);
         JavaRDD<String> line = jsc.textFile(args[0]);
 
         // (646-482,1), (646-485,1), ...
-        JavaPairRDD<String, Integer> allPairRdd = line.flatMapToPair(new PairFlatMapFunction<String, String, Integer>() {
-            @Override
-            public Iterator<Tuple2<String, Integer>> call(String s) throws Exception {
-                String[] followee_followers = s.split(":");
-                String[] followers = followee_followers[1].split(" ");
+        JavaPairRDD<String, Integer> allPairRdd = line
+                .repartition(1000)          // 1000个分区100个Task
+                .flatMapToPair(new PairFlatMapFunction<String, String, Integer>() {
+                    @Override
+                    public Iterator<Tuple2<String, Integer>> call(String s) throws Exception {
+                        String[] followee_followers = s.split(":");
+                        String[] followers = followee_followers[1].split(" ");
 
-                List<Tuple2<String, Integer>> list = new ArrayList<>();
+                        List<Tuple2<String, Integer>> list = new ArrayList<>();
 
-                for (int i = 0; i < followers.length - 1; i++)
-                    for (int j = i+1; j < followers.length; j++) {
-                        list.add(new Tuple2<>(followers[i] + "-" + followers[j], 1));
+                        for (int i = 0; i < followers.length - 1; i++)
+                            for (int j = i+1; j < followers.length; j++) {
+                                list.add(new Tuple2<>(followers[i] + "-" + followers[j], 1));
+                            }
+                        return list.iterator();
                     }
-                return list.iterator();
-            }
-        });
+                });
 
         // 求和 (646-482,3), (646-485,6)
         JavaPairRDD<String, Integer> pairRdd = allPairRdd.reduceByKey(new Function2<Integer, Integer, Integer>() {
@@ -221,7 +223,7 @@ public class WeiboFolloerSpark {
                 return s + " " + s2;
             }
         });
-        
+
         // value 切分排序：324_5 357_3 784_4 .....
         JavaPairRDD<String, String> mapResult = connPairResult.mapToPair(new PairFunction<Tuple2<String, String>, String, String>() {
             @Override
@@ -276,16 +278,14 @@ public class WeiboFolloerSpark {
 
 修改，打包，将含依赖jar上传
 
-```
+```sh
 bin/spark-submit \
 --class test.WeiboFolloerSpark \
 --master spark://172.16.7.124:7077 \
---executor-memory 24G \
---total-executor-cores 4 \
---driver-cores 2 --driver-memory 8g \
+--executor-memory 4G \
+--total-executor-cores 10 \
+--driver-cores 2 --driver-memory 1g \
 myJar/test-WeiboFolloerSpark-with-dependencies.jar \
-```
-```
 hdfs://172.16.7.124:9000/weibo/Small.txt \
 hdfs://172.16.7.124:9000/weibo/SmallOut
 ```
@@ -294,25 +294,20 @@ hdfs://172.16.7.124:9000/weibo/Large.txt \
 hdfs://172.16.7.124:9000/weibo/LargeOut
 ```
 
-```
-bin/spark-submit \
---class test.WeiboFolloerSpark \
---master spark://172.16.7.124:7077 \
---executor-memory 16G \
---total-executor-cores 4 \
---driver-cores 2 --driver-memory 8g \
-myJar/test-WeiboFolloerSpark-p0.jar \
-hdfs://172.16.7.124:9000/weibo/Small.txt \
-hdfs://172.16.7.124:9000/weibo/LargeOut
-```
+
+## 相关错误
 
 > WARN TaskSchedulerImpl: Initial job has not accepted any resources; check your cluster UI to ensure that workers are registered and have sufficient resources
 
+原因分析：将spark-submit的内存核数降低一点
 
 
-## Error 
 
-Large.txt 发生内存溢出
+> Unsupported major.minor version 52.0
+
+原因分析：IDEA 打包jar使用的是jdk1.8，linux系统安装的也是jdk1.8。之前运行，一段一段时间后spark-submit报错，提示spark环境不可运行jdk1.8，说明spark并没有使用安装的jdk1.8，此时需要在spark-env.sh增加`export JAVA_HOME=`，这样既可保证spark-submit提交运行的是1.8。
+
+
 
 > org.apache.spark.rpc.RpcTimeoutException: Futures timed out after [10 seconds]. This timeout is controlled by spark.executor.heartbeatInterval
 
@@ -320,30 +315,41 @@ Large.txt 发生内存溢出
 
 > org.apache.spark.rpc.RpcTimeoutException: Futures timed out after [10 seconds]. This timeout is controlled by spark.executor.heartbeatInterval
 
-
-Spark Web 监控
+Spark Web 监控显示
 
 > ExecutorLostFailure (executor driver exited caused by one of the running tasks) Reason: Executor heartbeat timed out after 123186 ms
 
 
-分析原因：flatMapToPair的时候两两之间产生new Tuple();数量过于庞大。本人只是用了一台机器测试。
+分析原因：Large.txt 数据过大，发生内存溢出，flatMapToPair的时候两两之间产生new Tuple();数量过于庞大。本人只是用了一台机器测试。
 
-解决：
 flatMapToPair操作之前调用repartition方法，rdd.repartition(10000)重写分区成10000个，在不增加内存的情况下，通过减少每个Task的大小，以便达到每个Task即使产生大量的对象Executor的内存也能够装得下。
 
 
-进行优化：
+## 增加分区后的错误
 
-1. driver 内存增大
+> WARN HeartbeatReceiver: Removing executor 0 with no recent heartbeats: 147906 ms exceeds timeout 120000 ms
 
-2. 切分成小文件
+> ERROR TaskSchedulerImpl: Lost executor 0 on 172.16.7.124: Executor heartbeat timed out after 147906 ms
 
-3. new Tuple() 换成 字符串（怎么统计数量？）
+> WARN TaskSetManager: Lost task 4.0 in stage 1.0 (TID 8, 172.16.7.124, executor 0): ExecutorLostFailure (executor 0 exited caused by one of the running tasks) Reason: Executor heartbeat timed out after 147906 ms
 
-4. 分区
+> WARN TaskSetManager: Lost task 1.1 in stage 1.0 (TID 21, 172.16.7.124, executor 1): FetchFailed(null, shuffleId=0, mapId=-1, reduceId=1, message= org.apache.spark.shuffle.MetadataFetchFailedException: Missing an output location for shuffle 0
 
-5. fastutil
 
-6. Kryo序列化
+再增加.persist(StorageLevel.DISK_ONLY()); 进行测试。
+
+```sh
+bin/spark-submit \
+--class test.WeiboFolloerSpark \
+--master spark://172.16.7.124:7077 \
+--executor-memory 4G \
+--total-executor-cores 10 \
+--driver-cores 2 --driver-memory 1g \
+myJar/test.WeiboFolloerSpark-p1000-D.jar \
+hdfs://172.16.7.124:9000/weibo/Large.txt \
+hdfs://172.16.7.124:9000/weibo/lp1000D
+```
+
+
 
 

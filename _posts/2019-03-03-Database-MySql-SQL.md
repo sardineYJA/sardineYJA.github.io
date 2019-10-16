@@ -128,6 +128,7 @@ flush privileges;
 删除 `skip-grant-tables`，重新启动
 
 
+
 # 常用语句
 
 
