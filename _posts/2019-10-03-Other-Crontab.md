@@ -76,6 +76,6 @@ echo -e '数据库备份完成\n'
 find $mysql_back_path -type f -mtime +7 -exec rm {} \;     # 删除7天以上的备份sql
 ```
 
-测试备份数据库：`* * * * * /home/yangja/sh/back_mysql.sh >> /home/yangja/sh/back_mysql.log`
+测试备份数据库：`30 2 * * * /home/yangja/sh/back_mysql.sh >> /home/yangja/sh/back_mysql.log`
 
 

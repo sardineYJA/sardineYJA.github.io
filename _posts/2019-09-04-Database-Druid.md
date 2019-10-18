@@ -8,9 +8,7 @@ tag: Database
 ---
 
 
-
 # Druid 连接池
-
 
 ## 简介
 
@@ -26,6 +24,11 @@ DRUID是阿里巴巴开源平台上一个数据库连接池实现，加入日志
     <groupId>com.alibaba</groupId>
     <artifactId>druid</artifactId>
     <version>1.1.9</version>
+</dependency>
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>5.1.23</version>
 </dependency>
 ```
 
@@ -68,6 +71,16 @@ poolPreparedStatements=false
 maxPoolPreparedStatementPerConnectionSize=200
 ```
 
+```
+driverClassName=com.mysql.jdbc.Driver
+url=jdbc:mysql://172.16.7.124:3306/firstfood?useUnicode=true&characterEncoding=gb2312
+username=root
+password=root123456
+```
+
+有时查询条件有中文时，需要增加编码：characterEncoding=gb2312
+
+
 ## 连接池用法
 
 ```java
@@ -78,8 +91,8 @@ public class DBPoolConnection {
 	static {
 		Properties properties = new Properties();
 		// 读取数据库全部参数
-		properties.load(DBPoolConnection.class.getResourceAsStream("db.properties"));
-		druidDataSource = (DruidDataSource)DruidDataSourceFactory.createDataSource(properties);
+            properties.load(DBPoolConnection.class.getClassLoader().getResourceAsStream("db.properties"));
+            druidDataSource = (DruidDataSource) DruidDataSourceFactory.createDataSource(properties);
 	}
 	// 连接池单例
 	public static synchronized DBPoolConnection getInstance() {
