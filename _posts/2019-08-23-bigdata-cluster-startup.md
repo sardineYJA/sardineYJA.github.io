@@ -7,7 +7,6 @@ tag: Bigdata
 
 ---
 
-
 # 启动命令
 
 ## Hadoop

@@ -7,6 +7,7 @@ tag: Python
 
 ---
 
+
 ```python
 %matplotlib inline
 import numpy as np

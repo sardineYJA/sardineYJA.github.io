@@ -7,6 +7,7 @@ tag: Python
 
 ---
 
+
 # 贝叶斯拼写检查器
 求解：argmaxc P(c|w) -> argmaxc P(w|c)P(c)/P(w)
 P(c)   : 文章出现一个正确拼写词c的频率

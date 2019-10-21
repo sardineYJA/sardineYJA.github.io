@@ -9,6 +9,7 @@ tag: Python
 
 # 简介
 
+
 以前学习过一些python分析的知识和书籍：《python数据分析与挖掘实战》
 
 记录一些python对数据的常用分析以及处理
