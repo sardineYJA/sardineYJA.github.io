@@ -7,10 +7,6 @@ tag: Spark
 
 ---
 
-# shuffle 调优
-
-(待补充)
-
 # 算子调优
 
 ## mapPartitions 替换 map 提高性能
@@ -110,12 +106,9 @@ rdd1.coalesce(10,true)
 ```
 
 
-
-
 # 参考
 
 https://blog.csdn.net/m0_37139189/article/details/100672783
 
-
-
+https://www.cnblogs.com/qiuhong10/p/7762532.html
 
