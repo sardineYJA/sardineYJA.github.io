@@ -491,17 +491,3 @@ public class MyInterceptorProducer {
 ```
 
 
-# Kafka Streams
-
-1. 流式处理框架：Spark Stream, Apache Storm，而Kafka Streams 提供的是一个基于Kafka的流式处理类库
-
-2. 作为类库，方便嵌入程序中，并对应用的打包和部署基本没有任何要求
-
-3. 使用Storm或Spark Streaming时，需为框架本身的进程预留资源，而Kafka作为库类不占用系统资源
-
-4. Kafka本身提供数据持久化
-
-5. Kafka Stream可以在线动态调整并行度
-
-## 样例
-

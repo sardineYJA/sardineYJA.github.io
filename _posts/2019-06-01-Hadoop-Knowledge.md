@@ -34,6 +34,46 @@ HDFS块的大小设置主要取决于磁盘传输速率。
 ![png](/images/posts/all/yarn架构图.PNG)
 
 
+## 资源调度器
+
+yarn-default.xml文件
+```xml
+<property>
+    <description>The class to use as the resource scheduler.</description>
+    <name>yarn.resourcemanager.scheduler.class</name>
+	<value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
+</property>
+```
+
+Hadoop作业调度器主要有三种
+
+- FIFO（先进先出）：job按到达时间排序，有新的服务器节点资源，再分配
+
+- Capacity Scheduler（容量调度）：job按到达时间排序，分多队列并行计算，每个队列采用FIFO
+
+- Fair Scheduler（公平调度）：job按缺额排序，分多队列并行计算，缺额越大越优先
+
+
+
+## 工作机制
+
+shuffle机制
+![png](/images/posts/all/hadoop的shuffle机制图.PNG)
+
+MapTask工作机制
+![png](/images/posts/all/hadoop的MapTask工作机制.PNG)
+
+ReduceTask工作机制
+![png](/images/posts/all/hadoop的ReduceTask工作机制.PNG)
+
+
+总结：
+
+- Read --> Map --> Collect --> Spill(快速排序) --> Combine --> Copy --> Merge(归并排序) --> Reduce
+
+- 从Map端拷贝到Reduce端的数据都是局部排序的，所以很适合归并排序
+
+
 ## 启动
 
 1. 第一次启动需要格式化NameNode:`hdfs namenode -format`
@@ -101,37 +141,6 @@ bin/hadoop fs 具体命令 或者 bin/hdfs dfs 具体命令
 4. SecondaryNameNode定期进行FsImage和Edits的合并
 
 
-## NameNode故障处理
-
-恢复数据方法：将SecondaryNameNode中数据拷贝到NameNode存储数据的目录
-1. kill -9 NameNode
-2. 删除NameNode数据：`rm -rf hadoop-2.7.2/data/tmp/dfs/name/*`
-3. 拷贝数据：`scp -r root@hadoop103:/.../dfs/namesecondary/* ./name/ `
-4. 注意NameNode在hadoop101，SecondaryNameNode在hadoop103
-5. 重启：`sbin/hadoop-daemon.sh start namenode`
-
-
-## 增加新节点
-
-1. ip和hostname的修改
-2. /etc/hosts文件的修改
-3. Java和hadoop安装
-4. hadoop配置文件的同步
-5. 直接启动DataNode
-```
-[hadoop105]$ sbin/hadoop-daemon.sh start datanode
-[hadoop105]$ sbin/yarn-daemon.sh start nodemanager
-```
-
-
-## distcp 分布式拷贝
-
-用于大规模集群内部和集群之间拷贝的工具。它使用Map/Reduce实现文件分发，错误处理和恢复，以及报告生成。
-hadoop distcp dir1 dir2 可用来代替scp，但又有所不同，分为如下两种情况：
-1. dir2 不存在，则新建dir2，dir1下文件全部复制到dir2
-2. dir2 存在，则目录dir1被复制到dir2下，形成dir2/dir1结构，这样的差异原因是为了避免直接覆盖原有目录文件。可以使用-overwrite，保持同样的目录结构同时覆盖原有文件。
-
-[hadoop101]$ `bin/hadoop distcp hdfs://haoop101:9000/test hdfs://hadoop102:9000/`
 
 
 

@@ -41,6 +41,8 @@ tag: Bigdata
 * Pig：基于Hadoop的数据流系统
 由yahoo!开源，设计动机是提供一种基于MapReduce的ad-hoc(计算在query时发生)数据分析工具。其定义了一种数据流语言—Pig Latin，将脚本转换为MapReduce任务在Hadoop上执行，通常用于进行离线分析。
 
+* Logstash：一个开源数据收集引擎，具有实时管道功能。Logstash可以动态地将来自不同数据源的数据统一起来，并将数据标准化到你所选择的目的地。
+
 ## 版本下载
 
 * Apache版本直接下载：http://archive.apache.org/dist/

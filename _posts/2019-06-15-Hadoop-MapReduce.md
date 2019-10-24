@@ -388,17 +388,23 @@ public void run(Context context) throws IOException, InterruptedException {
 
 # 优化
 
-
 ## 数据倾斜
 
 大量的相同key被partition分配到一个分区里，map /reduce程序执行时，reduce节点大部分执行完毕，但是有一个或者几个reduce节点运行很慢，导致整个程序的处理时间很长.
 
-1. 增加jvm内存
-2. 增加reduce
-3. 自定义分区
-4. 重写设计key
-5. 使用Combiner合并
-6. Join尽量使用Map Join
+- 自定义分区，减少数据倾斜
+
+- 为 job 添加一个 Combiner，可以大大的减少shuffer阶段的maoTask拷贝过来给远程的   reduce task的数据量
+
+- Join尽量使用Map Join
+
+- 数据输入前合并小文件
+
+- 减少溢写（Spill）次数：通过调整io.sort.mb及sort.spill.percent参数值，增大触发Spill的内存上限，减少Spill次数，从而减少磁盘IO。
+
+- 减少合并（Merge）次数：通过调整io.sort.factor参数，增大Merge的文件数目，减少Merge的次数，从而缩短MR处理时间。
+
+
 
 ## 参数调优
 
@@ -449,9 +455,6 @@ yarn.scheduler.maximum-allocation-vcores
 yarn.nodemanager.resource.memory-mb   	
 给Containers分配的最大物理内存，默认值：8192
 ```
-
-
-
 
 ## hdfs小文件处理
 
@@ -519,7 +522,9 @@ RecordWriter 自定义OutputFormat
 Partitioner 分区
 
 
-# 参考
+# reference
+
+https://blog.csdn.net/qq_30281559/article/details/89811543
 
 [代码地址](https://github.com/sardineYJA/Hadoop-MapReduce)
 
