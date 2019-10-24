@@ -287,9 +287,9 @@ client.admin().indices().prepareDelete("blog").get();
 ```java
 // json -> 新建文档
 String json = "{" + "\"id\":\"1\"," + "\"title\":\"基于Lucene的搜索服务器\","
-	+ "\"content\":\"它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口\"" + "}";
+		+ "\"content\":\"它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口\"" + "}";
 // 创建文档
-IndexResponse indexRespnse = client.prepareIndex("blog", "article", "1").setSource(json).execute().actionGet();
+IndexResponse indexResponse = client.prepareIndex("blog", "article", "1").setSource(json).execute().actionGet();
 
 
 // map -> 新建文档
@@ -298,17 +298,17 @@ map.put("id", "2");
 map.put("title", "基于Lucene的搜索服务器");
 map.put("content", "它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口");
 // 创建文档
-IndexResponse indexRespnse = client.prepareIndex("blog", "article", "2").setSource(map).execute().actionGet();
+indexResponse = client.prepareIndex("blog", "article", "2").setSource(map).execute().actionGet();
 
 
 // 通过es自带类构件json
 XContentBuilder builder = XContentFactory.jsonBuilder().startObject()
-	.field("id", 3)
-	.field("title", "基于Lucene的搜索服务器")
-	.field("content", "它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。")
-	.endObject();
+		.field("id", "3")
+		.field("title", "基于Lucene的搜索服务器")
+		.field("content", "它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口")
+		.endObject();
 // 创建文档
-IndexResponse indexRespnse = client.prepareIndex("blog", "article", "3").setSource(builder).execute().actionGet();
+indexResponse = client.prepareIndex("blog", "article", "3").setSource(builder).execute().actionGet();
 
 
 // 打印返回结果
@@ -328,10 +328,10 @@ System.out.println(response.getSourceAsString());
 
 // 查询文档-多个索引
 MultiGetResponse mresponse = client.prepareMultiGet()
-	.add("blog", "article", "1")
-	.add("blog", "article", "2", "3")
-	.add("blog", "article", "2")
-	.get();
+		.add("blog", "article", "1")
+		.add("blog", "article", "2", "3", "1")
+		.add("blog", "article", "2")
+		.get();
 for (MultiGetItemResponse item: mresponse) {
 	GetResponse getResponse = item.getResponse();
 	if(getResponse.isExists()) {
@@ -343,18 +343,19 @@ for (MultiGetItemResponse item: mresponse) {
 ## 更新文档
 
 ```java
-UpdateRequest  updateRequest = new UpdateRequest();
+// 创建更新数据的请求对象
+UpdateRequest updateRequest = new UpdateRequest();
 updateRequest.index("blog");
 updateRequest.type("article");
-updateRequest.id("id");
+updateRequest.id("3");
 
-updateRequest.doc(XContentFactory.jsonBuilder().startObject())
-	// 对没有的字段添加，对已有的字段替换
+updateRequest.doc(XContentFactory.jsonBuilder().startObject()
+	// 对没有的字段添加, 对已有的字段替换
 	.field("title", "基于Lucene的搜索服务器")
-	.field("content","它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。大数据前景无限")
-	.field("createDate", "2017-8-22")
-	.endObject());
+	.field("content", "它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。大数据前景无限")
+	.field("createDate", "2017-8-22").endObject());
 
+// 获取更新后的值
 UpdateResponse indexResponse = client.update(updateRequest).get();
 
 // 打印返回的结果
@@ -380,8 +381,8 @@ UpdateRequest upsert = new UpdateRequest("blog", "article", "5")
 	.doc(XContentFactory.jsonBuilder().startObject()
 		.field("user", "yangja")
 		.endObject())
-	.upsert(indexRequest)；  // 找不到则添加IndexRequest内容
-	
+	.upsert(indexRequest);  // 找不到则添加IndexRequest内容
+
 client.update(upsert).get();
 ```
 
@@ -448,36 +449,6 @@ while(iterator.hasNext()) {
 	SearchHit searchHit = iterator.next();
 	System.out.println(searchHit.getSourceAsString());
 }
-```
-
-## 映射
-
-```java
-XContentBuilder builder = XContentFactory.jsonBuilder()
-	.startObject()
-		.startObject("article")
-			.startObject("properties")
-				.startObject("id")
-					.field("type", "string")
-					.field("store", "yes")
-				.endObject()
-				.startObject("title")
-					.field("type", "string")
-					.field("store", "no")
-				.endObject()
-				.startObject("content")
-					.field("type", "string")
-					.field("store", "yes")
-				.endObject()
-			.endObject()
-		.endObject()
-	.endObject();
-
-PutMappingRequest mapping = Requests.putMappingRequest("blog4")
-	.type("article")
-	.source(builder);
-
-client.admin().indices().putMapping(mapping).get();
 ```
 
 # reference
