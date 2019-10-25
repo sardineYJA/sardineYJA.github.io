@@ -133,15 +133,34 @@ bin/hadoop fs 具体命令 或者 bin/hdfs dfs 具体命令
 4. DataNode传输数据
 
 
-## NameNode和SecondaryNameNode
+## NameNode和SecondaryNameNode 的 Checkpoint 机制
 
-1. NameNode(元数据)存放在内存
-2. 元数据备份文件FsImage存在磁盘
-3. 元数据的操作追加到Edits文件
-4. SecondaryNameNode定期进行FsImage和Edits的合并
+第一阶段：NameNode启动
 
+1. 第一次启动NameNode格式化后，创建Fsimage和Edits文件。如果不是第一次启动，直接加载编辑日志和镜像文件到内存。
 
+2. 客户端对元数据进行增删改的请求。
 
+3. NameNode记录操作日志，更新滚动日志。
 
+4. NameNode在内存中对数据进行增删改。
+
+第二阶段：Secondary NameNode工作
+
+1. Secondary NameNode询问NameNode是否需要CheckPoint。直接带回NameNode是否检查结果。
+
+2. Secondary NameNode请求执行CheckPoint。
+
+3. NameNode滚动正在写的Edits日志。
+
+4. 将滚动前的编辑日志和镜像文件拷贝到Secondary NameNode。
+
+5. Secondary NameNode加载编辑日志和镜像文件到内存，并合并。
+
+6. 生成新的镜像文件fsimage.chkpoint。
+
+7. 拷贝fsimage.chkpoint到NameNode。
+
+8. NameNode将fsimage.chkpoint重新命名成fsimage。
 
 

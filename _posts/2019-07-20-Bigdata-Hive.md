@@ -36,6 +36,22 @@ Hive通过给用户提供的一系列交互接口，接收到用户的指令(SQL
 Hive暴力扫描整个数据，因而访问延迟较高，Hive不适合在线数据查询。但是用于MapReduce，Hive可以并行访问数据，在大数据量体现优势。
 
 
+## SQL转化为MapReduce
+
+- Antlr定义SQL的语法规则，完成SQL词法，语法解析，将SQL转化为抽象语法树AST Tree
+
+- 遍历AST Tree，抽象出查询的基本组成单元QueryBlock
+
+- 遍历QueryBlock，翻译为执行操作树OperatorTree
+
+- 逻辑层优化器进行OperatorTree变换，合并不必要的ReduceSinkOperator，减少shuffle数据量
+
+- 遍历OperatorTree，翻译为MapReduce任务
+
+- 物理层优化器进行MapReduce任务的变换，生成最终的执行计划
+
+
+
 # 安装
 
 ## hive
@@ -158,4 +174,7 @@ set mapred.reduce.tasks;      查看具体某一项
 set mapred.reduce.tasks=100;  修改某一项（仅此次有效）  
 ```
 
+# reference
+
+https://blog.csdn.net/u010738184/article/details/70893161
 
