@@ -19,15 +19,86 @@ tag: Spark
 shuffle的读写都是昂贵的，如果这两个值过大，应该重构应用代码或者调整Spark参数减少Shuffle。
 
 
-# shuffle 调优
-
 ## ShuffleManager发展概述
 
-在Spark的源码中，负责shuffle过程的执行、计算和处理的组件主要就是ShuffleManager，也即shuffle管理器。而随着Spark的版本的发展，ShuffleManager也在不断迭代，变得越来越先进。
+Spark 0.8及以前 Hash Based Shuffle
 
-在Spark 1.2以前，默认的shuffle计算引擎是HashShuffleManager。HashShuffleManager有着一个非常严重的弊端，就是会产生大量的中间磁盘文件，进而由大量的磁盘IO操作影响了性能。
+Spark 0.8.1 为Hash Based Shuffle引入File Consolidation机制
 
-因此在Spark 1.2以后的版本中，默认的ShuffleManager改成了SortShuffleManager。SortShuffleManager相较于HashShuffleManager来说，有了一定的改进。主要就在于，每个Task在进行shuffle操作时，虽然也会产生较多的临时磁盘文件，但是最后会将所有的临时文件合并（merge）成一个磁盘文件，因此每个Task就只有一个磁盘文件。在下一个stage的shuffle read task拉取自己的数据时，只要根据索引读取每个磁盘文件中的部分数据即可。
+Spark 0.9 引入ExternalAppendOnlyMap
+
+Spark 1.1 引入Sort Based Shuffle，但默认仍为Hash Based Shuffle
+
+Spark 1.2 默认的Shuffle方式改为Sort Based Shuffle
+
+Spark 1.4 引入Tungsten-Sort Based Shuffle
+
+Spark 1.6 Tungsten-sort并入Sort Based Shuffle
+
+Spark 2.0 Hash Based Shuffle退出历史舞台
+
+Spark 2.2.x Spark ShuffleManager 分为HashShuffleManager和SortShuffleManager。在普通模式下，shuffle过程中会发生排序行为；Spark可以根据业务场景需要进行ShuffleManager选择--Hash Shuffle Manager / Sort ShuffleManager（普通模式和bypass模式）。
+
+
+## HashShuffle
+
+HashShuffleManager有着一个非常严重的弊端，就是会产生大量的中间磁盘文件，进而由大量的磁盘IO操作影响了性能。
+
+![png](/images/posts/all/Spark的HashShuffle.png)
+
+参数：
+```sh
+spark.shuffle.manager	hash
+spark.shuffle.consolidateFiles	false
+```
+
+Map任务会为每个Reduce创建对应的bucket，Map产生的结果会根据设置的partitioner得到对应的bucketId，然后填充到相应的bucket中去。bucket其实对应磁盘上的一个文件，Map的结果写到每个bucket中其实就是写到那个磁盘文件中，这个文件也被称为blockFile。
+
+![png](/images/posts/all/Spark的HashShuffle改进.png)
+
+参数：
+```sh
+spark.shuffle.manager	hash
+spark.shuffle.consolidateFiles	true
+```
+
+开启consolidation，改进HashShuffle，减少中间文件
+
+## SortShuffle
+
+参数：
+```sh
+spark.shuffle.manager	sort
+spark.shuffle.sort.bypassMergeThreshold	默认200
+```
+
+![png](/images/posts/all/Spark的SortShuffleManager.png)
+
+![png](/images/posts/all/Spark的SortShuffleManager的bypass.png)
+
+bypass模式与未经优化的 HashShuffleManager是一摸一样额，只是最后多了一了merge的操作，产生的文件包括一个盘文件和一个索引文件。
+
+SortShuffleManager相较于HashShuffleManager来说，有了一定的改进。
+主要就在于，每个Task在进行shuffle操作时，虽然也会产生较多的临时磁盘文件，但是最后会将所有的临时文件合并（merge）成一个磁盘文件，因此每个Task就只有一个磁盘文件。
+在下一个stage的shuffle read task拉取自己的数据时，只要根据索引读取每个磁盘文件中的部分数据即可。
+
+SortShuffle 类似下面：
+
+假如有100亿条数据，但是内存只有1M，但是磁盘很大，现在要对100亿条数据进行排序，1M内存只能装进1亿条数据，每次都只能对这1亿条数据进行排序，排好序后输出到磁盘，总共输出100个文件，最后怎么把这100个文件进行merge成一个全局有序的大文件。
+可以每个文件（有序的）都取一部分头部数据最为一个buffer，并且把这100个 buffer放在一个堆里面，进行堆排序，比较方式就是对所有堆元素（buffer）的head元素进行比较大小，然后不断的把每个堆顶的 buffer的head元素pop出来输出到最终文件中，然后继续堆排序，继续输出。
+如果哪个buffer空了，就去对应的文件中继续补充一部分数据。最终就得到一个全局有序的大文件。
+
+
+
+##  Hadoop的MapReduce Shuffle和Spark Shuffle差别总结如下：
+
+- 一个落盘，一个不落盘，spark就是为了解决mr落盘导致效率低下的问题而产生的，原理还是mr的原理，只是shuffle放在内存中计算。
+
+- Hadoop的有一个Map完成，Reduce便可以去fetch数据了，不必等到所有Map任务完成，而Spark的必须等到父stage完成，也就是父stage的map操作全部完成才能去fetch数据。
+
+- Hadoop的Shuffle是sort-base的，那么不管是Map的输出，还是Reduce的输出，都是partion内有序的，而spark hash不要求这一点。
+
+- Hadoop的Reduce要等到fetch完全部数据，才将数据传入reduce函数进行聚合，而spark是一边fetch一边聚合。
 
 
 # shuffle相关参数调优

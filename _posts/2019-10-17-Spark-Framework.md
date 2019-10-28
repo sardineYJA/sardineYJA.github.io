@@ -8,8 +8,6 @@ tag: Spark
 ---
 
 
-# Spark 框架
-
 ## 通信架构
 
 Spark 2, Spark 已经完全抛弃 Akka，全部使用Netty
@@ -56,4 +54,87 @@ Spark 2, Spark 已经完全抛弃 Akka，全部使用Netty
 
 9. 此时如果有用户提交Spark程序，Master需要协调启动Driver；而Worker端收到成功注册响应后，开始周期性向Master发送心跳
 
+
+## Submit 提交任务交互流程
+
+![png](/images/posts/all/Spark的Submit提交任务交互流程.png)
+
+1. 应用提交(橙色) 
+2. --> 启动Driver进程(紫色) 
+3. --> 注册Application(红色) 
+4. --> 启动Executor进程(蓝色) 
+5. --> 启动Task执行(粉色) 
+6. --> Task运行完成(绿色)
+
+## 橙色：提交用户Spark程序
+
+1. 用户spark-submit脚本提交一个Spark程序，会创建一个ClientEndpoint对象，该对象负责与Master通信交互
+
+2. ClientEndpoint向Master发送一个RequestSubmitDriver消息，表示提交用户程序
+
+3. Master收到RequestSubmitDriver消息，向ClientEndpoint回复SubmitDriverResponse，表示用户程序已经完成注册
+
+4. ClientEndpoint向Master发送RequestDriverStatus消息，请求Driver状态
+
+5. 如果当前用户程序对应的Driver已经启动，则ClientEndpoint直接退出，完成提交用户程序
+
+## 紫色：启动Driver进程
+
+1. Maser内存中维护着用户提交计算的任务Application，每次内存结构变更都会触发调度，向Worker发送LaunchDriver请求
+
+2. Worker收到LaunchDriver消息，会启动一个DriverRunner线程去执行LaunchDriver的任务
+
+3. DriverRunner线程在Worker上启动一个新的JVM实例，该JVM实例内运行一个Driver进程，该Driver会创建SparkContext对象
+
+## 红色：注册Application
+
+1. 创建SparkEnv对象，创建并管理一些数基本组件
+
+2. 创建TaskScheduler，负责Task调度
+
+3. 创建StandaloneSchedulerBackend，负责与ClusterManager进行资源协商
+
+4. 创建DriverEndpoint，其它组件可以与Driver进行通信
+
+5. 在StandaloneSchedulerBackend内部创建一个StandaloneAppClient，负责处理与Master的通信交互
+
+6. StandaloneAppClient创建一个ClientEndpoint，实际负责与Master通信
+
+7. ClientEndpoint向Master发送RegisterApplication消息，注册Application
+
+8. Master收到RegisterApplication请求后，回复ClientEndpoint一个RegisteredApplication消息，表示已经注册成功
+
+## 蓝色：启动Executor进程
+
+1. Master向Worker发送LaunchExecutor消息，请求启动Executor；同时Master会向Driver发送ExecutorAdded消息，表示Master已经新增了一个Executor（此时还未启动）
+
+2. Worker收到LaunchExecutor消息，会启动一个ExecutorRunner线程去执行LaunchExecutor的任务
+
+3. Worker向Master发送ExecutorStageChanged消息，通知Executor状态已发生变化
+
+4. Master向Driver发送ExecutorUpdated消息，此时Executor已经启动
+
+## 粉色：启动Task执行
+
+1. StandaloneSchedulerBackend启动一个DriverEndpoint
+
+2. DriverEndpoint启动后，会周期性地检查Driver维护的Executor的状态，如果有空闲的Executor便会调度任务执行
+
+3. DriverEndpoint向TaskScheduler发送Resource Offer请求
+
+4. 如果有可用资源启动Task，则DriverEndpoint向Executor发送LaunchTask请求
+
+5. Executor进程内部的CoarseGrainedExecutorBackend调用内部的Executor线程的launchTask方法启动Task
+
+6. Executor线程内部维护一个线程池，创建一个TaskRunner线程并提交到线程池执行
+
+## 绿色：Task运行完成
+
+1. Executor进程内部的Executor线程通知CoarseGrainedExecutorBackend，Task运行完成
+
+2. CoarseGrainedExecutorBackend向DriverEndpoint发送StatusUpdated消息，通知Driver运行的Task状态发生变更
+
+3. StandaloneSchedulerBackend调用TaskScheduler的updateStatus方法更新Task状态
+
+4. StandaloneSchedulerBackend继续调用TaskScheduler的resourceOffers方法，调度其他任务运行
 
