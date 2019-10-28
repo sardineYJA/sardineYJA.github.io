@@ -89,7 +89,6 @@ SortShuffle 类似下面：
 如果哪个buffer空了，就去对应的文件中继续补充一部分数据。最终就得到一个全局有序的大文件。
 
 
-
 ##  Hadoop的MapReduce Shuffle和Spark Shuffle差别总结如下：
 
 - 一个落盘，一个不落盘，spark就是为了解决mr落盘导致效率低下的问题而产生的，原理还是mr的原理，只是shuffle放在内存中计算。
@@ -99,6 +98,8 @@ SortShuffle 类似下面：
 - Hadoop的Shuffle是sort-base的，那么不管是Map的输出，还是Reduce的输出，都是partion内有序的，而spark hash不要求这一点。
 
 - Hadoop的Reduce要等到fetch完全部数据，才将数据传入reduce函数进行聚合，而spark是一边fetch一边聚合。
+
+
 
 
 # shuffle相关参数调优
