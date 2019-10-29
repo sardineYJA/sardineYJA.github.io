@@ -29,11 +29,7 @@ tag: Bigdata
 
 5. 效率比较低下，调优较难
 
-
-Hive通过给用户提供的一系列交互接口，接收到用户的指令(SQL)，使用自己的Driver，结合元数据(MetaStore)，将这些指令翻译成MapReduce，提交到Hadoop中执行，最后，将执行返回的结果输出到用户交互接口。
-
-
-Hive暴力扫描整个数据，因而访问延迟较高，Hive不适合在线数据查询。但是用于MapReduce，Hive可以并行访问数据，在大数据量体现优势。
+6. Hive暴力扫描整个数据，因而访问延迟较高
 
 
 ## SQL转化为MapReduce
@@ -50,6 +46,12 @@ Hive暴力扫描整个数据，因而访问延迟较高，Hive不适合在线数
 
 - 物理层优化器进行MapReduce任务的变换，生成最终的执行计划
 
+
+## hive内部表和外部表的区别
+
+- 内部表：加载数据到hive所在的hdfs目录，删除时，元数据和数据文件都删除 
+
+- 外部表：不加载数据到hive所在的hdfs目录，删除时，只删除表结构。
 
 
 # 安装
@@ -152,8 +154,8 @@ hive-site.xml增加显示当前数据库，表头信息
 </property>
 
 <property>
-	<name>hive.cli.print.current.db</name>
-	<value>true</value>
+        <name>hive.cli.print.current.db</name>
+        <value>true</value>
 </property>
 ```
 
@@ -174,7 +176,223 @@ set mapred.reduce.tasks;      查看具体某一项
 set mapred.reduce.tasks=100;  修改某一项（仅此次有效）  
 ```
 
+
+
+# 操作
+
+## 复杂类型
+
+Hive有三种复杂数据类型Array、Map 和 Struct
+
+```sql
+create table test(
+        name string,           -- 名字
+        friends array<string>, -- ["好友1" , "好友2"]
+        children map<string, int>,  -- {"A":10, "B":20}
+        address strcut<street:string, city:string> -- {"street":"jiedao", "city":"shenzhen"}
+)
+row format delimited fields terminated by ',' -- 分隔符
+collection items terminated by '_'            -- map struct array 的分隔符
+map keys terminated by ':'                    -- map 中的key与value分隔符
+lines terminated by '\n';                     -- 行分隔符
+```
+
+数据格式：
+```
+songsong,bingbing_lili,xiao song:18_xiaoxiao song:19,hui long guan_beijing
+yangyang,caicai_susu,xiao yang:18_xiaoxiao yang:19,chao yang_beijing
+```
+
+导入数据与查看：
+```sql
+load data local inpath `/data/1.txt` into table test;
+select friends[1], children['xiao song'], address.city from test name ="songsong";
+```
+
+## 类型转化
+
+隐式类型转换规则
+
+- 任何整数类型都可以隐式地转换为一个范围更广的类型
+- 所有整数类型、FLOAT和STRING类型都可以隐式地转换成DOUBLE
+- TINYINT、SMALLINT、INT都可以转换为FLOAT
+- BOOLEAN类型不可以转换为任何其它的类型
+
+使用CAST操作显示进行数据类型转换
+
+- 例如CAST('1' AS INT)将把字符串'1' 转换成整数1；
+- 如果强制类型转换失败，如执行CAST('X' AS INT)，表达式返回空值 NULL。
+
+
+# 表
+
+```sql
+-- 创建表
+CREATE [EXTERNAL] TABLE [IF NOT EXISTS] table_name 
+[(col_name data_type [COMMENT col_comment], ...)] 
+[COMMENT table_comment] 
+[PARTITIONED BY (col_name data_type [COMMENT col_comment], ...)] 
+[CLUSTERED BY (col_name, col_name, ...) 
+[SORTED BY (col_name [ASC|DESC], ...)] INTO num_buckets BUCKETS] 
+[ROW FORMAT row_format] 
+[STORED AS file_format] 
+[LOCATION hdfs_path]
+```
+
+- EXTERNAL 创建一个外部表，在建表的同时指定一个指向实际数据的路径（LOCATION），Hive创建内部表时，会将数据移动到数据仓库指向的路径；若创建外部表，仅记录数据所在的路径，不对数据的位置做任何改变。
+
+- COMMENT 为表和列添加注释
+
+- PARTITIONED BY 创建分区表
+
+- CLUSTERED BY 创建分桶表
+
+- SORTED BY 不常用
+
+- STORED AS 指定存储文件类型：SEQUENCEFILE（二进制序列文件）、TEXTFILE（文本）、RCFILE（列式存储格式文件）
+
+- LOCATION ：指定表在HDFS上的存储位置。
+
+## 内部表，外部表
+
+默认创建的表都是所谓的管理表，有时也被称为内部表。
+因为这种表，Hive会（或多或少地）控制着数据的生命周期。
+Hive默认情况下会将这些表的数据存储在由配置项`hive.metastore.warehouse.dir`
+(例如，/user/hive/warehouse)所定义的目录的子目录下。 
+当删除一个管理表时，Hive也会删除这个表中数据。管理表不适合和其他工具共享数据。
+
+外部表，Hive并非认为其完全拥有这份数据。删除该表并不会删除掉这份数据，不过描述表的元数据信息会被删除掉。
+
+
+``` sql
+desc formatted 表名;   -- 查看表的类型
+alter table 表名 set tblproperties('EXTERNAL'='TRUE');  -- 修改成外部表
+-- 注意：('EXTERNAL'='TRUE')和('EXTERNAL'='FALSE')为固定写法，区分大小写！
+```
+
+## 分区表
+
+分区表实际上就是对应一个HDFS文件系统上的独立的文件夹，该文件夹下是该分区所有的数据文件。Hive中的分区就是分目录，把一个大的数据集根据业务需要分割成小的数据集。在查询时通过WHERE子句中的表达式选择查询所需要的指定的分区，这样的查询效率会提高很多。
+
+```sql
+create table dept_partition(
+deptno int, dname string, loc string  -- 字段会增加一个 month
+)
+partitioned by (month string) -- 创建表时，根据字段分成不同目录。
+row format delimited fields terminated by '\t';
+
+load data local inpath '/../2.txt' into table 表名 partition(month='201909');
+-- 将数据导入到目标分区
+
+select * from dept_partition where month='201909'
+union
+select * from dept_partition where month='201908'
+-- 多个分区联合查询
+
+alter table 表名 add partition(month="201907");
+-- 增加分区
+
+alter table 表名 drop partition(month="201907");
+alter table 表名 drop partition(month="201907"), partition(month="201908");
+-- 删除分区
+
+show partitions 表名;   -- 查看分区数
+desc formatted 表名;    -- 查看分区表结构
+```
+
+二级分区表：
+```sql
+create table dept_partition2(
+        deptno int, dname string, loc string
+)
+partitioned by (month string, day string)
+row format delimited fields terminated by '\t';
+load data local inpath '/.../3.txt' into table 表名 partition(month='201709', day='13');
+```
+
+## 数据直接上传到分区目录
+
+```sql
+dfs -mkdir -p /user/hive/warehouse/表名/month=201709/day=12;
+dfs -put /.../1.txt  /user/hive/warehouse/表名/month=201709/day=12;
+msck repair table 表名;     -- 修复命令 
+```
+
+# 其他
+
+## RLIKE
+
+RLIKE子句是Hive中这个功能的一个扩展，其可以通过Java的正则表达式
+
+`select * from person where name RLIKE '[a]';`  名字含a的
+
+## NVL
+
+NVL：给值为NULL的数据赋值，它的格式是NVL(字段, 代替值)
+`select nvl(name, -1) from person;` 返回name，空则返回-1
+
+## case 字段 when
+
+```sql
+select 
+  sum(case sex when '男' then 1 else 0 end) male_count,
+  sum(case sex when '女' then 1 else 0 end) female_count
+from person;
+```
+
+## 排序
+
+order by
+
+sort by : 每个Reducer内部排序，对全局结果集来说不是排序
+
+distribute by : 分区排序，Hive要求DISTRIBUTE BY语句要写在SORT BY语句之前
+
+cluster by : 相当于distribute by和sorts by对同一字段排序。但是排序只能是升序排序，不能指定排序规则为ASC或者DESC。
+
+
+## 分桶表
+
+分区针对的是数据的存储路径；分桶针对的是数据文件
+
+分区提供一个隔离数据和优化查询的便利方式；分桶是将数据集分解成更容易管理的若干部分的技术
+
+需要设置：
+```sql
+set hive.enforce.bucketing=true;
+set mapreduce.job.reduces=-1;
+```
+
+```sql
+create table 表名(id int, name string)
+clustered by(id) -- 分桶表
+into 4 buckets   -- 4个桶
+row format delimited fields terminated by '\t';
+
+desc formatted 表名;  -- 查看表结构
+load data local inpath '/../1.txt' into table 表名;
+```
+
+
+# 函数
+
+```sql
+show functions;     -- 查看自带函数
+desc function max;  -- 查看max用法
+desc function extended max;  -- 详细信息
+```
+
+## 自定义函数
+
+1. 继承org.apache.hadoop.hive.ql.UDF
+
+2. 需要实现evaluate函数，evaluate函数支持重载
+
+
+
 # reference
 
 https://blog.csdn.net/u010738184/article/details/70893161
+
+
 

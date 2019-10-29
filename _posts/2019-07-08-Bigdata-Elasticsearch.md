@@ -98,8 +98,7 @@ vm.max_map_count=655360
 
 13. 打开Web界面：http://172.16.7.124:9200
 
-
-创建一个索引myfulltext：curl -XPUT http://172.16.7.124:9200/myfulltext
+创建一个索引mytext：curl -XPUT http://172.16.7.124:9200/mytext
 
 
 ## 问题
