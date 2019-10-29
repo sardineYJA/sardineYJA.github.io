@@ -384,10 +384,85 @@ desc function extended max;  -- 详细信息
 
 ## 自定义函数
 
-1. 继承org.apache.hadoop.hive.ql.UDF
+1. 继承org.apache.hadoop.hive.ql.exec.UDF
 
 2. 需要实现evaluate函数，evaluate函数支持重载
 
+3. 打包jar上传
+
+4. hive命令行：add jar /.../Xxx.jar  增加jar
+
+5. 创建function：create [temporary] function 方法名
+
+6. UDF必须要有返回类型，可以返回null，但是返回类型不能为void
+
+```xml
+<dependency>
+        <groupId>org.apache.hive</groupId>
+        <artifactId>hive-exec</artifactId>
+        <version>1.2.1</version>
+</dependency>
+```
+
+```java
+public class Lower extends UDF {
+        public String evaluate(final String s) {
+                if (s==null) {
+                        return null;
+                }
+                return s.toLowerCase();
+        }
+}
+```
+
+测试：
+```sql
+add jar /../Lower.jar
+create temporary function mylower as "com.sxdt.test.Lower";
+select mylower(name) from person;
+```
+
+
+# 优化
+
+## fetch
+
+Fetch抓取是指，Hive中对某些情况的查询可以不必使用MapReduce计算。
+
+在hive-default.xml.template文件中hive.fetch.task.conversion默认是more，在全局查找、字段查找、limit查找等都不走mapreduce。
+
+hive.fetch.task.conversion设置成none，然后执行查询语句，都会执行mapreduce程序。
+
+`hive (default)> set hive.fetch.task.conversion=none;`
+
+
+## 本地模式
+
+Hive可以通过本地模式在单台机器上处理所有的任务。对于小数据集，执行时间可以明显被缩短。
+
+```sql
+set hive.exec.mode.local.auto=true;  -- 开启本地mr
+
+-- 设置local mr的最大输入数据量，当输入数据量小于这个值时采用local mr的方式，默认为134217728，即128M
+set hive.exec.mode.local.auto.inputbytes.max=50000000;
+
+-- 设置local mr的最大输入文件个数，当输入文件个数小于这个值时采用local mr的方式，默认为4
+set hive.exec.mode.local.auto.input.files.max=10;
+```
+
+## MapJoin
+
+如果不指定MapJoin或者不符合MapJoin的条件，那么Hive解析器会将Join操作转换成Common Join，
+即：在Reduce阶段完成join。容易发生数据倾斜。
+可以用MapJoin把小表全部加载到内存在map端进行join，避免reducer处理。
+
+```sql
+-- 设置自动选择Mapjoin
+set hive.auto.convert.join = true;  -- 默认为true
+-- 大表小表的阈值设置（默认25M以下认为是小表）：
+set hive.mapjoin.smalltable.filesize=25000000;
+
+```
 
 
 # reference
