@@ -99,6 +99,9 @@ vm.max_map_count=655360
 13. 打开Web界面：http://172.16.7.124:9200
 
 
+创建一个索引myfulltext：curl -XPUT http://172.16.7.124:9200/myfulltext
+
+
 ## 问题
 
 > org.elasticsearch.bootstrap.StartupException: java.lang.RuntimeException: can not run elasticsearch as root
@@ -450,6 +453,18 @@ while(iterator.hasNext()) {
 	System.out.println(searchHit.getSourceAsString());
 }
 ```
+
+
+
+# 中文查询
+
+ik 分词模式：ik_max_word（最细颗粒，穷尽所有可能） 和 ik_smart（最粗颗粒）
+
+下载与ES版本一致：https://github.com/medcl/elasticsearch-analysis-ik/releases
+
+解压到ES的plugins目录下，修改目录名为ik，重启
+
+
 
 # reference
 
