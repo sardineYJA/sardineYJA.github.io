@@ -340,6 +340,14 @@ select
 from person;
 ```
 
+## explain
+
+```sql 
+explain SQL语句;             -- 查看执行计划
+
+explain extended SQL语句;    -- 详情
+```
+
 ## 排序
 
 order by
@@ -461,8 +469,167 @@ set hive.exec.mode.local.auto.input.files.max=10;
 set hive.auto.convert.join = true;  -- 默认为true
 -- 大表小表的阈值设置（默认25M以下认为是小表）：
 set hive.mapjoin.smalltable.filesize=25000000;
-
 ```
+
+## 开启Map端聚合参数设置
+
+```sh
+hive.map.aggr = true                          # 是否在Map端进行聚合，默认为True
+hive.groupby.mapaggr.checkinterval = 100000   # 在Map端进行聚合操作的条目数目
+hive.groupby.skewindata = true                # 有数据倾斜的时候进行负载均衡（默认是false）
+```
+
+## Count(Distinct)去重统计
+
+```sql
+select count(distinct id) from bigtable;                      -- 一个job完成
+select count(id) from (select id from bigtable group by id);  -- 两个job完成
+```
+
+COUNT DISTINCT操作需要用一个Reduce Task来完成，这一个Reduce需要处理的数据量太大，就会导致整个Job很难完成。
+一般COUNT DISTINCT使用先GROUP BY再COUNT的方式替换。(数据量不大时，COUNT DISTINCT反而更快)。
+虽然会多用一个Job来完成，但在`数据量大`的情况下，这个绝对是值得的。
+
+
+## 开启动态分区
+
+动态分区(Dynamic Partition)：对分区表Insert数据时候，数据库自动会根据分区字段的值，将数据插入到相应的分区中
+
+```sh
+hive.exec.dynamic.partition=true            # 开启动态分区功能，默认true
+hive.exec.dynamic.partition.mode=nonstrict  # 设置为非严格模式
+# 动态分区的模式，默认strict，表示必须指定至少一个分区为静态分区
+# nonstrict模式表示允许所有的分区字段都可以使用动态分区。
+
+hive.exec.max.dynamic.partition=1000  # 在所有节点上最大创建动态分区数量
+hive.exec.max.dynamic.partition.pernode=10  # 每个节点最大创建动态分区数量
+hive.exec.max.created.files=100000    # 最大创建hdfs文件数量
+hive.error.on.empty.partition=false   # 空分区时是否抛出异常
+```
+
+# 数据倾斜
+
+## map数量
+
+主要决定因素：input文件总数，input文件大小，集群设置文件块大小
+
+问题一：大量小文件（远小于128M），则每个文件当做一个块，用一个map任务。
+map任务启动和初始化的时间远大于逻辑处理的时间，造成很大的资源浪费。
+
+解决：map前合并小文件，减少map数量。CombineHiveInputFormat具有对小文件进行合并的功能（系统默认的格式）
+
+```sql
+set hive.input.format=org.apache.hadoop.hive.ql.io.CombineHiveInputFormat;
+```
+
+问题二：每个文件将近127M，一个Map任务。但是文件字段只有一个或两个，记录条数上千万。如果map处理的逻辑比较复杂，用一个map处理，比较耗时。
+
+解决：增加map，通过设置最大切片值
+```sql
+set mapreduce.input.fileinputformat.split.maxsize=100;
+```
+
+## reduce数量
+
+修改方法一：
+```sql
+-- 每个Reduce处理的数据量默认256M
+hive.exec.reducers.bytes.per.reducer=256000000
+
+-- 每个任务最大的reduce数，默认1009
+hive.exec.reducers.max=1009
+```
+
+修改方法二：
+```sql
+-- 在hadoop的mapred-default.xml中修改
+set mapreduce.job.reduces = 15;
+```
+
+- 过多的启动和初始化reduce也会消耗时间和资源
+- reduce数量即输出文件数量，注意是否生成大量小文件，给下一个任务带来问题
+- 既要合理的reduce数量，也要保证单个reduce数量的数据量合适
+
+
+## 并行执行阶段
+
+Hive会将一个查询转化成一个或者多个阶段。默认情况下，Hive一次只会执行一个阶段。不过，某个特定的job可能包含众多的阶段，而这些阶段可能并非完全互相依赖的，也就是说有些阶段是可以并行执行的，这样可能使得整个job的执行时间缩短。
+
+```sql
+set hive.exec.parallel=true;             -- 打开任务并行
+set hive.exec.parallel.thread.number=16; -- 同一个sql允许最大并行度，默认8
+```
+
+## 严格模式
+
+防止用户执行那些可能意想不到的不好的影响的查询（即耗时巨大）。
+
+默认为非严格nostrict
+```xml
+<property>
+    <name>hive.mapred.mode</name>
+    <value>strict</value>
+</property>
+```
+
+禁止：
+
+- 对于分区表，除非where语句中含有分区字段过滤条件来限制范围，否则不允许执行。
+
+- 对于使用了order by语句的查询，要求必须使用limit语句。
+
+- 限制笛卡尔积的查询。
+
+
+## JVM 重用
+
+适用场景：小文件或task特别多的场景（执行时间很短的场景）
+
+JVM 重用可以使得JVM实例在同一个job中重新适用N次
+
+在mapred-site.xml中设置
+```xml
+<property>
+  <name>mapreduce.job.jvm.numtasks</name>
+  <value>10</value>
+</property>
+```
+
+缺点：一直占用task插槽（方便重用），直到所有task结束
+
+
+## 推测执行
+
+问题：负载不均衡或者资源分布不均等原因，会造成同一个作业的多个任务之间运行速度不一致。
+
+解决：测执行（Speculative Execution）机制根据一定的法则推测出“拖后腿”的任务，并为这样的任务启动一个备份任务。
+让该任务与原始任务同时处理同一份数据，并最终选用最先成功运行完成任务的计算结果作为最终结果。
+
+在mapred-site.xml中设置
+```xml
+<property>
+    <name>mapreduce.map.speculative</name>
+    <value>true</value>
+</property>
+
+<property>
+    <name>mapreduce.reduce.speculative</name>
+    <value>true</value>
+</property>
+```
+
+hive本身也提供了配置项来控制reduce-side的推测执行
+
+```xml
+<property>
+    <name>hive.mapred.reduce.tasks.speculative.execution</name>
+    <value>true</value>
+</property>
+```
+
+- 如果用户对于运行时的偏差非常敏感的话，那么可以将这些功能关闭掉。
+
+- 如果用户因为输入数据量很大而需要执行长时间的map或者Reduce task的话，那么启动推测执行造成的浪费是非常巨大大。
 
 
 # reference
