@@ -243,226 +243,36 @@ http.cors.allow-origin: "*"
 ```
 
 
-# 项目
 
-## 依赖
+# 安装Kibana
 
-```xml
-<dependencies>
-	<dependency>
-		<groupId>org.elasticsearch</groupId>
-		<artifactId>elasticsearch</artifactId>
-		<version>5.2.2</version>
-	</dependency>
+下载：`wget https://artifacts.elastic.co/downloads/kibana/kibana-5.2.2-linux-x86_64.tar.gz`
 
-	<dependency>
-		<groupId>org.elasticsearch.client</groupId>
-		<artifactId>transport</artifactId>
-		<version>5.2.2</version>
-	</dependency>
-</dependencies>
+解压：`tar -zxvf kibana-5.2.2-linux-x86_64.tar.gz -C ../module`
+
+修改配置文件：vim config/kibana.yml
+
+```
+server.port: 5601
+server.host: "0.0.0.0"
+elasticsearch.url: "http://172.16.7.124:9200"
+kibana.index: ".kibana"
 ```
 
-## 连接测试
+启动：bin/kibana
 
-- ElasticSearch 服务默认端口9300
-- Web 管理平台端口9200
-- Head 插件端口9100
-
-下面：blog相当于数据库，article相当于表
-
-```java
-// 设置连接集群名称
-Settings settings = Settings.builder().put("cluster.name", "my-application").build();
-// 连接集群
-PreBuiltTransportClient client = new PreBuiltTransportClient(settings);
-client.addTransportAddress(new InetSocketTransportAddress(
-		InetAddress.getByName("172.16.7.124"), 9300));
-// 打印集群名称
-System.out.println(client.toString());
-
-// 创建索引
-// client.admin().indices().prepareCreate("blog").get();
-
-// 删除索引
-client.admin().indices().prepareDelete("blog").get();
-
-// 关闭连接
-// client.close();
-```
-
-## 数据源插入到文档
-
-```java
-// json -> 新建文档
-String json = "{" + "\"id\":\"1\"," + "\"title\":\"基于Lucene的搜索服务器\","
-		+ "\"content\":\"它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口\"" + "}";
-// 创建文档
-IndexResponse indexResponse = client.prepareIndex("blog", "article", "1").setSource(json).execute().actionGet();
+打开Web：http://172.16.7.124:5601
 
 
-// map -> 新建文档
-Map<String, Object> map = new HashMap<String, Object>();
-map.put("id", "2");
-map.put("title", "基于Lucene的搜索服务器");
-map.put("content", "它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口");
-// 创建文档
-indexResponse = client.prepareIndex("blog", "article", "2").setSource(map).execute().actionGet();
+## 问题
 
+>  Status changed from yellow to red - This version of Kibana requires Elasticsearch v6.3.2 on all nodes. I found the following incompatible nodes in your cluster: v5.2.2 @ 172.16.7.124:9200 (172.16.7.124)
 
-// 通过es自带类构件json
-XContentBuilder builder = XContentFactory.jsonBuilder().startObject()
-		.field("id", "3")
-		.field("title", "基于Lucene的搜索服务器")
-		.field("content", "它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口")
-		.endObject();
-// 创建文档
-indexResponse = client.prepareIndex("blog", "article", "3").setSource(builder).execute().actionGet();
-
-
-// 打印返回结果
-System.out.println("index:" + indexResponse.getIndex());
-System.out.println("type:" + indexResponse.getType());
-System.out.println("id:" + indexResponse.getId());
-System.out.println("version:" + indexResponse.getVersion());
-System.out.println("result:" + indexResponse.getResult());
-```
-
-## 查询文档
-
-```java
-// 查询文档-单个索引
-GetResponse response = client.prepareGet("blog", "article", "1").get();
-System.out.println(response.getSourceAsString());
-
-// 查询文档-多个索引
-MultiGetResponse mresponse = client.prepareMultiGet()
-		.add("blog", "article", "1")
-		.add("blog", "article", "2", "3", "1")
-		.add("blog", "article", "2")
-		.get();
-for (MultiGetItemResponse item: mresponse) {
-	GetResponse getResponse = item.getResponse();
-	if(getResponse.isExists()) {
-		System.out.println(getResponse.getSourceAsString());
-	}
-}
-```
-
-## 更新文档
-
-```java
-// 创建更新数据的请求对象
-UpdateRequest updateRequest = new UpdateRequest();
-updateRequest.index("blog");
-updateRequest.type("article");
-updateRequest.id("3");
-
-updateRequest.doc(XContentFactory.jsonBuilder().startObject()
-	// 对没有的字段添加, 对已有的字段替换
-	.field("title", "基于Lucene的搜索服务器")
-	.field("content", "它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。大数据前景无限")
-	.field("createDate", "2017-8-22").endObject());
-
-// 获取更新后的值
-UpdateResponse indexResponse = client.update(updateRequest).get();
-
-// 打印返回的结果
-System.out.println("index:" + indexResponse.getIndex());
-System.out.println("type:" + indexResponse.getType());
-System.out.println("id:" + indexResponse.getId());
-System.out.println("version:" + indexResponse.getVersion());
-System.out.println("create:" + indexResponse.getResult());
-```
-
-设置查询条件, 查找不到则添加IndexRequest内容，查找到则按照UpdateRequest更新
-
-```java
-// 设置查询条件，查找不到则添加(第一次执行，添加下面内容)
-IndexRequest indexRequest = new IndexRequest("blog", "article", "5")
-	.source(XContentFactory.jsonBuilder().startObject()
-		.field("title", "搜索服务器")
-		.field("content","它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。Elasticsearch是用Java开发的，并作为Apache许可条款下的开放源码发布，是当前流行的企业级搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。")
-		.endObject());
-
-// 设置更新，查找到更新下面的设置(第二次执行，增加字段)
-UpdateRequest upsert = new UpdateRequest("blog", "article", "5")
-	.doc(XContentFactory.jsonBuilder().startObject()
-		.field("user", "yangja")
-		.endObject())
-	.upsert(indexRequest);  // 找不到则添加IndexRequest内容
-
-client.update(upsert).get();
-```
-
-## 删除文档数据
-
-```java
-// 删除文档数据
-DeleteResponse indexResponse = client.prepareDelete("blog", "article", "5").get();
-
-// 打印返回的结果
-System.out.println("index:" + indexResponse.getIndex());
-System.out.println("type:" + indexResponse.getType());
-System.out.println("id:" + indexResponse.getId());
-System.out.println("version:" + indexResponse.getVersion());
-System.out.println("found:" + indexResponse.getResult());
-```
-
-## 条件查询
-
-
-```java
-// 查询所有
-SearchResponse searchResponse = client.prepareSearch("blog")
-	.setTypes("article")
-	.setQuery(QueryBuilders.matchAllQuery())
-	.get();
-
-
-// 对所有字段分词查询
-SearchResponse searchResponse = client.prepareSearch("blog")
-	.setTypes("article")
-	.setQuery(QueryBuilders.queryStringQuery("全文"))
-	.get();
-
-
-// 通配符查询 wildcardQuery，*任意多个字符，?单个字符
-SearchResponse searchResponse = client.prepareSearch("blog")
-	.setTypes("article")
-	.setQuery(QueryBuilders.wildcardQuery("content", "*全*"))
-	.get();
-
-
-// 词条查询 TermQuery
-// field查询
-SearchResponse searchResponse = client.prepareSearch("blog")
-	.setTypes("article")
-	.setQuery(QueryBuilders.termQuery("content", "全"))
-	.get();
-
-
-// 模糊查询fuzzy
-SearchResponse searchResponse = client.prepareSearch("blog")
-	.setTypes("article")
-	.setQuery(QueryBuilders.fuzzyQuery("title", "lucene"))
-	.get();
-
-
-// 打印
-SearchHits hits = searchResponse.getHits();   // 获取命中次数，查询结果有多少对
-System.out.println("查询结果有：" + hits.getTotalHits() + "条");
-
-Iterator<SearchHit> iterator = hits.iterator();
-while(iterator.hasNext()) {
-	SearchHit searchHit = iterator.next();
-	System.out.println(searchHit.getSourceAsString());
-}
-```
+安装Kibana6.3.2，与es版本不匹配，后面全部版本修改为5.2.2
 
 
 
-# 中文查询
+# 中文分词
 
 ik 分词模式：ik_max_word（最细颗粒，穷尽所有可能） 和 ik_smart（最粗颗粒）
 
