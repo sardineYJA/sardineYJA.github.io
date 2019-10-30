@@ -43,20 +43,27 @@ Field 字段（列）：Field是Elasticsearch的最小单位。一个document里
 3. 修改配置文件：config/elasticsearch.yml
 
 ```sh
-# ------------ Cluster --------------
+# 集群名字
 cluster.name: my-application
-# ------------- Node ----------------
+# 节点名字
 node.name: elasticsearch-101
-# ------------- Paths ---------------
+# 数据与日志存储目录
 path.data: /home/yangja/module/elasticsearch-5.2.2/data
 path.logs: /home/yangja/module/elasticsearch-5.2.2/logs
 # ------------- Memory --------------
 bootstrap.memory_lock: false
 bootstrap.system_call_filter: false
-# ------------- Network -------------
+# 本机ip地址
 network.host: 172.16.7.124 
-# ------------ Discovery ------------
-discovery.zen.ping.unicast.hosts: ["172.16.7.124"]
+# 设置集群中master节点的初始列表，可以通过这些节点来自动发现新加入集群的节点
+discovery.zen.ping.unicast.hosts: ["172.16.7.124:9300"]
+# 设置节点间交互的tcp端口（集群），（默认9300）
+transport.tcp.port: 9300
+# 监听端口（默认9200），（Web界面）
+http.port: 9200
+# 增加参数，使head插件可以访问es（端口9100）
+http.cors.enabled: true
+http.cors.allow-origin: "*"
 ```
 
 4. cluster.name如果要配置集群需要两个节点上的elasticsearch配置的cluster.name相同，都启动可以自动组成集群，
