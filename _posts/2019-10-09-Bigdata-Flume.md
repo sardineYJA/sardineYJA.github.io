@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "Flume"
+title: "Flume 使用案例"
 date: 2019-10-09
-description: "Flume"
+description: "Flume 使用案例"
 tag: Bigdata
 
 ---

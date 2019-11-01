@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Scala语法复习"
+title: "Scala 语法复习"
 date: 2019-05-28
 description: "语法复习"
 tag: Other

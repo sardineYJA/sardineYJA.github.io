@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "搭建Hadoop集群"
+title: "搭建 Hadoop 集群"
 date: 2019-02-04
 description: "简单介绍一下如何用虚拟机搭建Hadoop集群"
 tag: Hadoop

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "hdfs客户端操作"
+title: "HDFS 客户端操作"
 date: 2019-06-09
 description: "简单介绍一下hdfs客户端操作"
 tag: Hadoop

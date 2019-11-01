@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Hadoop知识点"
+title: "Hadoop 知识点"
 date: 2019-06-01
 description: "简单介绍一下Hadoop知识点"
 tag: Hadoop

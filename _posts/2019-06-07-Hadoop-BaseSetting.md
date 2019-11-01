@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Hadoop功能配置"
+title: "Hadoop 功能配置"
 date: 2019-06-07
 description: "简单介绍一下搭建Hadoop功能配置"
 tag: Hadoop

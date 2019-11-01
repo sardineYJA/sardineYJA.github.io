@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Spark环境配置"
+title: "Spark 环境配置"
 date: 2019-06-20
 description: "介绍一下Spark环境配置"
 tag: Spark

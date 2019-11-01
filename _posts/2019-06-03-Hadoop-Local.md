@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "搭建Hadoop单机模式"
+title: "搭建 Hadoop 单机模式"
 date: 2019-06-03
 description: "简单介绍一下如何搭建Hadoop单机模式"
 tag: Hadoop
