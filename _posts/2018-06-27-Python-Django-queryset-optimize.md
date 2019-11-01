@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "关于QuerySet的优化"
+title: "关于 QuerySet 的优化"
 date: 2018-06-27
 description: "介绍关于QuerySet的优化"
 tag: Python

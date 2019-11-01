@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Python并发并行"
+title: "Python 并发并行"
 date: 2018-05-01
 description: "介绍python读并发并行"
 tag: Python

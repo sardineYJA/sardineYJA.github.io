@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "python基础复习"
+title: "python 基础复习"
 date: 2018-03-09
 description: "简单复习python语法"
 tag: Python

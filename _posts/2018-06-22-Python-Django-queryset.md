@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Django QuerySet常见接口"
+title: "Django QuerySet 常见接口"
 date: 2018-06-22
 description: "介绍Django QuerySet常见接口"
 tag: Python
