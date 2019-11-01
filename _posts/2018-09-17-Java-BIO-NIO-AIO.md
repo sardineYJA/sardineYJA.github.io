@@ -137,10 +137,10 @@ public class NIOServer {
         System.out.println("服务器开启");
 
         ServerSocketChannel sChannel = ServerSocketChannel.open(); // 创建通道
-        sChannel.configureBlocking(false);                     // 切换成非阻塞模式
-        sChannel.bind(new InetSocketAddress(8888));       // 绑定连接
+        sChannel.configureBlocking(false);                        // 切换成非阻塞模式
+        sChannel.bind(new InetSocketAddress(8888));              // 绑定连接
         Selector selector = Selector.open();                    // 获取选择器
-        sChannel.register(selector, SelectionKey.OP_ACCEPT);    // 注册指定监听事件
+        sChannel.register(selector, SelectionKey.OP_ACCEPT);   // 注册指定监听事件
 
         while (selector.select() > 0) {   // 轮训式 获取选择"已经准备就绪"的事件
             Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
@@ -154,10 +154,10 @@ public class NIOServer {
 
                 } else if (sk.isReadable()) {
                     SocketChannel socketChannel = (SocketChannel)sk.channel();
-                    ByteBuffer buffer = ByteBuffer.allocate(1024);
+                    ByteBuffer buffer = ByteBuffer.allocate(1024);    // 容量1024
                     int len=0;
                     while ((len=socketChannel.read(buffer)) > 0) {    // 读取数据
-                        buffer.flip();
+                        buffer.flip(); 
                         System.out.println(new String(buffer.array(), 0, len));
                         buffer.clear();
                     }

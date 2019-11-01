@@ -11,7 +11,7 @@ tag: Bigdata
 
 ## Hadoop
 
-```
+```sh
 sbin/hadoop-daemon.sh start namenode          (NameNode)(注意在配置节点启动)
 sbin/hadoop-daemon.sh start datanode          (DataNode)
 sbin/hadoop-daemon.sh start secondarynamenode (SecondaryNameNode)(注意在配置节点启动)
@@ -25,22 +25,23 @@ sbin/start-yarn.sh
 
 sbin/mr-jobhistory-daemon.sh start historyserver （JobHistoryServer）
 ```
+
 ## Spark
 
-```
+```sh
 sbin/start-all.sh             (Master, Worker)
 sbin/start-history-server.sh  (HistoryServer)
 ```
 
 ## Zookeeper
 
-```
+```sh
 bin/zkServer.sh start  (QuorumPeerMain)
 ```
 
 ## HBase
 
-```
+```sh
 bin/hbase-daemon.sh start master         (HMaster)(内置ZooKeeperMain)
 bin/hbase-daemon.sh start regionserver   (HRegionServer)
 或者
@@ -49,8 +50,18 @@ bin/start-hbase.sh
 
 ## Kafka
 
-```
+```sh
 bin/kafka-server-start.sh config/server.properties &     (Kafka)
+```
+
+## Elasticsearch
+
+```sh
+bin/elasticsearch -d          (Elasticsearch)
+
+elasticsearch-head/目录下启动：grunt server -d     (head面板)
+
+bin/kibana             (Kibana面板)
 ```
 
 
@@ -59,10 +70,13 @@ bin/kafka-server-start.sh config/server.properties &     (Kafka)
 ```sh
 free -h                    # 内存
 
+df -h                      # 磁盘
+
 systemctl status 程序名    # 状态
 
 netstat -an | grep 端口号  # 端口 
 
+nc -lk 端口                # 发送数据
 ```
 
 
