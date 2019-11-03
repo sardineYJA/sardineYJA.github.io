@@ -24,7 +24,7 @@ tag: Interest
 itchat.auto_login(hotReload=False, loginCallback=lcFunc, exitCallback=ecFunc)
 ```
 
-##查找用户的UserName（加密的），通过UserName才可以发送消息
+## 查找用户的UserName（加密的），通过UserName才可以发送消息
 
 ```python
 # 根据好友名，查找好友的信息，获取toUserName
