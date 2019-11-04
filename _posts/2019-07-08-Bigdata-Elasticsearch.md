@@ -281,8 +281,111 @@ ik 分词模式：ik_max_word（最细颗粒，穷尽所有可能） 和 ik_smar
 解压到ES的plugins目录下，修改目录名为ik，重启
 
 
+# CRUD 操作
+
+curl测试：`curl -X<VERB> '<PROTOCOL>://<HOST>:<PORT>/<PATH>?<QUERY_STRING>' -d '<BODY>'`
+
+- VERB : GET, POST, PUT, HEAD, DELETE
+- PROTOCOL : http 或 https
+- HOST : 集群中任意节点的主机名
+- PORT : 运行ES HTTP服务的端口
+- PATH : 终端路径
+- QUERY_STRING : 任意可选的查询字符串参数，例如：?pretty 将格式化地输出JSON返回值
+- BODY : 格式的请求体
+
+## Kibana 样例
+
+```sh
+GET _cat/indices?v      # 查看索引
+
+GET /_count?pretty      # 个数
+{
+	"query": {
+		"match_all":{}
+	}
+}
+```
+
+## 新增
+
+db为_index，user为_type, 1为_id（没有指定id,将是随机字符串）
+```sh
+POST /db/user/1
+{
+	"name":"yang",
+	"password":"123",
+	"age":"25"
+}
+
+
+GET /db/user/1   # 查询
+```
+
+## 查询
+
+查找：`url/<index>/<type>/_search`
+
+index, type 可选择
+
+返回值 took表示耗时，hits表示命中记录
+
+```sh
+
+GET _search    # 查找所有
+
+
+GET _search    # 查询含有Hello
+{
+  "query": {
+    "query_string": {
+      "query": "Hello"
+    }
+  }
+}
+
+GET _search    # 查询含有Hello
+{
+  "query": {
+  	"query_string": {
+      "query": "Hello"
+    }
+  }
+}
+
+GET _search   # 查询字段title含有Hello的（fields默认_all）
+{
+  "query": {
+    "query_string": {
+      "query": "Hello",
+      "fields": ["title"]
+    }
+  }
+}
+
+GET _search   # 查询字段year是1995的
+{
+	"query": {
+		"term": {
+			"year": 1995
+		}
+	}
+}
+
+
+# 查找movices索引movie类型里文档title字段包含“Now”的数据。
+GET movies/movie/_search 
+{
+  "query":{
+    "match":{
+      "title":"Now"
+    }
+  }
+}
+```
 
 # reference
 
 https://www.cnblogs.com/zhuzi91/p/8228214.html
+
+http://www.apeit.cn/elasticsearchcrudrestful-api-bztyp
 
