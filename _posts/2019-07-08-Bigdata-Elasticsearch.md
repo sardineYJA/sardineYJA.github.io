@@ -57,3 +57,5 @@ jar包，里面包含了封装好的各种建立倒排索引，以及进行搜�
 
 https://blog.csdn.net/zkyfcx/article/details/79998197
 
+https://www.jianshu.com/p/fa510352ce1a
+
