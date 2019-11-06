@@ -41,6 +41,19 @@ Please make sure you have the correct access rights and the repository exists.
 4. 粘贴到github的setting的SSH中
 
 
+## .gitignore
+
+在.git同级目录下创建.gitignore
+
+```sh
+*.a       # 忽略所有.a结尾的文件
+!lib.a    # 但lib.a除外
+
+/TODO     # 仅忽略项目根目录下的TODO文件，不包括 subdir/TODO
+
+build      # 忽略build目录，及下面的文件
+```
+
 
 # 博客教程
 
