@@ -9,9 +9,13 @@ title: 关于我
 
 ## 个人
 
-职业路线规划为大数据处理、分布式系统架构
+职业路线规划为数据开发 --> 大数据处理 --> 分布式系统
 
 常用编程语言 Java & Python & Shell
+
+QQ 邮箱：yangjingan811@qq.com  (推荐)
+
+Gmail：yangjingan811@gmail.com
 
 ## 博客缘由
 
