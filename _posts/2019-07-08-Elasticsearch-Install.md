@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Elasticsearch 及插件安装"
+title: "ES 及插件安装"
 date: 2019-07-08
 description: "Elasticsearch"
-tag: Bigdata
+tag: Elasticsearch
 
 ---
 

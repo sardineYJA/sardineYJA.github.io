@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Elasticsearch CRUD 操作"
+title: "ES CRUD 操作"
 date: 2019-07-08
 description: "Elasticsearch"
-tag: Bigdata
+tag: Elasticsearch
 
 ---
 

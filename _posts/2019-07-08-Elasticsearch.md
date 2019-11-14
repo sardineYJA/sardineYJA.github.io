@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Elasticsearch 全文检索"
+title: "ES 全文检索"
 date: 2019-07-08
 description: "Elasticsearch"
-tag: Bigdata
+tag: Elasticsearch
 
 ---
 
