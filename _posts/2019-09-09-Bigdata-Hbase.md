@@ -99,6 +99,13 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 * HBase可以支持对数据的更新操作。
 * HBase弥补Hadoop不支持实时数据处理的缺陷。
 
+## HBase 和 Hive
+
+- Hive是一种类SQL的引擎，并且运行MapReduce任务，可以用来进行统计查询
+- Hive适用于离线的数据分析和清洗，延迟较高
+- Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库，可以用来进行实时查询
+
+
 
 ## HBase 读数据流程
 
@@ -139,5 +146,26 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 当Region达到阈值，会把过大的Region一分为二。
 
 
+## 节点服役（commissioning）
 
+当启动regionserver时，regionserver会向Hmaster注册并开始接收本地数据，开始的时候，新加入的节点不会有任何数据，平衡器开启的情况下，将会有新的region移动到开启的RegionServer上。如果启动和停止进程是使用ssh和HBase脚本，那么会将新添加的节点的主机名加入到conf/regionservers文件中。
+
+## 节点退役（decommissioning）
+
+删除某个RegionServer：
+
+1. 停止负载平衡器：`hbase > balance_switch false`
+2. 停止RegionServer：`hbase > hbase-daemon.sh stop regionserver`
+3. RegionServer一旦停止，会关闭维护的所有region
+4. Zookeeper上的该RegionServer节点消失
+5. Master节点检测到该RegionServer下线
+6. RegionServer的region服务得到重新分配
+
+以上关闭方法比较传统，需要花费一定的时间，而且会造成部分region短暂的不可用。
+
+另一种方法：
+
+1. RegionServer先卸载所管理region：`bin/graceful_stop.sh xxx.xxx.xxx.xxx（IP）`
+2. 自动平衡数据
+3. 接下来步骤为上个方法2-6
 
