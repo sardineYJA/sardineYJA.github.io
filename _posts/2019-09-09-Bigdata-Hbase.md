@@ -103,6 +103,7 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 
 - Hive是一种类SQL的引擎，并且运行MapReduce任务，可以用来进行统计查询
 - Hive适用于离线的数据分析和清洗，延迟较高
+- Hive本身不存储和计算数据，它完全依赖于HDFS和MapReduce
 - Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库，可以用来进行实时查询
 
 
