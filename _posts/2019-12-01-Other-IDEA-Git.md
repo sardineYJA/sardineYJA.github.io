@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "IDEA 上传项目到 Github"
+title: "IDEA 交互 Github 项目"
 date: 2019-12-01
-description: "IDEA 上传项目到 Github"
+description: "IDEA 交互 Github 项目"
 tag: Other
 
 ---
@@ -55,4 +55,14 @@ git commit -m "update .gitignore"
 # 上传服务器
 git push origin master
 ```
+
+
+## IDEA 下载仓库项目
+
+github 点击仓库的 clone or download --> 复制仓库地址
+
+VCS --> Checkout from Version Control --> Git --> 仓库地址 --> clone 
+
+> 下载后自动会创建项目，但是下载速度太慢了，还不下载直接导入
+
 
