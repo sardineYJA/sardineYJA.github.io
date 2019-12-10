@@ -52,6 +52,8 @@ RARP (Reverse Address Resolution Protocol)反向地址转换协议允许局域 �
 
 ICMP (Internet Control Message Protocol ）Internet 控制报文协议。它是TCP/IP 协议族的一个子协议，用于在IP 主机、路由器之间传递控制消息
 
+NAT（network address translation,网络地址转换协议）内网IP替换为当前局域网的对外外网IP
+
 相关协议：IP，ARP，RARP，ICMP，ICGP
 
 
