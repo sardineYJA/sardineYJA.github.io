@@ -27,7 +27,7 @@ final ServerBootstrap serverBootstrap = new ServerBootstrap();
 
 serverBootstrap
     .group(boosGroup, workerGroup)
-    .channel(NioServerSocketChannel.class)       // A
+    .channel(NioServerSocketChannel.class)       // 反射
     .option(ChannelOption.SO_BACKLOG, 1024)
     .childOption(ChannelOption.TCP_NODELAY, true)
     .childAttr(AttributeKey.newInstance("childAttr"), yourValue)
@@ -39,9 +39,9 @@ serverBootstrap
     });
 ```
 
-## 服务端Channel
+# Channel
 
-A 标记：.channel()函数传入NioServerSocketChannel类，并反射
+.channel()函数传入NioServerSocketChannel类，并反射
 
 ```java
 bind()  // 用户代码入口
@@ -91,4 +91,76 @@ AbstractUnsafe.bind()     // 入口
     └HeadContext.readIfIsAutoRead()  
 ```
 
+
+# NioEventLoop
+
+
+- 默认情况下，Netty服务端起多少线程？何时启动？
+
+- Netty是如何解决jdk空轮询bug？
+
+- Netty如何保证异步串行无锁化？
+
+
+## NioEventLoop 创建
+
+```java
+new NioEventLoopGroup()     // 线程组，默认2*cpu
+  ├new ThreadPerTaskExecutor()    // 线程创建器
+  ├for(){newChild()}              // 构造NioEventLoop
+  └chooserFactory.newChooser()    // 线程选择器，给连接绑定NioEventLoop
+```
+
+## ThreadPerTaskExecutor
+
+- 每次执行任务都会创建一个线程实体
+
+- NioEventLoop线程命名规则：nioEventLoop-1-xx
+
+## newchild()
+
+- 保存线程执行器 ThreadPerTaskExecutor
+
+- 创建一个 MpscQueue：保存任务队列
+
+- 创建一个 selector：轮询连接
+
+## chooserFactory.newChooser()
+
+```java
+isPowerOfTwo()  // 判断是否是2的幂，如2,4,8
+  ├PowerOfTwoEventExecutorChooser    // 优化
+  │ └index++ & (length-1)
+  └GenericEventExecutorChooser       // 普通 
+    └abs(index++ % length)
+```
+
+
+## NioEventLoop 启动
+
+```java
+bind() -> execute(task)      // 入口
+  └startThread() -> doStartThread()    // 创建线程
+     └ThreadPerTaskExecutor.execute()
+        ├thread=Thread.currentThread()
+        └NioEventLoop.run()            // 启动
+```
+
+
+## NioEventLoop.run()
+
+```java
+run()->for(;;)
+  ├select()                // 轮询检查是否有io事件
+  ├processSelectedKeys()   // 处理io事件
+  └runAllTasks()           // 处理异步任务队列
+```
+
+## select() 执行逻辑
+
+- deadline 以及任务穿插逻辑处理
+
+- 阻塞式select
+
+- 避免jdk空轮询的bug，设定512阀值
 
