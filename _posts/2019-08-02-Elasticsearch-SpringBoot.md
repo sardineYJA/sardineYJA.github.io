@@ -7,7 +7,7 @@ tag: Elasticsearch
 
 ---
 
-
+## 依赖
 
 ```xml
 <dependency>
@@ -117,3 +117,12 @@ public void insertList() {  // 批量插入
 ```
 
 
+# reference
+
+https://blog.csdn.net/chen_2890/article/details/83895646
+
+https://blog.csdn.net/wangshuaiwsws95/article/details/79411442
+
+https://blog.csdn.net/HelloWorldYangSong/article/details/86531795
+
+springboot依赖不用谢版本
