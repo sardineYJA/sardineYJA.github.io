@@ -34,7 +34,7 @@ java -jar XXX.jar
 public class HelloController {
     @GetMapping("/hello")
     // @PostMapping("/hello")
-    // @RequestMapping("/hello")
+    // @RequestMapping("/hello")  // Get,Post都行
     public String say() {
         return "Hello, Spring Boot!";
     }
@@ -197,12 +197,12 @@ public interface StudentRespository extends JpaRepository<Student, Integer> {
 @Autowired
 private StudentRespository studentRespository;
 
-@GetMapping("/student")
+@GetMapping("/student")         // 查询数据库全部
 public List<Student> list(){
     return studentRespository.findAll();
 }
 
-@GetMapping("/studentAdd")
+@GetMapping("/studentAdd")       // 向数据库添加
 public Student create(@RequestParam("id") Integer id,
                       @RequestParam("name") String name) {
     Student s = new Student();
@@ -211,7 +211,7 @@ public Student create(@RequestParam("id") Integer id,
     return studentRespository.save(s);
 }
 
-@GetMapping("/student/{id}")
+@GetMapping("/student/{id}")   
 public Student findById(@PathVariable("id") Integer id) {
     return studentRespository.findById(id).orElse(null);
 }
@@ -221,3 +221,55 @@ public Student findById(@PathVariable("id") Integer id) {
 ## 事务
 
 方法前：@Transactional
+
+
+## 表单验证
+
+为Student类属性增加限制：
+```java
+@Min(value = 18, message = "未成年！！")
+private Integer age;
+```
+
+```java
+@RequestMapping(value="/studentValid")
+public Student studentAdd(@Valid Student s, BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+        // 验证表单字段
+        System.out.println(bindingResult.getFieldError().getDefaultMessage());
+        return null;
+    }
+    return studentRespository.save(s);    // 向数据库中添加
+}
+```
+
+验证：url/studentValid?age=17
+
+
+## AOP
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+</dependency>
+```
+
+使用方法与Sping一样
+
+```java
+@Component
+@Aspect  
+public class LoggingAspectJ {
+    @Pointcut("execution(* com.sxdt.spring.service.*.*(..))")
+    public void pointcut(){}     // 重用切入点表达式
+
+    @Before("pointcut()")
+    public void beforeMethod(JoinPoint joinPoint) {
+        String name = joinPoint.getSignature().getName(); // 方法名
+        Object[] args = joinPoint.getArgs();              // 方法参数
+        System.out.println("@Before");
+    }
+}
+```
+

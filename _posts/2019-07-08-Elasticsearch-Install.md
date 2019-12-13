@@ -124,13 +124,15 @@ vi /etc/security/limits.conf
 
 解决：切换到root用户，进入limits.d目录下修改配置文件。
 
-vi /etc/security/limits.d/90-nproc.conf 
+vi /etc/security/limits.d/XX-nproc.conf 
 
 ```sh
 * soft nproc 1024
 #修改为
 * soft nproc 4096
 ```
+
+重启生效
 
 
 > max virtual memory areas vm.max_map_count [65530] likely too low, increase to at least [262144]
