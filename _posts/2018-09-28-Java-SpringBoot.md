@@ -189,7 +189,7 @@ public class Student {
 ## Jpa操作数据库
 
 ```java
-public interface StudentRespository extends JpaRepository<Student, Integer> {
+public interface StudentRepository extends JpaRepository<Student, Integer> {
 }
 ```
 
@@ -199,7 +199,7 @@ private StudentRespository studentRespository;
 
 @GetMapping("/student")         // 查询数据库全部
 public List<Student> list(){
-    return studentRespository.findAll();
+    return studentRepository.findAll();
 }
 
 @GetMapping("/studentAdd")       // 向数据库添加
@@ -208,12 +208,12 @@ public Student create(@RequestParam("id") Integer id,
     Student s = new Student();
     s.setId(id);
     s.setName(name);
-    return studentRespository.save(s);
+    return studentRepository.save(s);
 }
 
 @GetMapping("/student/{id}")   
 public Student findById(@PathVariable("id") Integer id) {
-    return studentRespository.findById(id).orElse(null);
+    return studentRepository.findById(id).orElse(null);
 }
 ```
 
@@ -239,7 +239,7 @@ public Student studentAdd(@Valid Student s, BindingResult bindingResult) {
         System.out.println(bindingResult.getFieldError().getDefaultMessage());
         return null;
     }
-    return studentRespository.save(s);    // 向数据库中添加
+    return studentRepository.save(s);    // 向数据库中添加
 }
 ```
 
