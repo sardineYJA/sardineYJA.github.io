@@ -246,6 +246,12 @@ queryBuilder.addAggregation(
 );
 ```
 
+# error
+
+> Caused by: com.fasterxml.jackson.databind.exc.InvalidDefinitionException: Cannot construct instance of `com.sxdt.demo.es.Item` (no Creators, like default construct, exist): cannot deserialize from Object value (no delegate- or property-based Creator)
+
+解决：相关的类缺少构造函数，补充即可。
+
 
 # reference
 

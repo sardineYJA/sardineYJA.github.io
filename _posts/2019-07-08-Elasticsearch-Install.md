@@ -132,7 +132,7 @@ vi /etc/security/limits.d/XX-nproc.conf
 * soft nproc 4096
 ```
 
-重启生效
+重启生效，`ulimit -a`查看 max user processes 是否改变。
 
 
 > max virtual memory areas vm.max_map_count [65530] likely too low, increase to at least [262144]
