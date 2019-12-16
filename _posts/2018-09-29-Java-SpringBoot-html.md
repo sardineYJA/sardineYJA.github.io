@@ -87,3 +87,22 @@ public class SearchController {
 }
 ```
 
+## Model 向 html 传递数据
+
+show.html
+```xml
+<html xmlns:th="http://www.thymeleaf.org">
+    <p th:text="'用户ID：' + ${id}"/>
+    <p th:text="'用户名：' + ${name}"/>
+</html>
+```
+
+
+```java
+@RequestMapping("show")
+public String show(Model model) {
+    model.addAttribute("id", "1");
+    model.addAttribute("name", "yang");
+    return "show";   // 将model传递个show.html
+}
+```
