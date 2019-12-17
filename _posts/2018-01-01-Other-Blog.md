@@ -65,6 +65,14 @@ build      # 忽略build目录，及下面的文件
 
 4. 目录下会自动创建 CNAME
 
+> 邮箱老是提示：We recommend you change this to a CNAME record ...
+
+将解析的`记录类型`改为CNAME，此时`记录值`可以直接为：xxx.github.io
+
+提示：github属于外网，无需域名备案。
+
+
+
 # 博客教程
 
 ## 修改访问量标准
