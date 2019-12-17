@@ -55,6 +55,16 @@ build      # 忽略build目录，及下面的文件
 ```
 
 
+## 域名解析
+
+1. 获取仓库ip地址：`ping sardineyja.github.io`
+
+2. 解析域名，绑定ip
+
+3. 仓库 --> Settings --> GitHub Pages --> Custom domain
+
+
+
 # 博客教程
 
 ## 修改访问量标准
