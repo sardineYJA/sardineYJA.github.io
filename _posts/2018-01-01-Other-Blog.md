@@ -63,7 +63,7 @@ build      # 忽略build目录，及下面的文件
 
 3. 仓库 --> Settings --> GitHub Pages --> Custom domain
 
-
+4. 目录下会自动创建 CNAME
 
 # 博客教程
 
