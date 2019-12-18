@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "ES CRUD 操作"
+title: "ES CURD 操作"
 date: 2019-07-08
 description: "Elasticsearch"
 tag: Elasticsearch
 
 ---
 
-## CRUD 操作
+## CURD 操作
 
 curl测试：`curl -X<VERB> '<PROTOCOL>://<HOST>:<PORT>/<PATH>?<QUERY_STRING>' -d '<BODY>'`
 
@@ -22,7 +22,71 @@ curl测试：`curl -X<VERB> '<PROTOCOL>://<HOST>:<PORT>/<PATH>?<QUERY_STRING>' -
 ## Kibana 样例
 
 ```sh
-GET _cat/indices?v      # 查看索引
+# 浏览器直接查询
+http://172.16.7.124:9200/_cat/indices?v   # 查看每个索引详细信息
+
+.../_cat/health?v
+.../_cat/nodes?v      # 各个节点
+
+.../索引名
+.../索引名/_search    # 默认只显示10条
+.../索引名/_count
+```
+
+```json
+{"_index":"mo-log-20191102",
+  "_type":"_doc",
+  "_id":"012011110223527080120000",
+  "_score":1.0,
+  "_source":
+  {
+    "validTime":"2019-11-05T01:52:43+08:00",
+    "ip":null,
+    "netId":131330,
+    "serviceNumber":"10690329*",
+    "smscNumber":"",
+    "ppUserType":2,
+    "feeNumber":"18927379002",
+    "spNumber":20346,
+    "serviceCode":"",
+    "indexDay":"20191102",
+    "operationFlag":1,
+    "linkid":"",
+    "srcismgCode":20061,
+    "msgId":"012011110223527080120000",
+    "dateTime":"2019-11-02T23:56:04+08:00",
+    "commitTime":"2019-11-02T23:52:43+08:00",
+    "srcMask":"0",
+    "maskFlag":0,
+    "destNumber":"106903290212367",
+    "errorCode":0,
+    "pid":0,
+    "sendTime":"2019-11-02T23:52:43+08:00",
+    "srcNumber":"18927379002",
+    "smscId":0,
+    "status":"DELIVRD",
+    "scpid":1,
+    "finishTime":"2019-11-02T23:52:43+08:00",
+    "feeCode":0,
+    "feeType":0,
+    "sendCount":1,
+    "ticketFlag":1,
+    "udhi":0,
+    "msgFormat":0,
+    "dsmpFlag":0,
+    "netFlag":2,
+    "userType":0,
+    "destismgCode":100001,
+    "msgContent":null,
+    "sendFlag":8,
+    "areaCode":20,
+    "stateAreaCode":20
+  }
+}
+```
+
+```sh
+GET _cat/indices?v      # 查看每个索引详细信息
 
 GET /_count?pretty      # 个数
 {

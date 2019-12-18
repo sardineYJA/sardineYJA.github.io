@@ -79,6 +79,17 @@ mvn install:install-file \
 	-Dversion=11.2.0.3 -Dpackaging=jar
 ```
 
+## IDEA 项目 maven 仓库目录设置
+
+> 发现自定义本地仓库后，不同项目的依赖，分别下到不同目录
+
+解决：Settings --> 搜Maven，修改项目的依赖目录
+
+```
+User setting file: C:\Users\yang\.m2\settings.xml
+Local repository:  D:\maven-repository
+```
+
 
 ## 命令
 mvn clean           清理

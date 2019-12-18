@@ -16,13 +16,18 @@ tag: Bigdata
 Zookeeper = 文件系统 + 通知机制。
 
 
+## 集群架构
+
+![png](/images/posts/all/Zookeeper集群架构.png)
+
+
 ## 角色
 
 - Leader 负责进行投票的发起和决议，更新系统状态
 
 - Follower 接收客户请求并向客户端返回结果，参与选举
 
-- ObServer 接收客户端连接，将请求转发给Leader，不参与投票选举，只同步leader状态。ObServer的目的是扩展系统，提高速度。
+- ObServer 接收客户端连接，将请求转发给Leader，不参与投票选举，只同步 leader 状态。 ObServer 的目的是扩展系统，提高速度。
 
 
 
@@ -36,11 +41,13 @@ Zookeeper = 文件系统 + 通知机制。
 
 4. 数据更新原子性
 
+
 ## 选举机制
 
 1. 半数机制：集群中半数以上机器存活，集群可用，适合安装奇数台服务器
 
 2. 选举机制：Leader是通过内部的选举机制临时产生
+
 
 ## 节点类型
 
@@ -77,9 +84,18 @@ Zookeeper = 文件系统 + 通知机制。
 5. Leader会通知先前的Server，由先前的Server通知Client完成写操作
 
 
-# Zookeeper 可运用场景
+## Split-Brain (脑裂)问题
+
+脑裂：由于假死会发起新的master选举，选举出一个新的master，但旧的master网络又通了，导致出现了两个master ，有的客户端连接到老的master 有的客户端链接到新的master。
+
+解决：半数以上选举。
 
 
+## ZAB 协议
+
+ZAB 协议是为分布式协调服务ZooKeeper专门设计的一种支持崩溃恢复的一致性协议，这个机制保证了各个server之间的同步。全称 Zookeeper Atomic Broadcast Protocol - Zookeeper 原子广播协议。
+
+两种模式：恢复模式和广播模式。
 
 
 
@@ -159,4 +175,6 @@ rmr    /jiedian    递归删除节点
 # reference
 
 https://blog.csdn.net/lingbo229/article/details/81052078
+
+https://segmentfault.com/a/1190000019153800?utm_source=tag-newest
 

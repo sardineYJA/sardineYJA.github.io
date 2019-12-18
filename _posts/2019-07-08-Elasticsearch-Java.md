@@ -226,6 +226,76 @@ while(iterator.hasNext()) {
 ```
 
 
+## 普通搜索 与 Scroll API
+
+> NoNodeAvailableException[None of the configured nodes are available: [{#transport#-1}{8jbjuh0ESMKoLJgc_k5Dkw}{172.16.7.124}{172.16.7.124:9300}]]
+
+解决：
+1. ("cluster.name", "my-application") 与配置yml文件一致
+2. network.host: 172.16.7.124  需写出自己的ip
+3. 依赖版本正确
+
+
+```java
+SearchRequestBuilder searchRequestBuilder = client.prepareSearch();
+searchRequestBuilder.setIndices("item");
+// searchRequestBuilder.setTypes(type);
+searchRequestBuilder.setSize(10);   // 搜索请求一次请求最大量为[10000]
+SearchResponse searchResponse = searchRequestBuilder.get();
+
+// 分页查询，从第几条开始,查询多少条
+// SearchResponse response = setQuery.setFrom(0).setSize(2).get();
+
+
+// 普通搜索
+SearchHit[] searchHits = searchResponse.getHits().getHits();
+for (SearchHit searchHit : searchHits) {
+	System.out.println(searchHit.getSourceAsString());
+}   
+```
+
+Scroll API：
+
+```java
+SearchRequestBuilder searchRequestBuilder = client.prepareSearch();  // 这里用的是SearchRequestBuilder
+searchRequestBuilder.setIndices("item");
+searchRequestBuilder.setScroll(new TimeValue(30000));  // 保持搜索的上下文环境时间
+SearchResponse searchResponse = searchRequestBuilder.get();
+
+String scrollId = searchResponse.getScrollId();
+System.out.println("ScrollId = " + scrollId);
+
+SearchHit[] hits = searchResponse.getHits().getHits();
+for (SearchHit hit : hits) {
+	System.out.println(hit.getSourceAsString());     // 发现只有10条
+}
+```
+
+滚动 ID 可以传递给 scroll API 来检索下一个批次的结果。请求中不用添加索引和类型，这些都指定在了原始的 search 请求中。
+
+```java
+SearchScrollRequestBuilder searchScrollRequestBuilder;  // 这里用SearchScrollRequestBuilder
+SearchResponse response;
+TimeValue timeValue = new TimeValue(30000);
+while (true) {
+	System.out.println("ScrollId = " + scrollId);
+	searchScrollRequestBuilder = client.prepareSearchScroll(scrollId);
+	searchScrollRequestBuilder.setScroll(timeValue);  // 重新设定滚动时间
+	response = searchScrollRequestBuilder.get();
+	if (response.getHits().getHits().length == 0) {
+		break;
+	}
+
+	SearchHit[] searchHits = response.getHits().getHits();
+	for (SearchHit searchHit : searchHits) {          // 每次10个
+		System.out.println(searchHit.getSourceAsString());
+	}
+	// 只有最近的滚动ID才能被使用
+	scrollId = response.getScrollId();
+}
+```
+
+
 
 # reference
 

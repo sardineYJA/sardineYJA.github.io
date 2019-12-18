@@ -27,7 +27,7 @@ jar包，里面包含了封装好的各种建立倒排索引，以及进行搜�
 
 - Index 索引（相当于数据库）：包含一堆有相似结构的文档数据
 
-- Type 类型（相当于表）：每个索引里都可以有一个或多个type，type是index中的一个逻辑数据分类，一个type下的document，都有相同的field
+- Type 类型（相当于表）：每个索引里都可以有一个或多个type，type是index中的一个逻辑数据分类，一个type下的document，都有相同的field（相当于一列）
 
 - Document 文档（相当于行）：文档是es中的最小数据单元，一个document可以是一条客户数据
 
@@ -48,6 +48,49 @@ jar包，里面包含了封装好的各种建立倒排索引，以及进行搜�
 - 主分片和副本分片的状态决定了集群的健康状态。每一个节点上都只会保存主分片或者其对应的一个副本分片，相同的副本分片不会存在于同一个节点中。如果集群中只有一个节点，则副本分片将不会被分配，此时集群健康状态为yellow，存在丢失数据的风险。
 
 - 每一个分片还会进一步拆分为分段（Segment）。
+
+
+
+## 节点配置
+
+
+（ES节点默认）：既有成为主节点的资格，又可以存储数据，还可以作为预处理节点。
+```sh
+node.master: true 
+node.data: true 
+node.ingest: true
+```
+
+（data节点）：只存储数据。
+```sh
+node.master: false 
+node.data: true 
+node.ingest: false
+```
+
+（master节点）：有成为主节点的资格，可以参与选举。
+```sh
+node.master: true 
+node.data: false 
+node.ingest: false
+```
+
+（client节点）：主要是针对海量请求的时候可以进行负载均衡。
+```sh
+node.master: false 
+node.data: false 
+node.ingest: true
+```
+
+（纯查询）：只可以接受查询。
+```sh
+node.master: false 
+node.data: false 
+node.ingest: false
+```
+
+
+半数选举：`discovery.zen.minimum_master_nodes`属性设置 NodesNum/2 + 1。
 
 
 
