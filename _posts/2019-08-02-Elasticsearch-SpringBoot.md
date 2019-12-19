@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "SpringBoot 整合 ES"
+title: "SpringBoot 整合 ES 的 ElasticsearchTemplate"
 date: 2019-08-02
 description: "Elasticsearch"
 tag: Elasticsearch
