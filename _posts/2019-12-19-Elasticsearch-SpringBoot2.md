@@ -8,10 +8,11 @@ tag: Elasticsearch
 ---
 
 
-# SpingBoot 使用 ES 的 high-level-client
+# high-level-client
 
+InetSocketTransportAddress  --> transportClient  --> RestHighLevelClient
 
-ES 7版本建议使用 high-level-client
+ES 7版本建议使用 high-level-client。
 
 
 ## 依赖
@@ -225,6 +226,23 @@ public void deleteByQuery(String index, QueryBuilder builder) {
 }
 ```
 
+
+## SearchSourceBuilder
+
+```java
+// 创建封装查询条件参数对象，所有的查询条件都会封装到此类
+SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+sourceBuilder.size(1000);
+sourceBuilder.from(0);
+sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+sourceBuilder.fetchSource(feilds, null);  // 获取指定的字段, String[] feilds
+sourceBuilder.sort("price", SortOrder.DESC);
+
+//创建请求对象，如果不传参数，这将针对所有索引运行，这里搜索多个索引, String[] indices
+SearchRequest searchRequest = new SearchRequest(indices,sourceBuilder);
+
+client.search(searchRequest, RequestOptions.DEFAULT).getHits();  // Client 查询
+```
 
 
 # reference
