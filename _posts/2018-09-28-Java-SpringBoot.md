@@ -12,6 +12,8 @@ tag: Java
 
 项目下载：https://start.spring.io/
 
+或新建项目 Spring Initializr
+
 ## 运行
 
 命令行：
@@ -83,7 +85,7 @@ person:
 
 ```java
 @Component
-@ConfigurationProperties(prefix = "person")
+@ConfigurationProperties(prefix = "person")  // 表示装载配置文件
 public class Person {
     private String name;
     private BigDecimal age;
@@ -94,16 +96,23 @@ public class Person {
 
 读取配置文件字段作为一个类的属性值
 ```java
-@Autowired
+@Autowired     // 这里还需 @Autowired
 private Person person;
 ```
 
-## 多个XXX.yml配置文件读取
+## 从多个 yml/properties 配置文件选择某个运行
 
-选择某个yml进行运行：
+从其中选择：application-dev.properties, application-prod.properties...
 
-java -jar -Dspring.profiles.active=... YYY.jar
+则 application.properties 配置，选择dev配置文件
+```sh
+spring.profiles.active=dev
+```
 
+如果需要使用命令启动，并选择配置文件：
+```sh
+java -jar -Dspring.profiles.active=dev YYY.jar
+```
 
 ## 警告
 
@@ -165,7 +174,7 @@ spring:
     password: root123456
   jpa:
     hibernate:
-      ddl-auto: create   # update是追加
+      ddl-auto: create   # create覆盖，update是追加
     show-sql: true
 ```
 
@@ -183,7 +192,7 @@ public class Student {
 }
 ```
 
-运行自动会创建student表
+运行自动会创建student表，相关字段
 
 
 ## Jpa操作数据库
@@ -220,7 +229,7 @@ public Student findById(@PathVariable("id") Integer id) {
 
 ## 事务
 
-方法前：@Transactional
+方法前加：@Transactional
 
 
 ## 表单验证
