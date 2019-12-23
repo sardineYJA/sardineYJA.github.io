@@ -7,17 +7,9 @@ tag: Java
 
 ---
 
-## 简介
+## Thymeleaf 模板引擎
 
-@RestController = @Controller + @ResponseBody
-
-@RestController 不能返回jsp，html页面。
-
-@Controller 返回到指定页面，需要返回JSON，XML或自定义mediaType内容到页面，则需要在对应的方法上加上 @ResponseBody 注解。
-
-
-
-## SpringBoot 跳转 html
+Thymeleaf 是一个面向java的XML/HTML5页面模板。
 
 ```xml
 <dependency>
@@ -30,7 +22,8 @@ tag: Java
 ```sh
 spring:
   thymeleaf:
-    prefix: classpath:/templates/
+    prefix: classpath:/templates/     # 模板路径
+    cache: false    # 开发配置为false，避免修改模板需重启服务器
 ```
 
 
@@ -51,6 +44,14 @@ resources/templates/fileUpload.html
     <p><input type="submit" value="提交"/></p>
 </form>
 ```
+
+
+@RestController = @Controller + @ResponseBody
+
+@RestController 不能返回jsp，html页面。
+
+@Controller 返回到指定页面，需要返回JSON，XML或自定义mediaType内容到页面，则需要在对应的方法上加上 @ResponseBody 注解。
+
 
 ## SpringBoot ES 搜索框
 
@@ -106,3 +107,25 @@ public String show(Model model) {
     return "show";   // 将model传递个show.html
 }
 ```
+
+当然也可以传递对象：
+
+```java
+@RequestMapping("show")
+public String show(Model model) {
+    List<Student> students = studentRepository.findAll();
+    model.addAttribute("students", students);
+    return "show";   // 将model传递个show.html
+}
+```
+
+show.html：
+```xml
+<html xmlns:th="http://www.thymeleaf.org">
+    <tr th:each="student:${students}">
+        <td th:text="${student.id}"></td>
+        <td th:text="${student.name}"></td>
+    </tr>>
+</html>
+```
+

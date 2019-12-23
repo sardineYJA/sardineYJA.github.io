@@ -102,6 +102,8 @@ private Person person;
 
 ## 从多个 yml/properties 配置文件选择某个运行
 
+配置文件优先级：.properties 高于 .yml
+
 从其中选择：application-dev.properties, application-prod.properties...
 
 则 application.properties 配置，选择dev配置文件
@@ -149,7 +151,11 @@ public String kan(@RequestParam(value = "id", required = false, defaultValue = "
 ```
 
 
-## 数据库
+## JPA(Java Persistence API) 
+
+通过基于JPA的Repository减少数据访问的代码量
+
+Repository——>CrudRepository(增删改查)——>PagingAndSortingRepository(增加分页和排序)——>JpaRepository（继承所有）
 
 ```xml
 <dependency>
@@ -180,8 +186,9 @@ spring:
 
 ```java
 @Entity
+@Table(name = "student")  // 表名，非必须，默认类名
 public class Student {
-    @Id
+    @Id                   // 主键id
     @GeneratedValue
     private Integer id;
 
@@ -194,9 +201,14 @@ public class Student {
 
 运行自动会创建student表，相关字段
 
+@Entity: 每个持久化POJO类都是一个实体Bean
+
+@Table: 声明此对象映射到数据库的数据表，不是必须
+
 
 ## Jpa操作数据库
 
+需要继承JpaRepository，<Student, Integer>，第二个参数为主键类型
 ```java
 public interface StudentRepository extends JpaRepository<Student, Integer> {
 }
@@ -211,7 +223,7 @@ public List<Student> list(){
     return studentRepository.findAll();
 }
 
-@GetMapping("/studentAdd")       // 向数据库添加
+@GetMapping("/studentAdd")       // 获取url?id和name，并向数据库添加
 public Student create(@RequestParam("id") Integer id,
                       @RequestParam("name") String name) {
     Student s = new Student();
@@ -220,23 +232,25 @@ public Student create(@RequestParam("id") Integer id,
     return studentRepository.save(s);
 }
 
-@GetMapping("/student/{id}")   
+@GetMapping("/student/{id}")     // 查询某个id
 public Student findById(@PathVariable("id") Integer id) {
     return studentRepository.findById(id).orElse(null);
 }
 ```
 
+并且JPA提供了一系列查询规范，具体可看文档。
+
 
 ## 事务
 
-方法前加：@Transactional
+方法或类前加：@Transactional
 
 
 ## 表单验证
 
 为Student类属性增加限制：
 ```java
-@Min(value = 18, message = "未成年！！")
+@Min(value = 18, message = "未成年！")
 private Integer age;
 ```
 
