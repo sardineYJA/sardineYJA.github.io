@@ -3,7 +3,7 @@ layout: post
 title: "SpringBoot 添加 html"
 date: 2018-09-29
 description: "SpringBoot 添加 html"
-tag: Java
+tag: Java Web
 
 ---
 

@@ -3,7 +3,7 @@ layout: post
 title: "Spring：基于xml"
 date: 2018-02-03
 description: "简单介绍Spring"
-tag: Java
+tag: Java Web
 
 ---
 
