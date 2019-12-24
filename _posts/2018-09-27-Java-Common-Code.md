@@ -21,6 +21,7 @@ log4j.appender.console.layout=org.apache.log4j.PatternLayout
 log4j.appender.console.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n
 ```
 
+
 ```xml
 <dependency>
     <groupId>org.slf4j</groupId>
@@ -33,11 +34,15 @@ log4j.appender.console.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{1}: 
 ```java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-public static Logger logger = LoggerFactory.getLogger(Xxx.class);
-logger.error("Error Message!");
-logger.warn("Warn Message!");
-logger.info("Info Message!");
-logger.debug("Debug Message!");
+
+public class Test {
+	public static Logger logger = LoggerFactory.getLogger(Xxx.class);
+	logger.error("Error Message!");
+	logger.warn("Warn Message!");
+	logger.info("Info Message!");
+	logger.debug("Debug Message!");
+}
+
 ```
 
 > ERROR StatusLogger No log4j2 configuration file found. Using default configuration: logging only errors to the console. Set system property 'org.apache.logging.log4j.simplelog.StatusLogger.level' to TRACE to show Log4j2 internal initialization logging.
