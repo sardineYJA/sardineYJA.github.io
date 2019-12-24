@@ -1,12 +1,11 @@
 ---
 layout: post
-title: "SpringBoot 整合 ES 的 HighLevelClient"
+title: "SpringBoot 整合 ES7"
 date: 2019-12-19
-description: "Elasticsearch"
-tag: Elasticsearch
+description: "SpringBoot 整合 ES"
+tag: Java Web
 
 ---
-
 
 # high-level-client
 
