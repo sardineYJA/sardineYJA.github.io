@@ -9,9 +9,10 @@ tag: Java Web
 
 # high-level-client
 
+关于连接ES Client：
 InetSocketTransportAddress  --> transportClient  --> RestHighLevelClient
 
-ES 7版本建议使用 high-level-client。
+ES 7版本建议使用 high-level-client（RestHighLevelClient）。
 
 
 ## 依赖
