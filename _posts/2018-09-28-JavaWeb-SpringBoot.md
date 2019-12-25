@@ -251,6 +251,8 @@ public Student findById(@PathVariable("id") Integer id) {
 为Student类属性增加限制：
 ```java
 @Min(value = 18, message = "未成年！")
+@NotEmpty(message = "此项必填")
+....
 private Integer age;
 ```
 

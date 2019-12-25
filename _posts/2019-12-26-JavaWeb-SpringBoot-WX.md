@@ -259,6 +259,156 @@ public class Test {
 </configuration>
 ```
 
+# 依赖
+
+```xml
+<!-- 数据连接 -->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+</dependency>
+
+<!-- JPA方式操作数据库 -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+
+<!-- 简化Getter/Setter等代码 -->
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+</dependency>
+```
+
+# yml 配置文件
+
+## 数据库配合
+
+```sh
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://127.0.0.1:3306/sell?characterEncoding=utf-8&useSSL=false
+  jpa:
+    show-sql: true
+```
+
+
+# dao 层
+
+## product_category 表创建相应的类
+
+```java
+@Entity
+@DynamicUpdate   // 当字段相关update_time会随着改变
+@Data            // 简化Setter/Getter,toString等
+public class ProductCategory {
+    @Id
+    @GeneratedValue
+    private Integer categoryId;
+    // ... 其他字段略
+}
+```
+
+## Repository 操作数据库接口
+
+```java
+public interface ProductCategoryRepository extends JpaRepository<ProductCategory, Integer> {
+    // 符合JPA命名规则的方法定义，创建相应的查询函数
+}
+```
+
+## 测试类
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class ProductCategoryRepositoryTest {
+    @Autowired
+    private ProductCategoryRepository repository;
+
+    @Test
+    public void findOneTest() {
+        ProductCategory productCategory = repository.findById(1).orElse(null);
+        System.out.println(productCategory.toString());
+    }
+}
+```
+
+# Service 层
+
+即对 Repository 数据库操作接口进行一步封装：
+
+```java
+public interface CategoryService {
+    ProductCategory findOne(Integer categoryId);
+    List<ProductCategory> findAll();
+    // ...其他相应查询函数
+}
+```
+
+```java
+@Service
+public class CategoryServiceImpl implements CategoryService {
+
+    @Autowired
+    private ProductCategoryRepository repository; // 实际使用的还是Repository接口
+
+    @Override
+    public ProductCategory findOne(Integer categoryId) {
+        return repository.findById(categoryId).orElse(null);
+    }
+
+    @Override
+    public List<ProductCategory> findAll() {
+        return repository.findAll();
+    }
+    // ...其他相应函数
+    // 注意事务的使用 @Transaction
+}
+```
+
+# Controller 层
+
+```java
+@RestController
+@RequestMapping("/buyer/product")
+public class BuyerProductController {
+
+    @Autowired
+    private ProductService productService;
+
+    // ... 其他相关Server类
+
+    @GetMapping("/list")
+    public ResultVO list(@RequestParam(value = "sellerId", required = false) String sellerId) {
+        // ... 数据库查询逻辑
+        // ... 整合数据，并返回
+        return ResultVOUtil.success(productVOList);
+    }
+
+    // ... 其他相关链接响应函数
+}
+```
+
+对于返回的数据进行封装成类：
+
+```java
+@Data       // Getter&Setting
+public class ProductVO implements Serializable {  // 序列化
+    @JsonProperty("name")  // 表示返回json时，字段名为name，并非categoryName
+    private String categoryName;
+
+    // ... 其他字段
+
+    @JsonProperty("foods")
+    private List<ProductInfoVO> productInfoVOList; // 字段
+}
+```
+
 
 # reference
 
