@@ -14,7 +14,7 @@ tag: Java Web
 
 或新建项目 Spring Initializr
 
-## 运行
+## 部署运行
 
 命令行：
 ```sh
@@ -23,8 +23,12 @@ mvn spring-boot:run
 
 打包运行：
 ```sh
-mvn clean package
-java -jar XXX.jar
+mvn clean package   # 打包
+
+java -jar XXX.jar   # 部署
+
+java -jar -Dserver.port=8899 XXX.jar   # 修改端口
+java -jar -Dspring.profiles.active=dev XXX.jar   # 选择配置文件
 ```
 
 网址：http://localhost:8080
@@ -146,7 +150,7 @@ public String test(@PathVariable("id") Integer id) {
 ```java
 @RequestMapping("/test")
 public String kan(@RequestParam(value = "id", required = false, defaultValue = "99") Integer id) {
-    return "id=="+id;
+    return "id=="+id;   // defaultValue 设置默认值
 }
 ```
 
@@ -220,7 +224,10 @@ private StudentRespository studentRespository;
 
 @GetMapping("/student")         // 查询数据库全部
 public List<Student> list(){
-    return studentRepository.findAll();
+    return studentRepository.findAll();  // 返回json
+
+    PageRequest request = PageRequest.of(page, size);
+    studentRepository.findAll(request);   // 也可根据页码查询，从0页开始
 }
 
 @GetMapping("/studentAdd")       // 获取url?id和name，并向数据库添加
@@ -234,7 +241,8 @@ public Student create(@RequestParam("id") Integer id,
 
 @GetMapping("/student/{id}")     // 查询某个id
 public Student findById(@PathVariable("id") Integer id) {
-    return studentRepository.findById(id).orElse(null);
+    return studentRepository.findById(id).orElse(null);  
+    // 返回类，即返回json数据
 }
 ```
 
@@ -252,7 +260,7 @@ public Student findById(@PathVariable("id") Integer id) {
 ```java
 @Min(value = 18, message = "未成年！")
 @NotEmpty(message = "此项必填")
-....
+// ... 或者其他限制
 private Integer age;
 ```
 

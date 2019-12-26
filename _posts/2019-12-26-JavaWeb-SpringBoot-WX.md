@@ -388,6 +388,7 @@ public class BuyerProductController {
         // ... 数据库查询逻辑
         // ... 整合数据，并返回
         return ResultVOUtil.success(productVOList);
+        // 返回一个类即返回到url/buyer/product/list的json数据
     }
 
     // ... 其他相关链接响应函数
@@ -408,6 +409,23 @@ public class ProductVO implements Serializable {  // 序列化
     private List<ProductInfoVO> productInfoVOList; // 字段
 }
 ```
+
+ModelAndView 和 Map :
+
+```java
+@GetMapping("/list")
+public ModelAndView list(Map<String, Object> map) {
+    List<ProductCategory> categoryList = categoryService.findAll();
+    map.put("categoryList", categoryList);
+    return new ModelAndView("category/list", map);  // templates/category/list.html
+}
+```
+
+
+# 登录登出
+
+
+
 
 
 # reference
