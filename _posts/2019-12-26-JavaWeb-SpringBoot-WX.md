@@ -424,7 +424,186 @@ public ModelAndView list(Map<String, Object> map) {
 
 # 登录登出
 
+## 保存登录信息
 
+- token(令牌)
+
+- Cookie存储在浏览器，不是很安全。
+
+- Session存储在服务器，当访问增多会比较占用服务器的性能。
+
+- Redis(实现分布式系统下的Session共享)
+
+
+## Cookie工具类
+
+```java
+public class CookieUtil {
+    // 设置Session
+    public static void set(HttpServletResponse response,
+                           String name,
+                           String value,
+                           int maxAge) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setPath("/");
+        cookie.setMaxAge(maxAge);
+        response.addCookie(cookie);
+    }
+
+    // 获取cookie
+    public static Cookie get(HttpServletRequest request,
+                           String name) {
+        Map<String, Cookie> cookieMap = readCookieMap(request);
+        if (cookieMap.containsKey(name)) {
+            return cookieMap.get(name);
+        }else {
+            return null;
+        }
+    }
+
+    // 将cookie封装成Map
+    private static Map<String, Cookie> readCookieMap(HttpServletRequest request) {
+        Map<String, Cookie> cookieMap = new HashMap<>();
+        Cookie[] cookies = request.getCookies();  // 里面可能有多个cookie
+        if (cookies != null) {
+            for (Cookie cookie: cookies) {
+                cookieMap.put(cookie.getName(), cookie);
+            }
+        }
+        return cookieMap;
+    }
+}
+```
+
+## 登录
+
+```java
+@GetMapping("/login")
+public ModelAndView login(@RequestParam("openid") String openid,
+                          HttpServletResponse response,
+                          Map<String, Object> map) {
+
+    //1. openid去和数据库里的数据匹配
+    SellerInfo sellerInfo = sellerService.findSellerInfoByOpenid(openid);
+    if (sellerInfo == null) {
+        map.put("msg", "登录成功！");
+        map.put("url", "/sell/seller/order/list");
+        return new ModelAndView("common/error");    // templates/common/error.html
+    }
+
+    //2. 设置token至redis
+    String token = UUID.randomUUID().toString();
+    Integer expire = RedisConstant.EXPIRE;
+
+    redisTemplate.opsForValue().set(String.format(RedisConstant.TOKEN_PREFIX, token), openid, expire, TimeUnit.SECONDS);
+
+    //3. 设置token至cookie
+    CookieUtil.set(response, CookieConstant.TOKEN, token, expire);
+    return new ModelAndView("redirect:" + projectUrlConfig.getSell() + "/sell/seller/order/list");
+}
+```
+
+## 登出
+
+```java
+@GetMapping("/logout")
+public ModelAndView logout(HttpServletRequest request,
+                   HttpServletResponse response,
+                   Map<String, Object> map) {
+    //1. 从cookie里查询
+    Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
+    if (cookie != null) {
+        //2. 清除redis
+        redisTemplate.opsForValue().getOperations().delete(String.format(RedisConstant.TOKEN_PREFIX, cookie.getValue()));
+
+        //3. 清除cookie
+        CookieUtil.set(response, CookieConstant.TOKEN, null, 0);
+    }
+
+    map.put("msg", ResultEnum.LOGOUT_SUCCESS.getMessage());
+    map.put("url", "/sell/seller/order/list");
+    return new ModelAndView("common/success", map);
+}
+```
+
+
+
+# AOP 身份验证
+
+通过切片对访问url进行登录身份验证，非登录则抛出异常，并对异常进行捕获处理并调到登录界面。
+
+```java
+@Aspect
+@Component
+public class SellerAuthorizeAspect {
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    // 验证范围表达式
+    @Pointcut("execution(public * com.imooc.controller.Seller*.*(..))" +
+    "&& !execution(public * com.imooc.controller.SellerUserController.*(..))")
+    public void verify() {}
+
+    @Before("verify()")         // 验证是否已登录
+    public void doVerify() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+
+        //查询cookie
+        Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
+        if (cookie == null) {
+            throw new SellerAuthorizeException();
+        }
+
+        //去redis里查询
+        String tokenValue = redisTemplate.opsForValue().get(String.format(RedisConstant.TOKEN_PREFIX, cookie.getValue()));
+        if (StringUtils.isEmpty(tokenValue)) {
+            throw new SellerAuthorizeException();
+        }
+    }
+}
+```
+
+```java
+@ControllerAdvice         // 全局异常处理
+public class SellExceptionHandler {
+    //拦截登录异常 SellerAuthorizeException
+    @ExceptionHandler(value = SellerAuthorizeException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ModelAndView handlerAuthorizeException() {
+        return new ModelAndView("url");  // 进行登录界面跳转
+    }
+}
+```
+
+@ControllerAdvice 全局异常统一处理的类
+
+@ExceptionHandler 处理具体异常类  
+
+@ResponseStatus(HttpStatus.FORBIDDEN) 表示返回403 Forbidden 页面
+
+@responseBody 该注解表示该方法的返回结果直接写到Http response Body中，不会解析成跳转地址，会解析成相应的json格式的对象 集合、字符串或xml等直接返回给前台。
+
+
+
+# 优化点
+
+mybatis
+
+redis + 分布式锁
+
+高并发请求：`ab -n 500 -c 100 http://127.0.0.1:8080/url`，其中 -n 表示请求数，-c 表示并发数。
+
+
+synchronize锁（只适合单点即单机模式）
+
+redis分布式锁：多台机器上多个进程对一个数据进行操作的互斥
+
+
+缓存：@EnableCaching
+
+@Cacheable、@CachePut、@CacheEvict
 
 
 
@@ -433,4 +612,5 @@ public ModelAndView list(Map<String, Object> map) {
 https://coding.imooc.com/class/117.html
 
 https://www.cnblogs.com/zhangjianbing/p/8992897.html
+
 
