@@ -589,21 +589,138 @@ public class SellExceptionHandler {
 
 # 优化点
 
-mybatis
+## mybatis 与 jpa
 
-redis + 分布式锁
+```xml
+<dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>1.2.0</version>
+</dependency>
+```
+
+```java
+@SpringBootApplication
+@MapperScan(basePackages = "com.sxdt.dataobject")    // mybatis 操作数据库
+@EnableCaching                                       // 使用缓存
+public class SellApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SellApplication.class, args);
+    }
+}
+```
+
+```java
+public interface ProductCategoryMapper {
+
+    @Insert("insert into product_category(category_name, category_type) values (#{categoryName, jdbcType=VARCHAR}, #{category_type, jdbcType=INTEGER})")
+    int insertByMap(Map<String, Object> map);
+
+    @Insert("insert into product_category(category_name, category_type) values (#{categoryName, jdbcType=VARCHAR}, #{categoryType, jdbcType=INTEGER})")
+    int insertByObject(ProductCategory productCategory);
+
+    @Select("select * from product_category where category_name = #{categoryName}")
+    @Results({
+        @Result(column = "category_id", property = "categoryId"),
+        @Result(column = "category_name", property = "categoryName"),
+        @Result(column = "category_type", property = "categoryType")
+    })
+    List<ProductCategory> findByCategoryName(String categoryName);
+
+    // 两个参数及以上需要@Param指定
+    @Update("update product_category set category_name = #{categoryName} where category_type = #{categoryType}")
+    int updateByCategoryType(@Param("categoryName") String categoryName, @Param("categoryType") Integer categoryType);
+
+    @Update("update product_category set category_name = #{categoryName} where category_type = #{categoryType}")
+    int updateByObject(ProductCategory productCategory);
+
+    @Delete("delete from product_category where category_type = #{categoryType}")
+    int deleteByCategoryType(Integer categoryType);
+}
+```
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Slf4j
+public class ProductCategoryMapperTest {
+
+    @Autowired
+    private ProductCategoryMapper mapper;
+
+    @Test
+    public void insertByMap() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        map.put("categoryName", "yang");
+        map.put("category_type", 101);
+        int result = mapper.insertByMap(map);
+        Assert.assertEquals(1, result);
+    }
+
+    @Test
+    public void insertByObject() {
+        ProductCategory productCategory = new ProductCategory();
+        productCategory.setCategoryName("yang");
+        productCategory.setCategoryType(102);
+        int result = mapper.insertByObject(productCategory);
+        Assert.assertEquals(1, result);
+    }
+
+    @Test
+    public void findByCategoryName() {
+        List<ProductCategory> result = mapper.findByCategoryName("yang");
+        Assert.assertNotEquals(0, result.size());
+    }
+
+    @Test
+    public void updateByCategoryType() {
+        int result = mapper.updateByCategoryType("yang", 101);
+        Assert.assertEquals(1, result);
+    }
+
+    @Test
+    public void updateByObject() {
+        ProductCategory productCategory = new ProductCategory();
+        productCategory.setCategoryName("yang");
+        productCategory.setCategoryType(102);
+        int result = mapper.updateByObject(productCategory);
+        Assert.assertEquals(1, result);
+    }
+
+    @Test
+    public void deleteByCategoryType() {
+        int result = mapper.deleteByCategoryType(102);
+        Assert.assertEquals(1, result);
+    }
+}
+```
+
+
+## 高并发情况需要加锁
 
 高并发请求：`ab -n 500 -c 100 http://127.0.0.1:8080/url`，其中 -n 表示请求数，-c 表示并发数。
-
 
 synchronize锁（只适合单点即单机模式）
 
 redis分布式锁：多台机器上多个进程对一个数据进行操作的互斥
 
 
+## 使用 Redis 缓存
+
 缓存：@EnableCaching
 
-@Cacheable、@CachePut、@CacheEvict
+- @Cacheable 将函数返回的结果（可序列化），放到Cache中，下次再运行时不再运行函数，直接从Cache获取，用在查询函数中
+
+- @CachePut 将函数返回的结果（可序列化），重新放到Cache，用在修改函数中
+
+- @CacheEvict 将Cache清除掉，用在修改函数中
+
+```java
+@Cacheable(cacheNames = "product", key = "#sellerId")
+public ResultVO list(@RequestParam(value = "sellerId", required = false) String sellerId) {
+    pass;
+}
+```
 
 
 
