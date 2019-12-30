@@ -281,6 +281,7 @@ public class Test {
 </dependency>
 ```
 
+
 # yml 配置文件
 
 ## 数据库配合
@@ -295,6 +296,23 @@ spring:
   jpa:
     show-sql: true
 ```
+
+## 将自定义配置项写成类
+
+```java
+@Data                                     // 省略Setter/Getter
+@Component
+@ConfigurationProperties(prefix = "app")  // 读取配置
+public class AppAccountConfig {
+    private String appId;
+    private String appName;
+    // ... 其他字段
+}
+
+@Autowired     // 使用时需要装载
+private AppAccountConfig appAccountConfig;
+```
+
 
 
 # dao 层
