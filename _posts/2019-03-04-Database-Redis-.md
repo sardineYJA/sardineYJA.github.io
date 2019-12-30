@@ -1,35 +1,72 @@
 ---
 layout: post
-title: "Redis的介绍"
+title: "Redis 简介与安装"
 date: 2019-03-04
 description: "简单介绍Redis安装教程"
 tag: Database
 
 ---
-# 简介
 
 ## 介绍
-NoSQL技术，这是一种基于内存的数据库，并且提供一定的持久化功能。Redis和MongoDB是当前使用最广泛的NoSQL（Not Only SQL非关系型的数据库）。Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库。在项目中使用redis，主要是从两个角度去考虑:性能和并发。性能：在碰到需要执行耗时特别久，且结果不频繁变动的SQL，就特别适合将运行结果放入缓存。这样，后面的请求就去缓存中读取，使得请求能够迅速响应。并发：在大并发的情况下，所有的请求直接访问数据库，数据库会出现连接异常。这个时候，就需要使用redis做一个缓冲操作，让请求先访问到redis，而不是直接访问数据库。
 
-## 单线程redis快的原因
-1. redis是单线程工作模型
-2. 纯内存操作
-3. 单线程操作，避免了频繁的上下文切换
-4. 采用了非阻塞I/O多路复用机制
+- NoSQL技术，基于内存的数据库，并且提供一定的持久化功能。
+
+- Redis和MongoDB是当前使用最广泛的NoSQL（Not Only SQL非关系型的数据库）。
+
+- Redis使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库。
+
+
+## 持久化
+
+- 方式一：RDB(Redis DataBase)，功能核心函数rdbSave(生成RDB文件)和rdbLoad（从文件加载内存）
+
+- 方式二：AOF(Append-only file)，每当执行服务器(定时)任务或者函数时flushAppendOnlyFile 函数都会被调用
+
+
+## 通信协议
+
+- RESP 是redis客户端和服务端之前使用的一种通讯协议
+
+- 特点：实现简单、快速解析、可读性好
+
 
 ## 缺点
-1. 缓存和数据库双写一致性问题
-2. 缓存雪崩问题
-3. 缓存击穿问题
-4. 缓存的并发竞争问题
+
+- 缓存雪崩问题：缓存层宕掉或Redis恰好将这部分数据全部删光
+
+- 缓存击穿问题：缓存不存在对应的value（恶意的请求会大量不命中），并发量很大去访问DB
+
+
+## 解决雪崩问题
+
+- 对于“对缓存数据设置相同的过期时间，导致某段时间内缓存失效，请求全部走数据库”情况：
+
+解决方法：在缓存的时候给过期时间加上一个随机值，这样就会大幅度的减少缓存在同一时间过期
+
+- 对于“Redis挂掉了，请求全部走数据库”情况：
+
+解决方法：实现Redis的高可用(Redis 集群)，尽量避免Redis挂掉这种情况发生
+
+
+## 解决击穿问题
+
+- 用布隆过滤器(BloomFilter)或压缩filter提前拦截，不合法就不让请求到数据库层
+
+- 从数据库找不到时，也将这个空对象设置到缓存里边去。下次再请求的时候，就可以从缓存里边获取了，并设置一个较短的过期时间。
+
+
+
 
 
 # Windows安装
+
 window下载安装：https://github.com/microsoftarchive/redis/releases
 
 直接安装msi软件，并增加环境路径
 
+
 ## 启动错误
+
 命令：`redis-server.exe redis.windows.conf`
 
 提示：
@@ -65,7 +102,9 @@ redis-server e:\Redis\redis.windows.conf
 
 新的窗口连接: `redis-cli -h 127.0.0.1 -p 6379`
 
-## 部署Redis
+
+## 部署 Redis
+
 命令：`redis-server --service-install e:\Redis\redis.windows.conf`
 
 提示：
@@ -84,6 +123,7 @@ redis-server --service-stop           // 停止服务
 介绍：https://github.com/antirez/redis
 
 安装gcc：yum -y install gcc gcc-c++
+
 
 ## 安装tcl
 
