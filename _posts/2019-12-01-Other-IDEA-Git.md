@@ -17,7 +17,7 @@ File → Settings → Version Control → GitHub，登录的GitHub账号
 
 ## 上传项目
 
-0. 右键项目，添加maven项目的.gitignore文件 
+0. 右键项目，new → 添加maven项目的.gitignore文件 
 
 1. VCS → Import into Version Control → Create Git Repository，配置好后，项目文件名称会变红。
 
@@ -34,7 +34,7 @@ File → Settings → Version Control → GitHub，登录的GitHub账号
 - 绿色，已经加入控制暂未提交
 - 白色，加入，已提交，无改动
 - 蓝色，加入，已提交，有改动
-- 灰色：版本控制已忽略文件
+- 灰色，版本控制已忽略文件
 
 
 ## 修改 .gitignore 文件
