@@ -53,6 +53,7 @@ ES 7版本建议使用 high-level-client（RestHighLevelClient）。
 </dependency>
 ```
 
+配置文件：
 ```
 es.search.node=172.16.7.93
 es.search.port=9200

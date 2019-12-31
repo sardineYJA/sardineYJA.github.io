@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "SpringBoot 微信点餐项目"
+title: "SpringBoot 项目案例"
 date: 2019-12-26
-description: "SpringBoot 微信点餐项目"
+description: "SpringBoot 项目案例"
 tag: Java Web
 
 ---
@@ -101,7 +101,7 @@ public class Test {
 
 此配置不仅在控制台输出，并保留在磁盘，info/debug/error/warn日志区分开，按照每天做归档。
 
-在resources下新建logback-spring.xml
+在resources下新建logback-spring.xml，配置文件无需任何修改，它也可以被识别。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
