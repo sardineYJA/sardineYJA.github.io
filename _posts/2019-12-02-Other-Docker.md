@@ -74,7 +74,9 @@ systemctl status docker
 ```sh
 docker pull training/webapp  # 载入镜像
 docker run -d -P training/webapp python app.py
+# -P 随机端口，-p 指定端口，例如：-p 5000:5000
 # 运行一个 Python Flask 应用来运行一个web应用
+
 docker ps   # 查看应用端口
 # 打开Web:http://172.16.7.124:32768
 ```
@@ -89,6 +91,41 @@ docker images              # 查看所有镜像
 
 docker rmi (镜像名)        # 删除镜像
 ```
+
+
+## 网络
+
+```sh
+docker network ls    # Docker 网络列表
+
+docker network create -d bridge test-net
+# -d 网络类型：bridge, overlay
+
+# 建立两个容器并连接到 test-net 网络:
+docker run -itd --name test1 --network test-net ubuntu /bin/bash
+docker run -itd --name test2 --network test-net ubuntu /bin/bash
+
+docker exec -it test1 /bin/bash    # 进入test1容器
+apt-get update                     # 安装ping
+apt install iputils-ping
+ping test2       # ping 证明 test1 容器和 test2 容器建立了互联关系 
+```
+
+## 用户仓库
+
+```sh
+# https://hub.docker.com/ 注册账号
+docker login      # 登录
+docker logout     # 退出
+
+docker push username/ubuntu:18.04  # 将自己的镜像推送到 Docker Hub
+```
+
+## Dockerfile
+
+
+
+
 
 
 # reference
