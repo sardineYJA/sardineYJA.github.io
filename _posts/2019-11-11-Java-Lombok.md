@@ -67,3 +67,18 @@ public class CleanupExample {
 }
 ```
 
+
+## @Slf4j
+
+@Slf4j 相当于定义了日志变量log
+
+```java
+@Slf4j
+public class Demo {
+    // 省略了 private final Logger log = LoggerFactory.getLogger(当前类名.class); 
+    public String auth(String s) {
+        log.error("没有通过权限验证！");
+    }
+```
+
+

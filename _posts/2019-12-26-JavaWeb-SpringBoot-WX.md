@@ -583,6 +583,8 @@ public class SellerAuthorizeAspect {
 }
 ```
 
+## @ControllerAdvice 全局异常处理
+
 ```java
 @ControllerAdvice         // 全局异常处理
 public class SellExceptionHandler {
