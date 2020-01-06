@@ -24,7 +24,7 @@ social:
 # 《--------------- 下面的信息可以自行选择是否修改 ------------------------》
 
 # 文章链接形式
-# permalink: /:year/:month/:title/
+permalink: /:year/:month/:title/
 # Format
 highlighter: rouge
 
