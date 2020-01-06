@@ -14,7 +14,7 @@ tag: Java Web
 ## 三大功能模块
 
 - Subject：主体，一般指用户。
-- SecurityManager：安全管理器，管理所有Subject，可以配合内部安全组件。
+- SecurityManager：安全管理器，管理所有Subject。
 - Realms：用于进行权限信息的验证，一般需要自己实现。
 
 
@@ -39,7 +39,6 @@ tag: Java Web
 ## 实体类
 
 一个User可能有多种角色Role，每种Role有相应的权限Permissions。
-
 
 ```java
 @Data
@@ -236,10 +235,10 @@ public class LoginController {
 
 ## 注解
 
-@RequiresGuest          代表无需认证即可访问，同理的就是 /path = anon
-@RequiresAuthentication 需要认证，只要登录成功后就允许你操作
-@RequiresPermissions    需要特定的权限，没有则抛出 AuthorizationException
-@RequiresRoles          需要特定的角色，没有则抛出 AuthorizationException
+- @RequiresGuest          代表无需认证即可访问，同理的就是 /path = anon
+- @RequiresAuthentication 需要认证，只要登录成功后就允许你操作
+- @RequiresPermissions    需要特定的权限，没有则抛出 AuthorizationException
+- @RequiresRoles          需要特定的角色，没有则抛出 AuthorizationException
 
 
 
