@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "SpringBoot 添加 html"
+title: "SpringBoot 使用 Thymeleaf"
 date: 2018-09-29
-description: "SpringBoot 添加 html"
+description: "SpringBoot 使用 Thymeleaf"
 tag: Java Web
 
 ---

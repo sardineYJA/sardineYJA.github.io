@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "itchat 微信"
+title: "itchat 微信库"
 date: 2018-10-01
-description: "itchat 微信"
+description: "itchat 微信库"
 tag: Interest
 
 ---

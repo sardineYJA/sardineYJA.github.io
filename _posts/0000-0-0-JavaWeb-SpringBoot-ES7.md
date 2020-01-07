@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "SpringBoot 整合 ES7"
+title: "SpringBoot 结合 Elasticsearch 7版本"
 date: 2019-12-19
-description: "SpringBoot 整合 ES"
+description: "SpringBoot 整合 ES7"
 tag: Java Web
 
 ---

@@ -1,13 +1,12 @@
 ---
 layout: post
-title: "Tomcat 项目"
+title: "Tomcat 基础使用"
 date: 2018-02-26
 description: "简单介绍Tomcat"
 tag: Java Web
 
 ---
 
-# tomcat
 
 ## IDEA新建tomcat项目
 

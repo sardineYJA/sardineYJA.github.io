@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "SpringBoot 整合 Druid"
+title: "SpringBoot 整合 Druid 监控"
 date: 2019-12-23
-description: "SpringBoot 整合 Druid"
+description: "SpringBoot 整合 Druid 监控"
 tag: Java Web
 
 ---

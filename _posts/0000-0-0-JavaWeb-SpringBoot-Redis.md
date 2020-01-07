@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "SpringBoot 使用 Redis"
+title: "SpringBoot 使用 Redis 缓存及分布式锁"
 date: 2019-12-29
 description: "SpringBoot 使用 Redis"
 tag: Java Web
