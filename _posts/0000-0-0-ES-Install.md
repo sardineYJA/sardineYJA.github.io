@@ -289,6 +289,8 @@ ES 的bin目录下plugin已经修改成elasticsearch-plugin
 
 # 中文分词
 
+## ik 分词
+
 ik 分词模式：ik_max_word（最细颗粒，穷尽所有可能）和 ik_smart（最粗颗粒）
 
 下载与ES版本一致：https://github.com/medcl/elasticsearch-analysis-ik/releases
@@ -302,6 +304,11 @@ yum -y install unzip
 
 unzip elasticsearch-analysis-ik-5.2.2.zip -d ../module/elasticsearch-5.2.2/plugins/ik
 ```
+
+## pinyin 分词 
+
+地址：https://github.com/medcl/elasticsearch-analysis-pinyin/releases
+
 
 # reference
 

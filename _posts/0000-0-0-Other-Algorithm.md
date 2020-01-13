@@ -305,6 +305,34 @@ void getNext(char * T)
 }
 ```
 
+# 动态查找
+
+## 二叉排序树
+
+左节点数值 < 根节点数值 < 右节点数值，中序遍历则就是升序排序
+
+循环方式查找：
+```C++
+int Search(BiTreeNode * root, DataType item) 
+{
+    BiTreeNode * p;
+    if (root != NULL) {
+        p = root;
+        while (p != NULL) {
+            if (p->data == item) return 1;           // 查找成功
+            if (p->data < item) p = p->rightChild;   // 目标数较大，往右查
+            if (p->data > item) p = p->leftChild;    // 目标数较小，往左查      
+        }
+    }
+}
+```
+
+当二叉排序树是一颗完全二叉树，或实现平衡二叉树，它们平均查找长度`O(lbn)`。
+
+B-树是一种平衡多叉排序树，主要用于动态查找。
+
+B+树是B-树的变形，主要用于文件系统。
+
 
 
 # 题目
