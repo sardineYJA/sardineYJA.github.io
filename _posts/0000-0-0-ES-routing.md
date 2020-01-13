@@ -54,7 +54,7 @@ PUT 索引名/类型/id值?routing=路由值&refresh
   "data": "Hello"
 }
 
-# hash(路由值)定位到分片，如果分片已存在，则更新Update，否则Create(即使其他分片也有此id也会创建)
+# hash(路由值)定位到分片，如果分片已存在此id，则更新Update，否则Create(即使其他分片也有此id也会创建)
 ```
 
 总结：
