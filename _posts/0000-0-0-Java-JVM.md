@@ -75,35 +75,49 @@ JVM Runtime Area 其实就是指 JVM 在运行期间，其对JVM内存空间的�
 
 ## PC Register
 
-每个线程都有一个程序计数器，是线程私有的,就是一个指针，指向方法区中的方法字节码（用来存储指向下一条指令的地址,也即将要执行的指令代码），由执行引擎读取下一条指令，是一个非常小的内存空间，几乎可以忽略不记。
+每个线程都有一个程序计数器，是`线程私有`的,就是一个指针，指向方法区中的方法字节码（用来存储指向下一条指令的地址,也即将要执行的指令代码），由执行引擎读取下一条指令，是一个非常小的内存空间，几乎可以忽略不记。
 
 
 ## Native Method Stack
 
-登记 native 方法，在 Execution Engine 执行时加载 native libraries
+Java Stack 为虚拟机执行Java方法服务，Native Method Stack 则为虚拟机使用到的Native方法服务。
+
+登记 native 方法，在 Execution Engine 执行时加载 native libraries。
+
+
+## Java Stack
+
+栈内存主管Java程序的运行，是在线程创建时创建，它的生命期是跟随线程的生命期，线程结束栈内存也就释放，对于栈来说不存在垃圾回收问题，只要线程一结束该栈就Over，生命周期和线程一致，是`线程私有`的。
+
+基本类型的变量、实例方法、引用类型变量都是在函数的栈内存中分配。
+
+栈分为3个部分：基本类型变量区、执行环境上下文、操作指令区(存放操作指令)。
+
+每个方法在执行的同时都会创建一个栈帧（Stack Frame）:
+
+![png](/images/posts/all/JVM虚拟机栈.png)
+
+每个线程里面都是顺序执行的，里面的所有程序的执行都在栈帧里，若一段代码调用一个方法就会产生一个新的栈帧压到栈里去。
+
+- StackOverflowError：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出 StackOverflowError。
+
+- OutOfMemoryError：如果虚拟机栈可以动态扩展，如果扩展时无法申请到足够的内存，将抛出 OutOfMemoryErro。
+
 
 
 ## Method Area
 
-方法区是线程共享的，通常用来保存装载的类的元结构信息。
+方法区是`线程共享的`，通常用来保存装载的类的元结构信息，常量，静态变量。
 
+Method Area 别名叫 Non-Heap(非堆)。
 
-## Stack Area
+运行时常量池（Runtime Constant Pool）是方法区的一部分。
 
-栈内存主管Java程序的运行，是在线程创建时创建，它的生命期是跟随线程的生命期，线程结束栈内存也就释放，对于栈来说不存在垃圾回收问题，只要线程一结束该栈就Over，生命周期和线程一致，是线程私有的。
-
-基本类型的变量、实例方法、引用类型变量都是在函数的栈内存中分配。
-
-栈分为3个部分：基本类型变量区、执行环境上下文、操作指令区(存放操作指令)
-
-![png](/images/posts/all/JVM虚拟机栈.png)
-
-每个线程里面都是顺序执行的，里面的所有程序的执行都在栈帧里，若一段代码调用一个方法就会产生一个新的栈帧压到栈里去
 
 
 ## Heap Area(重点)
 
-一个JVM实例只存在一个堆内存，堆内存的大小是可以调节的。类加载器读取了类文件后，需要把类、方法、常变量放到堆内存中，保存所有引用类型的真实信息，以方便执行器执行。
+一个JVM实例只存在一个堆内存，堆内存的大小是可以调节的，`线程共享`的，主要存放对象实例。
 
 堆内存逻辑上分为三部分：新生+养老+永久
 
@@ -142,25 +156,47 @@ System.out.println("maxMemory=" + maxMemory + "Byte," + (maxMemory/1024/1024) + 
 System.out.println("totalMemory=" + totalMemory + "Byte," + (totalMemory/1024/1024) + "MB");
 ```
 
+# 对象
+
+## 创建对象
+
+虚拟机遇到一条new指令时，首先将去检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果没有，那必须先执行相应的类加载过程。
+
+虚拟机为新生对象分配内存，从 Java Head 中划分出来，并初始化0值。
+
+分配方式：
+- 指针碰撞（Bump the Pointer）
+- 空闲列表（Free List）
+
+
+## 对象的内存布局
+
+HotSpot 虚拟机中对象在内存中存储：
+- 对象头 Header：HashCode, GC分代年龄, 时间戳...等。
+- 实例数据 Instance Data：Java程序定义的信息。
+- 对齐填充 Padding：将整个对象填充为8字节的整数倍。
+
+
+# 总结 
 
 ## 存储
 
-Heap Area: 对象实例，数组，线程共享
+- Method Area : 所有的class和static变量，线程共享
 
-Method Area : 所有的class和static变量，线程共享
+- Heap Area: 对象实例，数组，线程共享
 
-Stack Area : 基本类型，方法，对象引用，线程私有
-
-java6 常量池在 Method Area; 有永久代
-
-java7 常量池在 Heap Area; 有永久代
-
-java8 常量池在 Metaspace; 无永久代
+- Stack Area : 基本类型，方法，对象引用，线程私有
 
 
-## 调优
+- java6 常量池在 Method Area; 有永久代
 
-### 参数：
+- java7 常量池在 Heap Area; 有永久代
+
+- java8 常量池在 Metaspace; 无永久代
+
+
+
+## 参数
 
 * -Xms 初始的Heap的大小，默认为物理内存的1/64
 
@@ -182,8 +218,10 @@ java8 常量池在 Metaspace; 无永久代
 
 
 
-java的垃圾回收器在内存使用达到 -Xms 值的时候才会开始回收
 
+## 解释
+
+java的垃圾回收器在内存使用达到 -Xms 值的时候才会开始回收
 
 虚拟机栈使用的空间 = 内存 - Xmx（最大堆容量）- MaxPermSize（最大方法区容量）- 本地方法栈
 
@@ -193,6 +231,10 @@ Heap 越大可以供程序申请的内存空间越少，虚拟机栈越少（线
 
 对于低并发，创建对象多的项目，（数据处理型的）可以适当提高 Xmx（对象和数组是存放到Heap内的，栈帧中其实只存了对象地址，所以不存在爆的情况）
 
+
+
+
+# 垃圾回收
 
 ## GC
 
@@ -315,6 +357,8 @@ Full GC 表示执行全局垃圾回收
 
 # reference
 
+《深入理解Java虚拟机》第2版
+
 https://www.jianshu.com/p/6c875f0e7272?from=timeline&isappinstalled=0
 
 https://blog.csdn.net/baidu_21179881/article/details/87979763
@@ -322,4 +366,6 @@ https://blog.csdn.net/baidu_21179881/article/details/87979763
 https://blog.csdn.net/lxlmycsdnfree/article/details/78356704
 
 https://blog.csdn.net/renfufei/article/details/78178757
+
+
 
