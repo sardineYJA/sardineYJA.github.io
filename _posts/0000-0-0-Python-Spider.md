@@ -2,12 +2,13 @@
 layout: post
 title: "Python 基础爬虫"
 date: 2018-05-25
-description: "简单介绍python爬虫基础"
+description: "python爬虫基础"
 tag: Python
 
 ---
 
-# 反爬虫机制
+## 反爬虫机制
+
 1. user-agent 用户代理信息（Headers头部修改）
 2. cookie识别 用户登录信息（无需登录可禁用Cookie）
 3. IP限制访问频率
@@ -19,7 +20,7 @@ tag: Python
 9. robots.txt 协议
 
 
-# 基础爬虫
+## 基础爬虫
 
 ```python
 
@@ -88,7 +89,7 @@ urllib.request.install_opener(opener)   # 将opener安装为全局
 data = opener.open(req).read()
 ```
 
-# BeautifulSoup
+## BeautifulSoup
 
 
 安装：pip install beautifulsoup4
@@ -119,3 +120,4 @@ chapter_id = elem.find('a').attrs["data-chapterid"]   # 获取标签属性
 第49话 </a>
 </li>
 ```
+

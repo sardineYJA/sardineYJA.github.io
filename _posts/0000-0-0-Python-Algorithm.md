@@ -1,12 +1,14 @@
 ---
 layout: post
-title: "Python数据结构"
+title: "Python 数据结构"
 date: 2018-05-18
 description: "简单复习python数据结构"
 tag: Python
 
 ---
-# 目录
+
+## 目录
+
 1. 队列
 2. 堆栈
 3. 哈希表

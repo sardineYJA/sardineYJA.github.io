@@ -147,13 +147,6 @@ def test5():
         print('fetch({}) = {}'.format(num, results))
     end = time.time()
     print('asyncio cost time: {}'.format(end-start))
-
-
-# test1()
-# test2()
-# test3()
-# test4()
-# test5()
 ```
 
 
