@@ -214,7 +214,11 @@ HotSpot 虚拟机中对象在内存中存储：
 
 * -XX:+PrintGCDetails 输出详细的GC处理日志
 
+* -XX:+PrintGCApplicationStoppedTime
+
 * -XX:+PrintGCTimeStamps GC时间戳
+
+* -XX:MaxTenuringThreshold 晋升老年代的年龄阀值
 
 
 
