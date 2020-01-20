@@ -1,18 +1,17 @@
 ---
 layout: post
-title: "python装饰器"
+title: "Python 装饰器"
 date: 2018-03-28
-description: "简单介绍一下python装饰器"
+description: "Python装饰器"
 tag: Python
 
 ---
 
-# 简介
+## 简介
+
 python装饰器本质上就是一个函数，它可以让其他函数在不需要做任何代码变动的前提下增加额外的功能，
 装饰器的返回值也是一个函数对象（函数的指针）。装饰器函数的外部函数传入我要装饰的函数名字，
 返回经过修饰后函数的名字；内层函数（闭包）负责修饰被修饰函数。
-
-# 使用方法
 
 ## 函数的函数装饰器
 
@@ -104,7 +103,8 @@ p = Decorator(func) # p是类Decorator的一个实例
 p()                 # 实现了__call__()方法后，p可以被调用
 ```
 
-# 装饰器链
+## 装饰器链
+
 ```python
 def makebold(f):
 	return lambda:"<b>"+f()+"</b>"
@@ -121,5 +121,6 @@ print(say())
 ```
 
 
-# 参考
-1. https://www.cnblogs.com/lianyingteng/p/7743876.html
+# reference
+
+https://www.cnblogs.com/lianyingteng/p/7743876.html
