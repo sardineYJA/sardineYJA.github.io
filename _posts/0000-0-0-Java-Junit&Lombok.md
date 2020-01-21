@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "Junit 注解测试和 Lombok"
+title: "Junit 和 Lombok"
 date: 2018-02-15
-description: "Junit 注解测试和 Lombok"
+description: "Junit 和 Lombok"
 tag: Java
 
 ---
