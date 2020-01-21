@@ -1,20 +1,20 @@
 ---
 layout: post
-title: "Java语法复习"
+title: "Java 基础语法"
 date: 2018-01-05
 description: "Java语法复习"
 tag: Java
 
 ---
 
-## 基本数据类型：
-char    2
-byte    1
-short   2
-int     4
-long    8
-float   4
-double  8
+## 基本数据类型字节数：
+- char    2
+- byte    1
+- short   2
+- int     4
+- long    8
+- float   4
+- double  8
 
 
 ## 包装类，当成对象方便编程
@@ -22,85 +22,85 @@ Boolean, Character, Byte, Short, Integer, Long, Float, Double
 
 
 ## 访问控制修饰符：
-private    同一类内可见
-default    同一包内可见
-protected  同一包内和所有子类可见
-public     所有类可见
+- private    同一类内可见
+- default    同一包内可见
+- protected  同一包内和所有子类可见
+- public     所有类可见
 
 
 ## 访问控制继承
-1. 父类中 public 的方法在子类中也必须为 public。
-2. 父类中 protected 的方法在子类中声明为 protected 或 public，不能声明为 private。
-3. 父类中 private 的方法，不能够被继承。
+- 父类中 public 的方法在子类中也必须为 public。
+- 父类中 protected 的方法在子类中声明为 protected 或 public，不能声明为 private。
+- 父类中 private 的方法，不能够被继承。
 
 
 ## 非访问修饰符：
-static
-final
-abstract
-synchronized
-transient（变量不会被序列化）
-volatile （每次被线程访问时，都强迫从共享内存中重读变量的值，当变量发生变 化时强迫线程将变化值回写到共享内存。在任何时刻，两个不同的线程总看到变量的同一个值）
+- static
+- final
+- abstract
+- synchronized
+- transient（变量不会被序列化）
+- volatile （每次被线程访问时，都强迫从共享内存中重读变量的值，当变量发生变 化时强迫线程将变化值回写到共享内存。在任何时刻，两个不同的线程总看到变量的同一个值）
 
 
 ## 继承
-extends     类不可以多继承
-implements  接口可以多继承
+- extends     类不可以多继承
+- implements  接口可以多继承
 
-super 实现对父类成员的访问
-this  指向自己的引用
+- super 实现对父类成员的访问
+- this  指向自己的引用
 
-final 声明类可以把类定义为不能继承的，即最终类
-final 用于修饰方法，该方法可继承但不能被子类重写
+- final 声明类可以把类定义为不能继承的，即最终类
+- final 用于修饰方法，该方法可继承但不能被子类重写
 
-构造方法不能被重写。
-声明为static的方法不能被重写，但是能够被再次声明
+- 构造方法不能被重写。
+- 声明为static的方法不能被重写，但是能够被再次声明
 
 
 ## 多态
-必要条件：继承；重写；父类引用指向子类对象。
-实现方法：重写；接口；抽象类和抽象方法。
+- 必要条件：继承；重写；父类引用指向子类对象。
+- 实现方法：重写；接口；抽象类和抽象方法。
 
-如果一个类包含抽象方法，那么该类必须是抽象类。
-任何子类必须重写父类的抽象方法，或者声明自身为抽象类。
+- 如果一个类包含抽象方法，那么该类必须是抽象类。
+- 任何子类必须重写父类的抽象方法，或者声明自身为抽象类。
 
 
 ## new 和 clone
-new 分配内存，调用构造函数填充对象的各个域。
-clone 分配内存，使用原对象中对应的各个域填充新对象。
-clone方法执行的是浅拷贝，深拷贝则要实现Cloneable接口。
+- new 分配内存，调用构造函数填充对象的各个域。
+- clone 分配内存，使用原对象中对应的各个域填充新对象。
+- clone方法执行的是浅拷贝，深拷贝则要实现Cloneable接口。
 
 
 ## 接口与类的区别：
-接口不能用于实例化对象。
-接口没有构造方法。
-接口中所有的方法必须是抽象方法。
-接口不能包含成员变量，除了 static 和 final 变量。
-接口不是被类继承了，而是要被类实现。
-接口支持多继承。
+- 接口不能用于实例化对象。
+- 接口没有构造方法。
+- 接口中所有的方法必须是抽象方法。
+- 接口不能包含成员变量，除了 static 和 final 变量。
+- 接口不是被类继承了，而是要被类实现。
+- 接口支持多继承。
 
 
 ## 数据结构
-枚举    Enumeration
-位集合  BitSet
-向量    Vector
-栈      Stack
-字典    Dictionary
-哈希表  Hashtable
-属性    Properties
+- 枚举    Enumeration
+- 位集合  BitSet
+- 向量    Vector
+- 栈      Stack
+- 字典    Dictionary
+- 哈希表  Hashtable
+- 属性    Properties
 
 
 ## 三种创建线程的方法：
-通过实现 Runnable 接口。
-通过继承 Thread 类本身。
-通过 Callable 和 Future 创建线程。
+- 通过实现 Runnable 接口。
+- 通过继承 Thread 类本身。
+- 通过 Callable 和 Future 创建线程。
 
 
 ## 值传递和引用传递
 
-值传递（pass by value）：是指在调用函数时将实际参数复制一份传递到函数中，在函数中如果对参数进行修改，将不会影响到实际参数。
+- 值传递（pass by value）：是指在调用函数时将实际参数复制一份传递到函数中，在函数中如果对参数进行修改，将不会影响到实际参数。
 
-引用传递（pass by reference）：是指在调用函数时将实际参数的地址直接传递到函数中，在函数中如果对参数进行修改，将影响实际参数。
+- 引用传递（pass by reference）：是指在调用函数时将实际参数的地址直接传递到函数中，在函数中如果对参数进行修改，将影响实际参数。
 
 java 基本数据类型传递参数时是值传递 ；引用类型传递参数时是引用传递 。
 对于对象来说传递的是引用的一个副本给参数。
@@ -126,14 +126,14 @@ String str=”aaa”,与String str=new String(“aaa”)不一样的。因为内
 
 
 ## 类的实例化顺序
-父类静态变量    -->
-父类静态代码块  -->
-子类静态变量    -->
-子类静态代码块  -->
-父类非静态变量  -->
-父类构造函数    -->
-子类非静态变量  -->
-子类构造函数    -->
+1. 父类静态变量   
+2. 父类静态代码块
+3. 子类静态变量   
+4. 子类静态代码块 
+5. 父类非静态变量 
+6. 父类构造函数    
+7. 子类非静态变量 
+8. 子类构造函数  
 
 
 ## 代码块
@@ -148,12 +148,9 @@ String str=”aaa”,与String str=new String(“aaa”)不一样的。因为内
 
 
 ## 异常处理机制
-Throwable-->Error和ExceptionL：
-Error 表示程序本身无法克服和恢复的问题
-Exception 表示程序能够克服和恢复的问题
-
-throws 在方法声明后面，如果抛出异常，由该方法的调用者来进行异常的处理
-throw  在方法体内，如果抛出异常，由方法体内的语句处理
+Throwable-->Error和Exception：
+- throws 在方法声明后面，如果抛出异常，由该方法的调用者来进行异常的处理
+- throw  在方法体内，如果抛出异常，由方法体内的语句处理
 
 
 ## 知识点
@@ -217,23 +214,6 @@ Java中异常：编译时异常和运行时异常
 3. notifyAll(): 唤醒所有的等待线程。将线程池中的所有线程都唤醒。
 
 
-## nio 和 bio:
-BIO（Blocking I/O）同步阻塞I/O处理：一个客户端请求，服务器端分配一个线程（以及内存空间）处理。
-NIO（Non-blocking I/O) 同步非阻塞的I/O模型：一个有效请求对于一个线程，当连接没有数据时，是没有工作线程来处理的。
-NIO2.0，也就是AIO（Asynchronous 异步非阻塞IO）
-
-BIO是面向流的，NIO是面向缓冲区的。
-BIO方式适用于连接数目比较小且固定的架构，对服务器资源要求比较高，并发局限于应用中，但程序直观简单易理解。
-NIO方式适用于连接数目多且连接比较短（轻操作）的架构，比如聊天服务器，并发局限于应用中，编程比较复杂。
-
-BIO：InputStream、OutputStream、Writer、Reader
-NIO：Channels, Buffers, Selectors
-
-同步和异步是针对程序和内核的交互而言，同步指用户进程触发IO操作并等待或者轮询的去查看IO操作是否就绪，而异步指用户进程触发IO操作以后便开始做自己的事情，当IO操作已经完成的时候会得到IO完成的通知。
-阻塞和非阻塞是针对于进程在访问数据的时候，阻塞方式下读取或者写入函数将一直等待，而非阻塞方式下，读取或者写入函数会立即返回一个状态值。
-
-
-
 ## 请求连接：
 C   ------SYN----->  S
 C   <---SYN,ACK----  S
@@ -244,12 +224,6 @@ C   -----FIN----->  S
 C   <-----ACK-----  S
 C   <-----FIN-----  S
 C   -----ACK----->  S
-
-
-## 图形界面
-AWT和Swing之间的区别：
-1. AWT 是基于本地方法的C/C++程序，运行速度较快；Swing是基于AWT的Java程序，运行速度较慢。
-2. AWT的控件在不同的平台可能表现不同，而Swing在所有平台表现一致。
 
 
 ## 字节流
@@ -311,10 +285,11 @@ line = br.readline();  // if line == null break
 
 
 
-# 参考
-1. https://www.runoob.com/java/java-tutorial.html
+# reference
 
-2. https://www.cnblogs.com/eastday/p/8124580.html
+https://www.runoob.com/java/java-tutorial.html
 
-3. https://www.cnblogs.com/zhoutongsheng/p/7910966.html
+https://www.cnblogs.com/eastday/p/8124580.html
+
+https://www.cnblogs.com/zhoutongsheng/p/7910966.html
 
