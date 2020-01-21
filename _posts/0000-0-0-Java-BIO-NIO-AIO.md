@@ -127,7 +127,77 @@ while(true) {
 ```
 
 
-# NIO
+# NIO (Asynchronous Non-Blocking I/O)
+
+## 特点
+
+- 事件驱动模型
+- 单线程处理多任务
+- 非阻塞I/O
+- 基于block的传输比基于流的传输更加高效
+- 基于Reactor线程模型
+- 更高级的IO函数zero-copy
+- IO多路复用提高java网络应用的可伸缩性和实用性
+
+
+## 核心
+
+- Channel
+- Buffers
+- Selectors
+
+## Channels and Buffers
+
+NIO是基于通道（Channel）和缓冲区（Buffer）进行操作，数据总是从通道读取到缓冲区中，或者从缓冲区写入到通道中。
+
+## Selectors
+
+选择器用于监听多个通道的事件（比如：连接打开，数据到达）。
+仅用单个线程来处理多个Channels的好处是，只需要更少的线程来处理通道。
+线程之间上下文切换的开销很大，而且每个线程都要占用系统的一些资源（如内存）。
+
+## 主要实现类
+
+- FileChannel：从文件中读写数据
+- DatagramChannel：能通过UDP读写网络中的数据
+- SocketChannel：能通过TCP读写网络中的数据
+- ServerSocketChannel：可以监听新进来的TCP连接，对于新连接都会创建SockChannel
+
+- ByteBuffer
+- CharBuffer
+- DoubleBuffer
+- FloatBuffer
+- IntBuffer
+- LongBuffer
+- ShortBuffer
+
+
+## Buffer 使用
+
+1. 写入数据到Buffer
+2. 调用flip()方法
+3. 从Buffer中读取数据
+4. 调用clear()方法或者compact()方法
+
+Buffer基本属性：capacity(容量)、limit(限制)和position(位置)
+
+flip函数：buffer读写转换。即position为0，读写时，不断移动，直到limit位置。
+
+
+## Selector 使用
+
+1. Selector的创建：Selector selector = Selector.open();
+2. 将Channel注册到Selector上：SelectableChannel.register();
+
+
+## NIO 服务端建立过程
+
+1. ServerSocketChannel.open()：创建服务器的Channel
+2. Channel.configureBlocking(false)：配置非阻塞模式
+3. Channel.bind()：绑定端口
+4. Selector.open()：打开Selector
+5. Channel.register()：注册Channel和关注的事件到Selector上
+6. Selector.select()：轮询拿到已经就绪的事件
 
 AIO（NIO2.0）引入了新的异步通道的概念，并提供了异步文件通道和异步套接字通道的实现。
 
@@ -202,3 +272,6 @@ https://blog.csdn.net/guanghuichenshao/article/details/79375967
 
 https://blog.csdn.net/yswKnight/article/details/79347833
 
+https://blog.csdn.net/u013096088/article/details/78638245
+
+https://github.com/wangzhiwubigdata/God-Of-BigData
