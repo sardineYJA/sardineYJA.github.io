@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "python 基础知识点"
+title: "Python 基础知识点"
 date: 2018-03-09
 description: "python语法"
 tag: Python
