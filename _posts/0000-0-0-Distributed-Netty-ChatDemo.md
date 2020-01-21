@@ -3,7 +3,7 @@ layout: post
 title: "Netty 网络聊天案例"
 date: 2019-10-24
 description: "Netty 网络聊天案例"
-tag: Other
+tag: Distributed Service
 
 ---
 
