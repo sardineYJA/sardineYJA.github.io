@@ -7,24 +7,25 @@ tag: Python
 
 ---
 
-# 简介
+## 前言
 
 
-以前学习过一些python分析的知识和书籍：《python数据分析与挖掘实战》
+以前学习过一些python分析的知识和书籍，记录一些python对数据的常用分析以及处理。
 
-记录一些python对数据的常用分析以及处理
+
+## 处理方式
+
+- Correcting  对错误值修正
+- Completing  对缺失值补充
+- Creating    创造新的属性值
+- Converting  转换成label，onehot
+
+
+
 
 ```python
-import warnings
+import warnings   # 忽视警告
 warnings.filterwarnings('ignore')
-```
-
-
-```python
-Correcting  # 对错误值修正
-Completing  # 对缺失值补充
-Creating    # 创造新的属性值
-Converting  # 转换成label，onehot
 ```
 
 
@@ -225,3 +226,9 @@ MLA_compare.sort_values(by = ['MLA Test Accuracy Mean'], ascending = False, inpl
 print(MLA_compare)
 #MLA_predict
 ```
+
+
+# reference
+
+《python数据分析与挖掘实战》
+

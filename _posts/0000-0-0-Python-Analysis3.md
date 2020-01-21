@@ -8,7 +8,8 @@ tag: Python
 ---
 
 
-# 贝叶斯拼写检查器
+## 贝叶斯拼写检查器
+
 求解：argmaxc P(c|w) -> argmaxc P(w|c)P(c)/P(w)
 P(c)   : 文章出现一个正确拼写词c的频率
 P(w|c) : 在用户想键入c的情况下敲成w的概率
@@ -77,7 +78,8 @@ print(correct('leare'))
 print(correct('tess'))
 ```
 
-# 用 Xgboost 做二分类问题
+## 用 Xgboost 做二分类问题
+
 判断病人是否会在 5 年内患糖尿病，数据前 8 列是变量，最后一列是预测值为 0 或 1。
 
 ```python
@@ -162,7 +164,7 @@ for mean, stdev, param in zip(means, stds, params):
     print("%f (%f) with: %r" % (mean, stdev, param))
 ```
 
-# 时间序列ARIMA
+## 时间序列ARIMA
 
 
 ```python
@@ -309,7 +311,7 @@ fig = arma_mod80.plot_predict('2090', '2100', dynamic=True, ax=ax, plot_insample
 plt.show()
 ```
 
-# 时间序列ARIMA：美国消费者信心指数
+## 时间序列ARIMA：美国消费者信心指数
 
 
 ```python
@@ -445,7 +447,7 @@ for ax, lag in zip(axes.flat, np.arange(1, lags+1, 1)):
 fig.tight_layout()
 ```
 
-# ARIMA模型训练
+## ARIMA模型训练
 
 
 ```python
@@ -579,7 +581,7 @@ print('BIC', train_results.bic_min_order)
 model_results.plot_diagnostics(figsize=(16, 12))
 ```
 
-# k-mean图片压缩
+## k-mean图片压缩
 
 
 ```python
@@ -622,7 +624,7 @@ io.imshow(image)
 io.show()
 ```
 
-# PCA主成分分析降维
+## PCA主成分分析降维
 
 
 ```python
@@ -774,7 +776,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-# 神经网络分类
+## 神经网络分类
 
 
 ```python

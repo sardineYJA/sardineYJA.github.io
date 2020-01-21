@@ -20,7 +20,7 @@ from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
 ```
 
-# 异常值处理
+## 异常值处理
 
 
 ```python
@@ -67,7 +67,7 @@ print(df[df['D']>lower_q-1.5*q_int][df['D']<upper_q+1.5*q_int])
 df[[True if item.startswith("f") else False for item in list(df["F"].values)]]
 ```
 
-# 特征选择
+## 特征选择
 
 
 ```python
@@ -104,7 +104,7 @@ sfm=SelectFromModel(estimator=DecisionTreeRegressor(),threshold=0.1)  # threshol
 print(sfm.fit_transform(X,Y))
 ```
 
-# 特征变换
+## 特征变换
 
 ```python
 lst=[6,8,10,15,16,24,25,40,67]

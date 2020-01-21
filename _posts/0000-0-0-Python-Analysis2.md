@@ -38,7 +38,8 @@ print(ss.normaltest(norm_dist))
     
 
 
-# 卡方检验
+## 卡方检验
+
 ```python
 # 想对两个或两个以上因子彼此之间是否相互独立做检验时，用卡方检验
 ss.chi2_contingency([[15,95],[85,5]])
@@ -47,7 +48,8 @@ ss.chi2_contingency([[15,95],[85,5]])
 >(126.08080808080808, 2.9521414005078985e-29, 1, array([[ 55.,  55.],[ 45.,  45.]]))
 
 
-# t 检验
+## t 检验
+
 ```python
 # t 检验：正态均值的比较，X,Y
 ss.ttest_ind(ss.norm.rvs(size=10), ss.norm.rvs(size=20))
@@ -61,7 +63,8 @@ ss.ttest_ind([65,68,72,75,82,85,91,95], [50,59,71,80])
 >Ttest_indResult(statistic=1.9860353294081732, pvalue=0.07511465244258364)
 
 
-# F 检验（方差检验）
+## F 检验（方差检验）
+
 ```python
 # F 检验（方差检验）：多个正态总体方差的比较
 ss.f_oneway([49,50,39,40,43], [28,32,30,26,34], [38,40,45,42,48])
@@ -82,7 +85,8 @@ ss.f_oneway([5.5,4.6,4.4,3.4,1.9,1.6,1.1,0.8,0.1,-0.1],
 
 
 
-# QQ图
+## QQ图
+
 ```python
 # qq图默认检查是否符合正态分布
 plt.show(qqplot(ss.norm.rvs(size=100)))
@@ -90,7 +94,8 @@ plt.show(qqplot(ss.norm.rvs(size=100)))
 ![png](/images/posts/2019-01-10/output_13_0.png)
 
 
-# 相关系数
+## 相关系数
+
 ```python
 s1 = pd.Series([1,2,3,4,5])
 s2 = pd.Series([2,3,7,9,12])
@@ -101,7 +106,8 @@ print(s1.corr(s2, method='spearman'))
 >1.0
     
 
-# 线性回归
+## 线性回归
+
 ```python
 x = np.arange(10).astype(np.float).reshape((10,1))
 y = x*3 + 4 + np.random.random((10,1))  # 加上0-1的噪声
@@ -138,7 +144,8 @@ print(reg.intercept_)  # 截距
  ```   
 
 
-# PCA降维
+## PCA降维
+
 默认使用奇异分解降维
 Linear dimensionality reduction using Singular Value Decomposition of the data to project it to a lower dimensional space.
 explained_variance_，它代表降维后的各主成分的方差值。方差值越大，则说明越是重要的主成分。
@@ -192,7 +199,8 @@ print('降维后：\n',        lower_dim.fit_transform(data))       # 降维后�
 ```  
 
 
-# 交叉分析
+## 交叉分析
+
 ```python
 df=pd.read_csv("data\\HR.csv")
 dp_indices=df.groupby(by="department").indices              # 获取到所有部门的分类索引，如 marketing,sales等部门
@@ -247,8 +255,6 @@ plt.show()
     E:\Anaconda3\lib\site-packages\scipy\stats\_distn_infrastructure.py:1818: RuntimeWarning: invalid value encountered in less_equal
       cond2 = cond0 & (x <= self.a)
 ```  
-<img src="/images/posts/2019-01-10/output_24_2.png">
-
 
 
 ```python
@@ -302,9 +308,6 @@ sns.heatmap(piv_tb, vmax = 1, vmin = 0,                  # 最大值1，最小�
            cmap=sns.color_palette('Reds',n_colors=256))  # 颜色随值大而变深
 plt.show()
 ```
-<img src="/images/posts/2019-01-10/output_27_0.png">
-
-
 
 
 ```python
@@ -312,8 +315,6 @@ plt.show()
 sns.barplot(x="salary",y="left",hue="department",data=df)
 plt.show()
 ```
-<img src="/images/posts/2019-01-10/output_28_1.png">
-
 
 
 ```python
@@ -334,4 +335,3 @@ sns.barplot([0,1,2,3,4,5,6,7,8,9],d.sort_values())
 plt.show()
 
 ```
-<img src="/images/posts/2019-01-10/output_29_1.png">

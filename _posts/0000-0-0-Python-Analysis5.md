@@ -18,7 +18,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.decomposition import PCA
 ```
 
-# 数据预处理
+## 数据预处理
 
 
 ```python
@@ -80,7 +80,7 @@ features,label=hr_preprocessing()
 print(features)
 ```
 
-# 划分训练集和测试集
+## 划分训练集和测试集
 
 
 ```python
@@ -98,7 +98,7 @@ print('训练集数据量：',len(X_train))
 print('测试集数据量：',len(X_test))
 ```
 
-# KNN分类预测
+## KNN分类预测
 
 
 ```python
@@ -119,7 +119,7 @@ from sklearn.externals import joblib
 # knn_clf = joblib.load('knn_clf')  # 加载模型
 ```
 
-# 其他分类
+## 其他分类
 
 
 ```python
@@ -174,7 +174,7 @@ for clf_name,clf in models:
 #         graph.write_pdf("dt_tree.pdf")
 ```
 
-# 回归
+## 回归
 
 
 ```python
@@ -251,7 +251,7 @@ for i in range(len(xy_lst)):
 plt.show()
 ```
 
-# 聚类
+## 聚类
 
 
 ```python
@@ -292,7 +292,7 @@ for inx,clt in enumerate(models):
 plt.show()
 ```
 
-# 关联
+## 关联
 
 
 ```python
@@ -411,7 +411,7 @@ if __name__=="__main__":
     main()
 ```
 
-# 半监督
+## 半监督
 
 
 ```python
