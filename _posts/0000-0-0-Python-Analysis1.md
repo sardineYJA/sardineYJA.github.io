@@ -21,8 +21,6 @@ tag: Python
 - Converting  转换成label，onehot
 
 
-
-
 ```python
 import warnings   # 忽视警告
 warnings.filterwarnings('ignore')
@@ -81,7 +79,7 @@ pd.rolling_skew()
 pd.rolling_kurt() 
 
 pd.get_dummies(df)                         # one-hot编码
-pd.crosstab(data['Sex'],data['Survived'])) # 以Sex属性为行，Survived属性为列的交叉表
+pd.crosstab(data['Sex'],data['Survived'])  # 以Sex属性为行，Survived属性为列的交叉表
 df.pivot_table(index=['产地','类别'])      # 透视表，以产地分类，再以类别分类，其他属性输出均值
 df['target'].groupby(df['Sex']).mean()     # 以Sex属性分类，分成male,female，计算属性target的均值（即male的target均值，femal的target均值）
 
