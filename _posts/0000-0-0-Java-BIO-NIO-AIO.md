@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "BIO,NIO,AIO通信"
+title: "BIO,NIO,AIO 通信介绍"
 date: 2018-09-17
 description: "BIO,NIO,AIO通信"
 tag: Java
