@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "Facebook文本分类工具fastText"
+title: "Facebook 文本分类 FastText"
 date: 2018-10-18
-description: "简单介绍一下fastText工具，训练速度极快"
+description: "fastText工具，训练速度极快"
 tag: Machine Learn
 
 ---

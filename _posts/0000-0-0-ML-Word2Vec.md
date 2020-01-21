@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "词向量Word2Vec介绍"
+title: "词向量 Word2Vec"
 date: 2018-10-03
-description: "简单介绍一下word2vec"
+description: "word2vec"
 tag: Machine Learn
 
 ---
 
-## gensim的word2vec参数使用
+## gensim 的 word2vec 参数使用
 
 
 ```python
