@@ -121,3 +121,7 @@ chapter_id = elem.find('a').attrs["data-chapterid"]   # 获取标签属性
 </li>
 ```
 
+
+## 详细案例
+
+请查看GitHub中项目
