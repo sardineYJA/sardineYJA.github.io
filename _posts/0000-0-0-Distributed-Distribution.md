@@ -3,7 +3,7 @@ layout: post
 title: "分布式理论知识点"
 date: 2019-07-08
 description: "分布式理论知识点"
-tag: Bigdata
+tag: Distributed Service
 
 ---
 
