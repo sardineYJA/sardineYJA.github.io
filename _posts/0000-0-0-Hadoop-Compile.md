@@ -8,13 +8,16 @@ tag: Hadoop
 ---
 
 # 准备
-1. hadoop-2.7.2-src.tar.gz
+
+1. hadoop-2.7.2-src.tar.gz （源码）
 2. jdk-8u144-linux-x64.tar.gz
 3. apache-ant-1.9.9-bin.tar.gz（build工具，打包用的）
 4. apache-maven-3.0.5-bin.tar.gz
 5. protobuf-2.5.0.tar.gz（序列化的框架）
 
+
 # jar包安装
+
 1. JDK解压、配置环境变量 JAVA_HOME和PATH，验证java-version
 ```
 [root]# tar -zxf jdk-8u144-linux-x64.tar.gz -C /opt/module/
@@ -100,6 +103,7 @@ protoc --version
 ```
 
 # 编译源码
+
 1. 解压源码到/opt/目录
 ```
 [root]# tar -zxvf hadoop-2.7.2-src.tar.gz -C /opt/
@@ -112,5 +116,8 @@ protoc --version
  
 3. 成功的64位hadoop包在/opt/hadoop-2.7.2-src/hadoop-dist/target下
 
-# 参考
-1. 尚硅谷大数据教程
+
+
+# reference
+
+尚硅谷大数据教程

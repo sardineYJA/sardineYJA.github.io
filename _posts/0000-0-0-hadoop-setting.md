@@ -10,8 +10,11 @@ tag: Hadoop
 # 安装准备
 
 ## 安装hadoop
+
 1. [Hadoop下载](https://archive.apache.org/dist/hadoop/common/hadoop-2.7.2/)
+
 2. 解压安装文件：`[hadoop101 software]$ tar -zxvf hadoop-2.7.2.tar.gz -C /opt/module/`
+
 3. 将Hadoop添加到环境变量：`[hadoop101 hadoop-2.7.2]$ sudo vi /etc/profile`
 ```
 ##HADOOP_HOME
@@ -19,10 +22,14 @@ export HADOOP_HOME=/opt/module/hadoop-2.7.2
 export PATH=$PATH:$HADOOP_HOME/bin
 export PATH=$PATH:$HADOOP_HOME/sbin
 ```
+
 4. 让修改后的文件生效：`[hadoop101 jdk1.8.0_144]$ source /etc/profile`
+
 5. 测试JDK是否安装成功：`[@hadoop101 jdk1.8.0_144]# hadoop -version`
 
+
 # 修改配置文件
+
 ## 集群部署规划
 
 虚拟机 | hadoop101 | hadooop102 | hadoop103
@@ -31,6 +38,7 @@ HDFS | NameNode&DataNode | DataNode | SecondaryNameNode&DataNode
 YARN | NodeManager | ResourceManager&NodeManager | NodeManager
 
 ## hadoop-env.sh、yarn-env.sh、mapred-env.sh
+
 增加`export JAVA_HOME=/opt/module/jdk1.8.0_144`
 
 修改 hadoop-env.sh，增加：export HADOOP_PID_DIR=/.../pids
@@ -94,7 +102,9 @@ YARN | NodeManager | ResourceManager&NodeManager | NodeManager
 
 ## 最后同步三台虚拟机
 
+
 # 启动
+
 1. 配置slaves：
 ```
 cd /opt/module/hadoop-2.7.2/etc/hadoop/slaves
@@ -110,5 +120,6 @@ hadoop103
 [hadoop102]$ sbin/start-yarn.sh
 ```
 
-# 参考
-1. 尚硅谷大数据教程
+# reference
+
+尚硅谷大数据教程
