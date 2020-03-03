@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "ES 及插件安装"
-date: 2019-07-08
+date: 2019-07-07
 description: "Elasticsearch"
 tag: Elasticsearch
 
