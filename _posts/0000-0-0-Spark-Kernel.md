@@ -25,3 +25,7 @@ tag: Spark
 - Task
 是在物理节点上运行的基本单位，Task包含两类：ShuffleMapTask和ResultTask，分别对应于Stage中ShuffleMapStage和ResultStage中的一个执行基本单元。
 
+
+
+未完成，待续...
+
