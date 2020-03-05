@@ -69,7 +69,7 @@ rdd5 = rdd4.reduceByKey(lambda x,y:x+y)              // 全局聚合
 
 ## reduce join 转化为 map join 
 
-适用场景：两个RDD要进行join，其中一个RDD是数据比较小的。broadcast 出去那个小RDD的数据以后，就会在每个executor的 block manager 中都驻留一份，并确保内存足够存放那个小RDD中的数据。不走shuffle，直接走map，性能也会高很多。
+适用场景：两个RDD要进行join，其中一个RDD是数据比较小的。将小的RDD进行collect操作然后设置为broadcast变量，broadcast 出去那个小RDD的数据以后，就会在每个executor的 block manager 中都驻留一份，并确保内存足够存放那个小RDD中的数据。不走shuffle，直接走map，性能也会高很多。
 
 ![png](/images/posts/all/broadcast小RDD.png)
 
