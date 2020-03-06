@@ -62,14 +62,42 @@ HashTable:
 实现线程安全的方式是在修改数据时Synchronize锁住整个HashTable，效率低，ConcurrentHashMap做了相关优化。
 Hashtable继承自Dictionary类
 
+
 HashMap:
 底层数组+链表实现，可以存储null键和null值，线程不安全。
 在多线程环境中，需要手动实现同步机制。
 HashMap继承自AbstractMap类。
 
+```java
+// HashMap 实现线程安全
+Map<Long, User> users = Collections.synchronizedMap(new HashMap<Long, User>());
+```
+
 ConcurrentHashMap:
 底层采用分段的数组+链表实现，线程安全。
 ConcurrentHashMap允许多个修改操作并发进行，其关键在于使用了锁分离技术。
+
+
+
+
+## String 
+
+String 是引用类型，底层用char数组实现。
+
+String s ="123"; s = s+"456";对象没有改变，只是s指向新的String对象了。以往如此，会引起内存开销。
+
+String不能被继承，String类有final修饰符，而final修饰的类是不能被继承的。
+平常定义的String str=”a”;（引用）其实和String str=new String(“a”)（构建新对象）还是有差异的。
+
+String str=”aaa”,与String str=new String(“aaa”)不一样的。因为内存分配的方式不一样。
+第一种，创建的”aaa”是常量，jvm都将其分配在常量池中。
+第二种，创建的是一个对象，jvm将其值分配在堆内存中。
+
+1. String 字符串常量(final修饰，不可被继承)，String是常量，当创建之后即不能更改。
+2. StringBuffer 字符串变量（线程安全）,其也是final类别的，不允许被继承，其中的绝大多数方法都进行了同步处理。
+3. StringBuilder 字符串变量（非线程安全），方法除了没使用synch修饰以外基本与StringBuffer一致，速度更快。
+
+
 
 
 # 实例

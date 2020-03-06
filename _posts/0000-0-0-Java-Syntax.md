@@ -107,24 +107,6 @@ java 基本数据类型传递参数时是值传递 ；引用类型传递参数�
 引用数据类型分为：类，接口，数组。
 
 
-## String 
-
-String 是引用类型，底层用char数组实现。
-
-String s ="123"; s = s+"456";对象没有改变，只是s指向新的String对象了。以往如此，会引起内存开销。
-
-String不能被继承，String类有final修饰符，而final修饰的类是不能被继承的。
-平常定义的String str=”a”;（引用）其实和String str=new String(“a”)（构建新对象）还是有差异的。
-
-String str=”aaa”,与String str=new String(“aaa”)不一样的。因为内存分配的方式不一样。
-第一种，创建的”aaa”是常量，jvm都将其分配在常量池中。
-第二种，创建的是一个对象，jvm将其值分配在堆内存中。
-
-1. String 字符串常量(final修饰，不可被继承)，String是常量，当创建之后即不能更改。
-2. StringBuffer 字符串变量（线程安全）,其也是final类别的，不允许被继承，其中的绝大多数方法都进行了同步处理。
-3. StringBuilder 字符串变量（非线程安全），方法除了没使用synch修饰以外基本与StringBuffer一致，速度更快。
-
-
 ## 类的实例化顺序
 1. 父类静态变量   
 2. 父类静态代码块
