@@ -321,7 +321,31 @@ Full GC 表示执行全局垃圾回收
 
 > java.lang.OutOfMemoryError: Java heap space
 
-内存泄露(Memory leak)
+因为对象实例存储在heap中，设置：-Xmx12m
+
+```java
+public class OOM {
+    static final int SIZE=2*1024*1024;
+    public static void main(String[] args) {
+        int[] i = new int[SIZE];
+    }
+}
+```
+
+
+> java.lang.OutOfMemoryError: StackOverflow
+
+因为变量和方法存储在stack中
+
+Java Stack 和 Native Stack 溢出
+
+```java
+public void intAdd() {
+	i++;
+	intAdd();
+}
+```
+
 
 
 
