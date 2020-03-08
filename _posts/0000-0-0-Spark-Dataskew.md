@@ -71,8 +71,12 @@ rdd5 = rdd4.reduceByKey(lambda x,y:x+y)              // 全局聚合
 
 适用场景：两个RDD要进行join，其中一个RDD是数据比较小的。将小的RDD进行collect操作然后设置为broadcast变量，broadcast 出去那个小RDD的数据以后，就会在每个executor的 block manager 中都驻留一份，并确保内存足够存放那个小RDD中的数据。不走shuffle，直接走map，性能也会高很多。
 
+被广播的表需要小于spark.sql.autoBroadcastJoinThreshold所配置的值，默认是10M。
+
 ![png](/images/posts/all/broadcast小RDD.png)
 
+
+但因为被广播的表首先被collect到driver段，然后被冗余分发到每个executor上，所以当表比较大时，采用broadcast join会对driver端和executor端造成较大的压力。
 
 
 ## 对倾斜的 Keys 采样后进行单独的 Join 操作
