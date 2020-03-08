@@ -80,9 +80,13 @@ JVM Runtime Area 其实就是指 JVM 在运行期间，其对JVM内存空间的�
 
 ## Native Method Stack
 
-Java Stack 为虚拟机执行Java方法服务，Native Method Stack 则为虚拟机使用到的Native方法服务。
+- 线程私有
 
-登记 native 方法，在 Execution Engine 执行时加载 native libraries。
+- Java Stack 为虚拟机执行Java方法服务
+
+- Native Method Stack 则为虚拟机使用到的Native方法服务
+
+- 登记 native 方法，在 Execution Engine 执行时加载 native libraries。
 
 
 ## Java Stack
@@ -156,25 +160,6 @@ System.out.println("maxMemory=" + maxMemory + "Byte," + (maxMemory/1024/1024) + 
 System.out.println("totalMemory=" + totalMemory + "Byte," + (totalMemory/1024/1024) + "MB");
 ```
 
-# 对象
-
-## 创建对象
-
-虚拟机遇到一条new指令时，首先将去检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果没有，那必须先执行相应的类加载过程。
-
-虚拟机为新生对象分配内存，从 Java Head 中划分出来，并初始化0值。
-
-分配方式：
-- 指针碰撞（Bump the Pointer）
-- 空闲列表（Free List）
-
-
-## 对象的内存布局
-
-HotSpot 虚拟机中对象在内存中存储：
-- 对象头 Header：HashCode, GC分代年龄, 时间戳...等。
-- 实例数据 Instance Data：Java程序定义的信息。
-- 对齐填充 Padding：将整个对象填充为8字节的整数倍。
 
 
 # 总结 
@@ -333,7 +318,7 @@ public class OOM {
 ```
 
 
-> java.lang.OutOfMemoryError: StackOverflow
+> java.lang.OutOfMemoryError: StackOverflowError
 
 因为变量和方法存储在stack中
 
