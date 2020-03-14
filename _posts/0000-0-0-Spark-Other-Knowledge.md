@@ -125,4 +125,81 @@ Shuffle Copy的方式：
 如果spark应用缓存比较多，shuffle比较少，调高缓存的内存占比；反之亦然
 
 
+## Spark 应用程序执行过程
+
+1. 用户Client端Submit作业，Driver运行创建SparkContext
+
+2. SparkContext向资源管理器（Standalone, yarn, Mesos）注册申请资源
+
+3. 资源分配给Executor
+
+4. SparkContext构建DAG图，并分解成Stage，将Taskset发送给Task Scheduler
+
+5. Executor向SparkContext申请Task，Task Scheduler将Task发送给Executor，SparkContext将程序代码发送给Executor
+
+6. Task在Executor上运行，运行完毕后释放资源
+
+
+## Driver 作用
+
+- 一个Spark作业运行时包含一个Driver进程
+- 程序入口点
+- 创建SparkContext
+- 向集群申请资源
+- 解析和调度作业
+
+
+
+## hadoop和spark的shuffle过程
+
+hadoop：map端保存分片数据，通过网络收集到reduce端。
+spark：spark的shuffle是在DAGSchedular划分Stage的时候产生的，TaskSchedule要分发Stage到各个worker的executor，减少shuffle可以提高性能。
+
+
+## HashParitioner
+
+分区原理：对于给定的key，计算其hashCode。
+弊端是数据不均匀，容易导致数据倾斜。
+
+## RangePartitioner
+
+尽量保证每个分区中数据量的均匀，而且分区与分区之间是有序的，即一个分区中的元素肯定都是比另一个分区内的元素小或者大。
+分区内的元素是不能保证顺序的。
+简单的说就是将一定范围内的数映射到某一个分区内。
+
+
+# 案例
+
+## WordCount:
+```java
+sc.textFile("/1.txt").flatMap(_.split(" ")).filter(!_.isEmpty).map((_,1)).reduceByKey(_+_).sortBy(_._2, false).saveAsTextFile("/2.txt")
+```
+
+## 数量：
+```java
+sc.textFile("/1.txt").count
+// 或者
+hdfs dfs -cat /1.txt | wc -l
+```
+
+
+给定a、b两个文件，各存放50亿个url，每个url各占64字节，内存限制是4G，让你找出a、b文件共同的url：
+
+1. 大小约为5G×64=320G
+2. 对每个url求取hash(url)%1000，每个小文件的大约为300M
+3. 将小文件的url存储到hash_set中
+4. 再次遍历小文件的每个url，如在刚才构建的hash_set中就是共同的url
+
+
+
+1G大小文件，里面每一行是一个词，词的大小不超过16字节，内存限制大小是1M，返回频数最高的100个词：
+
+1. 顺序读文件中，对于每个词x，取hash(x)%5000
+2. 对每个小文件，统计词频，并取频率最大的100个词，存入文件得到了5000个文件
+3. 5000个文件进行归并排序，取出前100
+
+
+# reference
+
+https://www.jianshu.com/p/7a8fca3838a4
 
