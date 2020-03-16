@@ -106,8 +106,44 @@ tag: Database
 - 但可能查询缓慢，需要Join越多的表。
 
 
+# 表分区
+
+## mysql 
+
+mysql的数据是以文件的形势存在磁盘上的，默认放在/mysql/data下面（可以通过my.cnf中的datadir来查看），一张表主要对应着三个文件:
+- 一个是 frm 存放表结构
+- 一个是 myd 存放表数据
+- 一个是 myi 存表索引
+
+
+## 表分区
+
+如果一张表的数据量太大的话，那么myd,myi就会变的很大，查找数据就会变的很慢，这时候利用mysql的分区功能，在物理上将这一张表对应的三个文件，分割成许多个小块，这样查找一条数据时，就不用全部查找了，只要知道这条数据在哪一块，然后在那一块找就行了。如果表的数据太大，可能一个磁盘放不下，这个时可以把数据分配到不同的磁盘里面去。
+
+
+## 优点
+
+- 与单个磁盘或文件系统分区相比，可以存储更多的数据
+
+- 查询可以得到极大的优化
+
+- 聚合函数的查询，各分区可以很容易地进行并行处理
+
+
+## 查看是否支持分区
+
+如果have_partition显示YES，表示当前mysql支持分区
+
+```sql
+show variables like "%partition%"
+```
+
+
 # reference
 
 https://www.cnblogs.com/domi22/p/8538628.html
 
 https://blog.csdn.net/snowbaby1234/article/details/81238760
+
+https://www.cnblogs.com/zhouguowei/p/9360136.html
+
