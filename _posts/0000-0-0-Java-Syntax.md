@@ -135,24 +135,23 @@ Throwable-->Error和Exception：
 - throw  在方法体内，如果抛出异常，由方法体内的语句处理
 
 
+## final，finalize, finally
+final为关键字
+finalize()为方法；在Object中进行了定义，用于在对象“消失”时，由JVM进行调用用于对对象进行垃圾回收
+finally为区块标志，用于try语句中
+
+
+## collection, collections
+collection是结合类的上级接口,子接口有List和Set等。
+collections是java.util下的一个工具类,提供一些列静态方法对集合搜索排序线程同步化等。
+
+
+
 ## 知识点
 
 类进行序列化先实现Serializable接口，该接口没任何抽象方法只是起到一个标记作用。
 
 boolean 类型不能转换成任何其它数据类型。
-
-final为关键字；
-finalize()为方法；在Object中进行了定义，用于在对象“消失”时，由JVM进行调用用于对对象进行垃圾回收。
-finally为区块标志，用于try语句中；
-
-collection是结合类的上级接口,子接口有List和Set等。
-Collections是java.util下的一个工具类,提供一些列静态方法对集合搜索排序线程同步化等。
-
-
-ArrayList和LinkedList都实现了List接口：
-ArrayList是基于索引的数据接口，以O(1)时间复杂度对元素进行随机访问。
-LinkedList是以元素列表的形式存储它的数据，链接在一起，在这种情况下，查找某个元素的时间复杂度是O(n)，插入，添加，删除操作速度更快。
-
 
 java中有指针，但是隐藏了，开发人员无法直接操作指针，由jvm来操作指针。
 
@@ -176,7 +175,11 @@ static静态方法不能被重写
 
 static静态变量，一个类不管创建多少个对象，静态变量在内存中仅有一个拷贝
 
-== 是数值是否相同，equals是对象包括hash是否相同
+## == 和 equals()
+
+== 基本数据类型比较的是值，引用类型（对象）比较的是地址值
+
+equals 比较的是两个引用（对象）的字面值是不是相同
 
 
 

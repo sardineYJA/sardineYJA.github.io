@@ -24,19 +24,18 @@ Collection
  └TreeSet
 ```
 
-类均在java.util包
+List 有序，可重复元素, Set 无序，不含重复元素
 
-List 有序，可重复元素
+## Vector、ArrayList、LinkedList
+
+Vector `同步`(线程安全，所以性能比Vector较差)，底层是`数组`，线程安全，增删慢，查询慢
+
+ArrayList `非同步`（多线程访问时需要自己实现），底层结构是`数组`，查询快，增删慢
 
 LinkedList 非同步（多线程访问时需要自己实现），底层结构是链表，增删快，查询慢
 
-ArrayList 非同步（多线程访问时需要自己实现），底层结构是数组，查询快，增删慢
 
-Vector 同步，底层是数组，线程安全，增删慢，查询慢
 
-Stack 继承 Vector
-
-Set 无序，不含重复元素
 
 ## Map
 
@@ -49,11 +48,11 @@ Map
 
 Map 提供 key-value 映射，键唯一，值不唯一
 
-Hashtable 同步，任何非空（non-null）的对象都可作为 key 或 value
+HashMap 非线程安全，允许 null value 和 null key
+
+Hashtable 线程安全，任何非空（non-null）的对象都可作为 key 或 value
 
 ConcurrentHashMap: 改进 Hashtable，线程安全，其关键在于使用了锁分离技术
-
-HashMap 非同步，允许 null value 和 null key
 
 WeakHashMap 改进的 HashMap，它对 key 实行“弱引用”，如果一个 key 不再被外部所引用，那么该 key 可以被GC回收
 
@@ -80,7 +79,7 @@ ConcurrentHashMap允许多个修改操作并发进行，其关键在于使用了
 
 
 
-## String 
+## String、StringBuffer、StringBuilder
 
 String 是引用类型，底层用char数组实现。
 
@@ -93,9 +92,9 @@ String str=”aaa”,与String str=new String(“aaa”)不一样的。因为内
 第一种，创建的”aaa”是常量，jvm都将其分配在常量池中。
 第二种，创建的是一个对象，jvm将其值分配在堆内存中。
 
-1. String 字符串常量(final修饰，不可被继承)，String是常量，当创建之后即不能更改。
-2. StringBuffer 字符串变量（线程安全）,其也是final类别的，不允许被继承，其中的绝大多数方法都进行了同步处理。
-3. StringBuilder 字符串变量（非线程安全），方法除了没使用synch修饰以外基本与StringBuffer一致，速度更快。
+- String 字符串常量(final修饰，不可被继承)，String是常量，当创建之后即不能更改。
+- StringBuffer 字符串变量（线程安全）,其也是final类别的，不允许被继承，其中的绝大多数方法都进行了同步处理。
+- StringBuilder 字符串变量（非线程安全），方法除了没使用synch修饰以外基本与StringBuffer一致，速度更快。
 
 
 
