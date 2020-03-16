@@ -77,6 +77,14 @@ systemctl status 程序名    # 状态
 netstat -an | grep 端口号  # 端口 
 
 nc -lk 端口                # 发送数据
+
+kill -9 进程号             # 杀死进程
+ 
+ps -A                     # 所有进程
+
+chmod  777 文件名         # 修改文件权限
+
+rsync 和 scp              # 远程传输文件                  
 ```
 
 
