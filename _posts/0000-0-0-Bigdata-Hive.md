@@ -49,9 +49,41 @@ tag: Bigdata
 
 ## hive内部表和外部表的区别
 
+- 创建内部表时，会将数据移动到数据仓库指向的路径
+
+- 创建外部表，仅记录数据所在的路径， 不对数据的位置做任何改变
+
 - 内部表：加载数据到hive所在的hdfs目录，删除时，元数据和数据文件都删除 
 
-- 外部表：不加载数据到hive所在的hdfs目录，删除时，只删除表结构。
+- 外部表：不加载数据到hive所在的hdfs目录，删除时，只删除表结构
+
+
+
+## Hive 工作流程
+
+![png](/images/posts/all/Hive工作流程图.jpeg)
+
+1. (执行查询操作)Execute Query：命令行或Web UI之类的Hive接口将查询发送给Driver(任何数据库驱动程序，如JDBC，ODBC等)以执行。
+
+2. (获取计划任务)Get plan：Driver借助查询编译器解析查询，检查语法和查询计划或查询需求。
+
+3. (获取元数据信息)Get Metadata：编译器将元数据请求发送到Metastore(任何数据库)。
+
+4. (发送元数据)：MetaStore将元数据作为对编译器的响应发送出去。
+
+5. (发送计划任务)Send Plan：编译器检查需求并将计划重新发送给Driver。到目前为止，查询的解析和编译已经完成。
+
+6. (执行计划任务)Execute Plan：Driver将执行计划发送到执行引擎。
+
+7. (执行Job任务)Execute Job：在内部，执行任务的过程是MapReduce Job。执行引擎将Job发送到ResourceManager,ResourceManager位于Name节点中，并将job分配给datanode中的NodeManager。在这里，查询执行MapReduce任务。Metadata Ops 在执行的同时，执行引擎可以使用Metastore执行元数据操作。
+
+8. (拉取结果集)Fetch Result：执行引擎将从datanode上获取结果集。
+
+9. (发送结果集至driver)Send Results：执行引擎将这些结果值发送给Driver。
+
+10. (driver将result发送至interface)Send Results Driver：将结果发送到Hive接口。
+
+
 
 
 # 安装
@@ -350,13 +382,13 @@ explain extended SQL语句;    -- 详情
 
 ## 排序
 
-order by
+order by : 数据全局排序
 
-sort by : 每个Reducer内部排序，对全局结果集来说不是排序
+sort by : 局部排序，每个Reducer内部排序
 
-distribute by : 分区排序，Hive要求DISTRIBUTE BY语句要写在SORT BY语句之前
+distribute by : 分区排序，按照指定的字段对数据进行划分输出到不同的reducer中
 
-cluster by : 相当于distribute by和sorts by对同一字段排序。但是排序只能是升序排序，不能指定排序规则为ASC或者DESC。
+cluster by : 相当于distribute by和sorts by对同一字段排序
 
 
 ## 分桶表
