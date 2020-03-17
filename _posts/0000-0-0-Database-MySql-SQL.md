@@ -120,6 +120,17 @@ having avg(grade)>70;
 ```
 
 
+```sql 
+# case when then else end
+select *,(case when score>=90 then '优秀'
+			   when score>=60 then '及格'
+			   else '不及格'
+		  end)
+from mathTable;
+
+```
+
+
 ```sql
 select 1 from table;
 select anycol(任意一行） from table;
@@ -134,6 +145,33 @@ select * from table;
 select * from 表名 order by 2;                  # 表示根据第二列排序，以往直接写列名 
 select * from 表名 order by rand();             # 乱序
 select * from 表名 order by rand() limit() 3;   # 随机抽取3条
+```
+
+
+```sql
+# 表1
+("张三", "数学", 34),
+("张三", "语文", 58),
+("张三", "英语", 58),
+("李四", "数学", 45),
+("李四", "语文", 87),
+("李四", "英语", 45),
+("王五", "数学", 76),
+("王五", "语文", 34),
+("王五", "英语", 89);
+
+# 表2
+张三, 34, 58, 58;
+李四, 45, 87, 45;
+王五, 76, 34, 89;
+
+# 表1转表2，行转列
+select name,
+	MAX(case courseName when '数学' then score else 0 end) 数学，
+	MAX(case courseName when '语文' then score else 0 end) 语文,
+	MAX(case courseName when '英语' then score else 0 end) 英语
+from tableName
+group by name;   # 需要group by
 ```
 
 
@@ -174,7 +212,3 @@ limit千万级分页的时候优化（使用between and）而不是limit m，n�
 仅列出需要查询的字段，不要使用select * from ...，节省内存。
 
 
-
-
-
-（以此警惕自己，待补充...）
