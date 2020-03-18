@@ -99,6 +99,8 @@ CLI（hive shell）、JDBC/ODBC(java访问hive)、WEB UI（浏览器访问hive�
 
 - 物理层优化器进行MapReduce任务的变换，生成最终的执行计划
 
+总结：`metastore`是一套映射工具，将sql语句转换成对应的job任务区进行执行
+
 
 
 ## hive内部表和外部表的区别
@@ -135,9 +137,35 @@ bucket是更加细的划分，按照指定值进行hash，每个桶就是表目�
 - parquet格式是列式存储，有很好的压缩性能和表扫描功能
 
 
+# 常用配置参数
+
+## hive.fetch.task.conversion=more
+
+hive 拉取模式：
+- more 在全局查找、字段查找、limit查找等都不走 mapreduce。
+- none 执行查询语句，都会执行 mapreduce 程序。
+
+## hive.exec.mode.local.auto=true
+
+开启本地mr：决定 Hive 是否应该自动地根据输入文件大小，在本地运行。
+
+## hive.auto.convert.join=true
+
+根据输入小表的大小，自动将 Reduce 端的 Common Join 转化为 Map Join，从而加快大表关联小表的 Join 速度。
+
+## hive.map.aggr=true 和 hive.groupby.skewindata=true
+
+开启map端集合，group by 操作支持倾斜的数据（进行合并）。
+
+
+## hive.mapred.mode=strict
+
+- strict 严格模式，将不允许笛卡尔积。 防止用户执行那些可能意想不到的不好的影响的查询（即耗时巨大）。
+- nonstrict 默认非严格模式。
 
 
 # reference
 
 https://www.jianshu.com/p/b0b77b045fab
 
+https://baijiahao.baidu.com/s?id=1655664783085326263&wfr=spider&for=pc
