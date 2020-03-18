@@ -9,15 +9,15 @@ tag: Bigdata
 
 # HBase
 
-## 简介
+## 特点
 
 原型是Google的BigTable论文，受到了该论文思想的启发
 
-* 提供表状的面向列的数据存储
+* 分布式的、基于列式存储的数据库
 
-* 针对表状数据的随机读写进行优化
+* 基于hadoop的hdfs存储
 
-* 优化了多次读，以及多次写
+* zookeeper进行管理
 
 * 适合结构化数据和非结构化数据
 
@@ -105,16 +105,16 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 - Hive适用于离线的数据分析和清洗，延迟较高
 - Hive本身不存储和计算数据，它完全依赖于HDFS和MapReduce
 - Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库，可以用来进行实时查询
-
+- Hbase与Hive都是架构在hadoop之上的。都是用hadoop作为底层存储
 
 
 ## HBase 读数据流程
 
-- Client访问Zookeeper，获取meta表在哪个HRegionServer。
+- Client访问Zookeeper获取meta table，从而得知HRegionServer的信息。
 
-- Client通过刚才HRegionServer读取meta元数据。
+- Client通过HRegionServer查询负责管理自己想访问的row key地址。
 
-- Client通过元数据中存储的信息，访问对应的HRegionServer，然后扫描所在HRegionServer的Memstore和Storefile来查询数据。
+- Client访问对应的HRegionServer，然后扫描所在HRegionServer的Memstore和Storefile来查询数据。
 
 - 最后HRegionServer把查询到的数据响应给Client。
 
@@ -125,7 +125,7 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 
 - Client向该HRegionServer服务器发起写入数据请求，然后HRegionServer收到请求并响应。
 
-- Client先把数据写入到HLog，以防止数据丢失。然后将数据写入到Memstore。如果HLog和Memstore均写入成功，则这条数据写入成功
+- Client先把数据写入到HLog（磁盘上），以防止数据丢失。然后将数据写入到Memstore。如果HLog和Memstore均写入成功，则这条数据写入成功。
 
 - 如果Memstore达到阈值，会把Memstore中的数据flush到Storefile中。当Storefile越来越多，会触发Compact合并操作，把过多的Storefile合并成一个大的Storefile。当Storefile越来越大，Region也会越来越大，达到阈值后，会触发Split操作，将Region一分为二。
 
@@ -138,13 +138,6 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 
 - 参数：`hbase.regionserver.global.memstore.lowerLimit：0.38`当MemStore使用内存总量达到hbase.regionserver.global.memstore.upperLimit指定值时，将会有多个MemStores flush到文件中，MemStore flush 顺序是按照大小降序执行的，直到刷新到MemStore使用内存略小于lowerLimit。
 
-## compact 机制
-
-把小的Memstore文件合并成大的Storefile文件。
-
-## split 机制
-
-当Region达到阈值，会把过大的Region一分为二。
 
 
 ## 节点服役（commissioning）

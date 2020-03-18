@@ -91,6 +91,7 @@ export HBASE_MANAGES_ZK=true
 </property>
 ```
 
+
 ## 高可用
 
 - 在conf下创建backup-masters文件，写入高可用节点`echo hadoop101.com > backup-masters`
