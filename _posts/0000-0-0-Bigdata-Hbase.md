@@ -81,6 +81,69 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 ![png](/images/posts/all/HBase的Region结构图.png)
 
 
+
+```java
+HRegionSerer (运作在DataNode上)
+ 	├ HLog
+ 	├ HRegin (相当于表的分片)
+ 	│	 ├ Store (一个Store对应一个列族，表有几个列族，则有几个Store)
+ 	│	 │	   ├ MemStore
+	│	 │	   ├ StoreFile 
+	│	 │	   ├ StoreFile
+	│	 │	   └ ... (第三层：MemStore,StoreFile)
+ 	│	 ├ Store
+ 	│	 ├ Store
+ 	│	 └ ... (第二层：Store)
+ 	├ HRegin
+ 	├ HRegin
+ 	└ ... (第一层：HLog,HRegin)
+```
+
+## Meta Table
+
+HBase中有一个特殊的起目录作用的表格，称为META table。
+META table中保存集群region的地址信息。
+ZooKeeper中会保存META table的位置。
+
+## 逻辑存储模型
+
+```sh
+| RowKey |        ColumnFamily:CF1        |       ColumnFamily:CF2     |   TimeStamp  |
+|        |  Column:Name | Column:Address  |  Column:Age | Column:Sex   |              |
+| rk001  |     yang     |      CH         |      33     |      M       |      t1      |
+| rk002  |    chang     |      US         |      21     |      M       |      t2      |
+```
+
+RowKey：Hbase 使用 Rowkey 来唯一的区分某一行的数据
+
+列族：Hbase 通过列族划分数据的存储，列族下面可以包含任意多的列，实现灵活的数据存取。
+官方推荐的是列族最好小于或者等于3。
+
+时间戳：TimeStamp 对 Hbase 来说至关重要，因为它是实现 Hbase 多版本的关键。
+在 Hbase 中使用不同的 timestame 来标识相同 rowkey 行对应的不通版本的数据。
+
+Cell：HBase 中通过 rowkey 和 columns 确定的为一个存储单元称为 cell。
+每个 cell 都保存着同一份 数据的多个版本。版本通过时间戳来索引。
+
+
+## 高可用
+
+每一个Region server都在ZooKeeper中创建相应的ephemeral node。
+HMaster通过监控这些ephemeral node的状态来发现正常工作的或发生故障下线的Region server。
+HMaster之间通过互相竞争创建ephemeral node进行Master选举。
+ZooKeeper会选出区中第一个创建成功的作为唯一一个活跃的HMaster。
+活跃的HMaster向ZooKeeper发送心跳信息来表明自己在线的状态。
+不活跃的HMaster则监听活跃HMaster的状态，并在活跃HMaster发生故障下线之后重新选举，从而实现了HBase的高可用性。
+
+
+## 列簇创建
+
+rowKey 最好要创建有规则的 rowKey，即最好是有序的。
+
+HBase 中一张表最好只创建一到两个列族比较好，因为 HBase 不能很好的处理多个列族。
+
+
+
 ## 使用场景
 
 * 数据有很多列，且包含很多空字段
@@ -99,6 +162,7 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 * HBase可以支持对数据的更新操作。
 * HBase弥补Hadoop不支持实时数据处理的缺陷。
 
+
 ## HBase 和 Hive
 
 - Hive是一种类SQL的引擎，并且运行MapReduce任务，可以用来进行统计查询
@@ -106,6 +170,8 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 - Hive本身不存储和计算数据，它完全依赖于HDFS和MapReduce
 - Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库，可以用来进行实时查询
 - Hbase与Hive都是架构在hadoop之上的。都是用hadoop作为底层存储
+- Hive是建立在Hadoop之上为了减少MapReducejobs编写工作的批处理系统
+- HBase是为了支持弥补Hadoop对实时操作的缺陷的项目
 
 
 ## HBase 读数据流程
@@ -129,6 +195,45 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 
 - 如果Memstore达到阈值，会把Memstore中的数据flush到Storefile中。当Storefile越来越多，会触发Compact合并操作，把过多的Storefile合并成一个大的Storefile。当Storefile越来越大，Region也会越来越大，达到阈值后，会触发Split操作，将Region一分为二。
 
+
+## Minor Compaction
+
+HBase会自动选取一些较小的HFile进行合并，并将结果写入几个较大的HFile中。
+
+通过Merge sort的形式将较小的文件合并为较大的文件，从而减少了存储的HFile的数量，提升HBase的性能。
+
+
+## Major Compaction
+
+HBase将对应于某一个Column family的所有HFile重新整理并合并为一个HFile，并在这一过程中删除已经删除或过期的cell，更新现有cell的值。这一操作大大提升读的效率。但是因为Major compaction需要重新整理所有的HFile并写入一个HFile，这一过程包含大量的硬盘I/O操作以及网络数据通信。这一过程也称为写放大（Write amplification）。在Major compaction进行的过程中，当前Region基本是处于不可访问的状态。
+
+Major compaction可以配置在规定的时间自动运行。为避免影响业务，Major compaction一般安排在夜间或周末进行。
+
+Major compaction会将当前Region所服务的所有远程数据下载到本地Region server上。这些远程数据可能由于服务器故障或者负载均衡等原因而存储在于远端服务器上。
+
+
+## Region split
+
+随着region中数据量的增加，region会被分割成两个子region。每一个子region中存储原来一半的数据。同时Region server会通知HMaster这一分割。出于负载均衡的原因，HMaster可能会将新产生的region分配给其他的Region server管理（这也就导致了Region server服务远端数据的情况的产生）。
+
+
+
+## Data Replication
+
+HDFS会自动备份WAL和HFile。
+
+
+## Region Server 宕机
+
+
+当Region server宕机的时候，其所管理的region在这一故障被发现并修复之前是不可访问的。ZooKeeper负责根据服务器的心跳信息来监控服务器的工作状态。当某一服务器下线之后，ZooKeeper会发送该服务器下线的通知。HMaster收到这一通知之后会进行恢复操作。
+
+HMaster会首先将宕机的Region server所管理的region分配给其他仍在工作的活跃的Region server。然后HMaster会将该服务器的WAL分割并分别分配给相应的新分配的Region server进行存储。新的Region server会读取并顺序执行WAL中的数据操作，从而重新创建相应的MemStore。
+
+
+## Data Recovery
+
+当MemStore中存储的数据因为某种原因丢失之后，HBase以WAL对其进行恢复。
 
 ## flush 机制
 
@@ -163,3 +268,7 @@ HBase由三个部分：HMaster，ZooKeeper，HRegionServer
 2. 自动平衡数据
 3. 接下来步骤为上个方法2-6
 
+
+# reference
+
+https://www.jianshu.com/p/479bc6308381
