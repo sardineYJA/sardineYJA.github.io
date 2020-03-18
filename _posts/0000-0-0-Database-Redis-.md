@@ -36,7 +36,8 @@ tag: Database
 - Hash
 - List
 - Set
-- zset
+- sorted set
+
 
 ## 持久化
 
@@ -53,6 +54,16 @@ tag: Database
 - rdb性能比aof好
 
 - 如果两个都配了优先加载AOF
+
+
+
+## 快速
+
+- 纯内存操作
+
+- 单线程操作，避免了频繁的上下文切换
+
+- 采用了非阻塞I/O多路复用机制
 
 
 ## 缺点
@@ -80,6 +91,50 @@ tag: Database
 - 从数据库找不到时，也将这个空对象设置到缓存里边去。下次再请求的时候，就可以从缓存里边获取了，并设置一个较短的过期时间。
 
 
+
+## 过期策略及内存淘汰策略
+
+redis采用的是定期删除+惰性删除策略。
+
+`定期删除`：redis默认每个100ms检查，是否有过期的key，有过期key则删除。但不是每个100ms将所有的key检查一次，而是随机抽取进行检查(如果每隔100ms,全部key进行检查，redis岂不是卡死)。因此，如果只采用定期删除策略，会导致很多key到时间没有删除。
+
+`惰性删除`：是说在获取某个key的时候，redis会检查一下，这个key如果设置了过期时间那么是否过期了？如果过期了此时就会删除。
+
+如果定期删除没删除key，也没即时去请求key，redis的内存会越来越高。那么就应该采用内存淘汰机制。
+
+`内存淘汰机制`：redis.conf配置文件中，`maxmemory-policy volatile-lru`
+
+- volatile-lru：从已设置过期时间的数据集（server.db[i].expires）中挑选最近最少使用的数据淘汰
+- volatile-ttl：从已设置过期时间的数据集（server.db[i].expires）中挑选将要过期的数据淘汰
+- volatile-random：从已设置过期时间的数据集（server.db[i].expires）中任意选择数据淘汰
+- allkeys-lru：从数据集（server.db[i].dict）中挑选最近最少使用的数据淘汰
+- allkeys-random：从数据集（server.db[i].dict）中任意选择数据淘汰
+- no-enviction（驱逐）：禁止驱逐数据，新写入操作会报错
+
+
+## 分布式锁
+
+setnx 命令：若给定的 key 已存在，则不再如何动作。不存在 key 则将 key 值设置为 value。
+
+del key命令：释放锁。
+
+解决死锁：
+
+- 通过 redis 的 expire()给锁设定最大持有时间，超时 redis 则会释放锁。
+
+- 使用 setnx key "当前时间+持有时间" （没有则创建）和 getset key "当前时间+持有时间"（获取旧值设置新值）。
+
+
+setnx之后执行expire之前进程意外crash或重启维护：
+
+解决：setnx和expire合成一条指令来用的
+
+
+
+## 有大量的key需要设置同一时间过期
+
+如果大量的key过期时间设置的过于集中，到过期的那个时间点，redis可能会出现短暂的卡顿现象。
+一般需要在时间上加一个随机值，使得过期时间分散一些。
 
 
 # Windows安装
