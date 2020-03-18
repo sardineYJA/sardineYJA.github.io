@@ -30,6 +30,31 @@ tag: Database
 - 特点：实现简单、快速解析、可读性好
 
 
+## 支持的数据格式
+
+- String
+- Hash
+- List
+- Set
+- zset
+
+## 持久化
+
+- RDB方式（Redis DataBase）Redis默认的持久化方式。按照一定的时间周期策略把内存的数据以快照的形式保存到硬盘的二进制文件。
+
+- AOF方式（Append-only file）Redis会将每一个收到的写命令都通过Write函数追加到文件最后，类似于MySQL的binlog。当Redis重启是会通过重新执行文件中保存的写命令来在内存中重建整个数据库的内容。
+
+比较：
+
+- aof文件比rdb更新频率高，优先使用aof还原数据
+
+- aof比rdb更安全也更大
+
+- rdb性能比aof好
+
+- 如果两个都配了优先加载AOF
+
+
 ## 缺点
 
 - 缓存雪崩问题：缓存层宕掉或Redis恰好将这部分数据全部删光
@@ -53,7 +78,6 @@ tag: Database
 - 用布隆过滤器(BloomFilter)或压缩filter提前拦截，不合法就不让请求到数据库层
 
 - 从数据库找不到时，也将这个空对象设置到缓存里边去。下次再请求的时候，就可以从缓存里边获取了，并设置一个较短的过期时间。
-
 
 
 
@@ -217,3 +241,5 @@ https://www.cnblogs.com/bigben0123/p/9115597.html
 https://www.runoob.com/redis/redis-backup.html
 
 https://blog.csdn.net/weixin_34320159/article/details/85088333
+
+https://www.cnblogs.com/jasontec/p/9699242.html
