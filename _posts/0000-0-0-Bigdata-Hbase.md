@@ -142,7 +142,8 @@ rowKey 最好要创建有规则的 rowKey，即最好是有序的。
 
 HBase 中一张表最好只创建一到两个列族比较好，因为 HBase 不能很好的处理多个列族。
 
-
+Column Family 的个数具体看表的数据，一般来说划分标准是根据数据访问频度。
+如一张表里有些列访问相对频繁，而另一些列访问很少，这时可以把这张表划分成两个列族，分开存储，提高访问效率。 
 
 ## 使用场景
 
@@ -195,6 +196,12 @@ HBase 中一张表最好只创建一到两个列族比较好，因为 HBase 不�
 
 - 如果Memstore达到阈值，会把Memstore中的数据flush到Storefile中。当Storefile越来越多，会触发Compact合并操作，把过多的Storefile合并成一个大的Storefile。当Storefile越来越大，Region也会越来越大，达到阈值后，会触发Split操作，将Region一分为二。
 
+
+## Compaction
+
+当 storeFile的数量达到一定程度后，就需要将 storefile 文件来进行 compaction 操作。
+
+分 Minor 和 Major.
 
 ## Minor Compaction
 
