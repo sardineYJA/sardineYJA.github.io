@@ -7,7 +7,6 @@ tag: HBase
 
 ---
 
-# 搭建
 
 ## 单机模式
 
@@ -36,6 +35,7 @@ export HBASE_MANAGES_ZK=true    # 使用自带Zookeeper
 操作HBase数据库：`bin/hbase shell` ，状态`status`
 
 
+
 ## 伪分布式
 
 编辑 conf/hbase-env.sh
@@ -62,6 +62,7 @@ export HBASE_MANAGES_ZK=true
     </property>
 </configuration>
 ```
+
 
 ## 分布式
 
@@ -102,7 +103,7 @@ export HBASE_MANAGES_ZK=true
 
 
 
-# 问题
+# 遇到的问题
 
 ## 多个日志jar
 
@@ -152,7 +153,7 @@ java.io.IOException: Could not start ZK at requested port of 2181.  ZK was start
 
 
 
-# HBase 数据库操作
+# HBase 测试操作
 
 HBase是由row key，column family，column和cell组成。
 row key确定唯一的一行，column family由若干column组成，column是表的字段，cell存储了实际的值或数据。
