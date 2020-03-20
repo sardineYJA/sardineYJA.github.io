@@ -3,7 +3,7 @@ layout: post
 title: "Hbase 结合 Hive"
 date: 2019-09-10
 description: "Hbase 系列"
-tag: Bigdata
+tag: HBase
 
 ---
 

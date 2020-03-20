@@ -3,7 +3,7 @@ layout: post
 title: "Hbase 环境配置"
 date: 2019-09-09
 description: "Hbase 系列"
-tag: Bigdata
+tag: HBase
 
 ---
 
