@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "shuffle 优化"
+title: "HashShuffle & SortShuffle"
 date: 2019-10-16
-description: "shuffle 优化"
+description: "shuffle "
 tag: Spark
 
 ---

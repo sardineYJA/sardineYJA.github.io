@@ -376,6 +376,8 @@ Spark在Driver上，对Application的每一个stage的task，进行分配之前�
 bin/spark-submit \
 --conf "spark.locality.wait=0s" \
 ```
+spark.locality.wait=0。此时，排队的task会去其他excutor上去执行，不会排队。local级别，变成了跨网络去数据。如果是默认值3s，task会等3s，超时后再分配到其他的excutor上执行。
+
 
 ## 修改参数
 
