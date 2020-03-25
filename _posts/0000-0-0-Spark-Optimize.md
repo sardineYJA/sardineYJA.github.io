@@ -201,6 +201,25 @@ OOM 问题可能性：
 
 因为hdfs中不适合存小文件，所以Spark计算后如果产生的文件太小，我们会调用coalesce合并文件再存入hdfs中。但是这会导致一个问题，例如在coalesce之前有100个文件，这也意味着能够有100个Task，现在调用coalesce(10)，最后只产生10个文件，因为coalesce并不是shuffle操作，这意味着coalesce并不是按照我原本想的那样先执行100个Task，再将Task的执行结果合并成10个，而是从头到位只有10个Task在执行，原本100个文件是分开执行的，现在每个Task同时一次读取10个文件，使用的内存是原来的10倍，这导致了OOM。解决这个问题的方法是令程序按照我们想的先执行100个Task再将结果合并成10个文件，这个问题同样可以通过repartition解决，调用repartition(10)，因为这就有一个shuffle的过程，shuffle前后是两个Stage，一个100个分区，一个是10个分区，就能按照我们的想法执行。
 
+## 大数据集分区
+
+数据从集群上拉到driver节点做处理，拉取结果集过大，而驱动节点内存不足，经常导致OOM
+
+修改spark的rdd分区数量：
+```java
+//读取数据，第二个参数可以指定分区个数
+textFile(path,partitionNums)
+
+// 修改RDD分区数目，RDD实际上是把大数据源切分成了多个分区数据，并行处理这份大数据集
+def coalesce(numPartitions: Int, shuffle: Boolean = false):RDD[T]
+rdd.coalesce(10,false)   // 分区数从多变少，一般是不需要开启shuffle的
+rdd.coalesce(300,true)   // 分区数从少变多，必须开启shuffle，否则不会改变
+rdd.coalesce(1, true)    // 从多变成1，开启shuffle，加速合并计算的流程
+
+// repartition函数内部实际上是调用coalesce函数第二个参数等于true时
+def repartition(numPartitions: Int):RDD[T]
+``` 
+
 
 ## shuffle后内存溢出：
 

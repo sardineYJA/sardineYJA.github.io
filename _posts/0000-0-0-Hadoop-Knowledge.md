@@ -164,3 +164,19 @@ bin/hadoop fs 具体命令 或者 bin/hdfs dfs 具体命令
 8. NameNode将fsimage.chkpoint重新命名成fsimage。
 
 
+## hadoop动态添加datanode，不停namenode方式
+
+1. 修改slaves文件，添加需要增加的节点host或者ip，并将其更新到各个节点
+2. 在datanode中启动执行启动datanode命令。命令：sh hadoop-daemon.sh start datanode
+3. 可以通过web界面查看节点添加情况。或使用命令：sh hadoop dfsadmin -report
+4. 执行hadoop balance命令。（此项为balance集群使用，如果只是添加节点，则此步骤不需要）
+
+
+
+## 一个job的map和reduce的数量
+
+- map数量：splitSize=max{minSize,min{maxSize,blockSize}}，map数量由处理的数据分成的block数量决定default_num = total_size / split_size;
+
+- reduce数量：reduce的数量job.setNumReduceTasks(x);x 为reduce的数量。不设置的话默认为 1。
+
+
