@@ -64,7 +64,7 @@ pid=$HADOOP_MAPRED_PID_DIR/mapred-$HADOOP_MAPRED_IDENT_STRING-$command.pid
 
 
 修改 hadoop-env.sh，增加：export HADOOP_PID_DIR=/.../pids
-/home/yangja/tmp
+
 修改 yarn-env.sh，增加：export YARN_PID_DIR=/.../pids
 
 修改 mapred-env.sh，增加：export HADOOP_MAPRED_PID_DIR=/.../pids
