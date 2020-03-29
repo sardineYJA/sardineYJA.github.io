@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Hadoop HA高可用"
-date: 2020-03-20
+date: 2020-03-10
 description: "Hadoop HA高可用"
 tag: Hadoop
 
