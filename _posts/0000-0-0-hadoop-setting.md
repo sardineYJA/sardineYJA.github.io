@@ -105,7 +105,7 @@ YARN | NodeManager | ResourceManager&NodeManager | NodeManager
 
 # 启动
 
-1. 配置slaves：
+1. 集群DataNode启动配置slaves：
 ```
 cd /opt/module/hadoop-2.7.2/etc/hadoop/slaves
 vi slaves
@@ -119,6 +119,16 @@ hadoop103
 [hadoop101]$ sbin/start-dfs.sh
 [hadoop102]$ sbin/start-yarn.sh
 ```
+
+
+
+## 重新格式化
+
+停集群，清空各个节点配置的tmp、name、namesecondary、data、logs等目录
+
+重新：`hadoop namenode -format`
+
+
 
 # reference
 

@@ -8,13 +8,25 @@ tag: Database
 ---
 
 
+## CentOS 7 安装
+
+CentOS 7 版本将MySQL数据库软件从默认的程序列表中移除，用mariadb代替了
+
+```sh
+wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+rpm -ivh mysql-community-release-el7-5.noarch.rpm    # 会获得两个mysql的yum
+yum install mysql mysql-server
+```
+缺点：速度太慢
+
+
 ## 安装
 
 数据库的安装登录需要root用户
 
-1. 查看：rpm -qa\|grep mysql
+1. 查看：`rpm -qa|grep mysql`，`rpm -qa |grep mariadb`
 
-2. 卸载所有：rpm -e --nodeps mysql-xxx.x86_64
+2. 卸载所有：`rpm -e --nodeps mysql-xxx.x86_64`，`rpm -e --nodeps mariadb-xxx.x86_64 `
 
 3. 下载：https://dev.mysql.com/downloads/mysql/
 
@@ -38,7 +50,7 @@ useradd mysql -g mysql -p mysql
 
 11. 登录：`mysql -uroot -pYourPassword`
 
-12. 修改密码：`> set password=password('root123456');`
+12. 修改密码：`> set password=password('123456');`
 
 13. 退出重新登录
 
@@ -54,7 +66,7 @@ use mysql;
 desc user;
 select user, host, password from user;
 update user set host='%' where host='localhost';
-delete from user where host='hadoop101';
+delete from user where host='hostname';
 delete from user where host='127.0.0.1';
 delete from user where host='::1';
 flush privileges;	
