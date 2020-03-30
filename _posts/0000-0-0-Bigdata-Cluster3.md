@@ -131,6 +131,8 @@ fi
 
 # Mysql
 
+VM124 安装 Mysql
+
 详见MySQL篇文章...
 
 
@@ -138,7 +140,7 @@ fi
 
 ## 配置
 
-建议：hive-1.2版本
+VM124 安装 Hive
 
 解压apache-hive-2.1.1-bin.tar.gz
 
@@ -153,7 +155,7 @@ export HIVE_CONF_DIR=/home/yang/module/hive-2.1.1-bin/conf
 cp hive-log4j2.properties.template hive-log4j2.properties
 vi hive-log4j2.properties
 # 日志目录需要提前创建
-hive.log.dir=/home/yang/module/hive-2.1.1-bin/logs
+property.hive.log.dir = /home/yang/module/hive-2.1.1-bin/logs
 ```
 
 ## 利用mysql放Hive的元数据
@@ -178,7 +180,7 @@ mysql-connector-java-5.1.48-bin.jar将其放到lib/目录下
     </property>
     <property>
             <name>javax.jdo.option.ConnectionURL</name>
-            <value>jdbc:mysql://VM124:3306/hivedb?createDatabaseIfNotExist=true&amp;characterEncoding=UTF-8&amp;useSSL=false</value>
+            <value>jdbc:mysql://VM124:3306/hivedb?createDatabaseIfNotExist=true</value>
     <description>Hive access metastore using JDBC connectionURL</description>
     </property>
     <property>
@@ -231,8 +233,61 @@ mysql-connector-java-5.1.48-bin.jar将其放到lib/目录下
 hdfs dfs -mkdir -p /tmp/hive
 hdfs dfs -chmod 777 /tmp/hive
 hdfs dfs -mkdir -p /hive/warehouse
-hdfs dfs -chmod 777 /hive 
+hdfs dfs -chmod 777 /hive/warehouse
 ```
 
 启动：bin/hive
+
+```sql
+create table test(id int, name string);
+```
+
+创建表失败，拒绝连接（未解决，待补充...）
+
+
+
+
+# Hive 和 HBase 集成
+
+## 目的
+
+使用SQL 对 hbase 进行操作
+
+## hbase的部分jar拷贝或软链接到hive
+
+```sh
+export HBASE_HOME=/home/yang/module/hbase-1.3.2
+export HIVE_HOME=/home/yang/module/hive-2.1.1-bin
+
+ln -s $HBASE_HOME/lib/hbase-server-1.3.2.jar $HIVE_HOME/lib/hbase-server-1.3.2.jar
+ln -s $HBASE_HOME/lib/hbase-client-1.3.2.jar $HIVE_HOME/lib/hbase-client-1.3.2.jar
+ln -s $HBASE_HOME/lib/hbase-protocol-1.3.2.jar $HIVE_HOME/lib/hbase-protocol-1.3.2.jar
+ln -s $HBASE_HOME/lib/hbase-it-1.3.2.jar $HIVE_HOME/lib/hbase-it-1.3.2.jar
+ln -s $HBASE_HOME/lib/hbase-hadoop-compat-1.3.2.jar $HIVE_HOME/lib/hbase-hadoop-compat-1.3.2.jar
+ln -s $HBASE_HOME/lib/hbase-hadoop2-compat-1.3.2.jar $HIVE_HOME/lib/hbase-hadoop2-compat-1.3.2.jar
+ln -s $HBASE_HOME/lib/hbase-common-1.3.2.jar $HIVE_HOME/lib/hbase-common-1.3.2.jar
+```
+
+## 测试
+
+hbase:
+```sh
+status
+create 'student','info' 
+put 'student','1001','info:name','yang'
+put 'student','1001','info:sex','male'
+put 'student','1001','info:age','28'
+```
+hdfs路径：/hbase/data/default
+
+
+hive:
+```sh
+create external table hive_hbase_student(rowkey int, name string, sex string, age int) 
+stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+with serdeproperties ("hbase.columns.mapping"=":key,info:name,info:sex,info:age")
+tblproperties("hbase.table.name"="student");
+```
+
+待补充...
 
