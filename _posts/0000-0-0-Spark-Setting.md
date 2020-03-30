@@ -224,29 +224,36 @@ val outputFilePath:String = "D:\\output"
 # 配置Standalone集群模式
 
 ## 配置流程
+
 1. ../conf目录下增加配置文件
 cp slaves.template slaves
 cp spark-env.sh.template spark-env.sh
+
 2. slaves 中增加：
 ```
 slave01
 slave02
 ```
+
 3. spark-env.sh 中增加：
 ```
 SPARK_MASTER_HOST=master01
 SPARK_MASTER_PORT=7077
 ```
+
 4. 配置文件同步到其他节点
 5. 启动：`sbin/start-all.sh`
 6. 浏览器查看：`http://master01:8080`
 
 ## 问题
+
 1. 提示异常：“JAVA_HOME not set”，则 spark-config.sh 需要增加：
 `export JAVA_HOME=/.../jdk1.8.0_144`，同步配置文件。
 
 2. hdfs写入权限问题：`org.apache.hadoop.security.AccessControlException`，
 需要在hdfs-site.xml 关闭权限验证：
+
+
 ```xml
 <property>
     <name>dfs.permissions</name>
@@ -261,14 +268,14 @@ SPARK_MASTER_PORT=7077
 1. cp spark-defaults.conf.template spark-defaults.conf
 
 2. 开启Log, vi spark-defaults.conf:
-```
+```sh
 spark.master             spark://master01:7077
 spark.eventLog.enabled   true
 spark.eventLog.dir       hdfs://master01:9000/directory 或 file:///home/yangja/sparklog
 spark.eventLog.compress  true
 ```
 3. vi spark-env.sh 添加：
-```
+```sh
 export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=4000
 -Dspark.history.retainedApplications=3
 -Dspark.history.fs.logDirectory=hdfs://master01:9000/directory"
