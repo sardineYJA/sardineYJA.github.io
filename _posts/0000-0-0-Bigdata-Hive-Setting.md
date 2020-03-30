@@ -97,6 +97,10 @@ hdfs dfs -chmod 777 /hive
 6. Hive启动：`bin/hive`
 
 
+在default数据库中的表的存储位置hdfs: /user/hive/warehouse
+
+其他数据库的表会在hdfs: /user/hive/warehouse/xxx.db/
+
 ## 其他配置
 
 hive-site.xml增加显示当前数据库，表头信息
@@ -128,6 +132,47 @@ show databases;      多数命令与MySQL类似
 set;                          查看配置信息
 set mapred.reduce.tasks;      查看具体某一项
 set mapred.reduce.tasks=100;  修改某一项（仅此次有效）  
+```
+
+## 关于某些问题
+
+最近重新安装2.1.1版本
+
+> 编码错误 
+
+```xml
+<property>
+    <name>javax.jdo.option.ConnectionURL</name>
+    <value>jdbc:mysql://172.16.7.124:3306/hiveDB?createDatabaseIfNotExist=true&amp;characterEncoding=UTF-8&amp;useSSL=false</value>
+</property>
+```
+metastore 库生成后，如果直接用 hive 创建库或表就会报错，去掉编码
+```xml
+ <value>jdbc:mysql://172.16.7.124:3306/hiveDB?createDatabaseIfNotExist=true</value>
+```
+
+
+> Caused by: MetaException(message:Version information not found in metastore. )
+
+```xml
+<name>hive.metastore.schema.verification</name>
+<value>false</value>
+```
+
+> 配置过多？？？
+
+去掉多余的配置，就create table成功，否则创建表就提示拒绝连接。
+
+问题暂未找出
+
+```xml
+<name>hive.exec.scratchdir</name>
+
+<name>javax.jdo.option.Multithreaded</name>
+
+<name>hive.metasotre.schema.verification</name>
+
+<name>hive.metastore.warehouse.dir</name>
 ```
 
 

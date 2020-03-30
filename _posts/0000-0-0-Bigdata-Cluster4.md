@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "快速搭建4 —— Kafka和Flume"
+title: "快速搭建4 —— Kafka和Flume数据流"
 date: 2020-03-29
 description: "Bigdata"
 tag: Bigdata

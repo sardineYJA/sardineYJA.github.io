@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "快速搭建3 —— HBase和Hive"
+title: "快速搭建3 —— HBase和Hive集成"
 date: 2020-03-25
 description: "Bigdata"
 tag: Bigdata
@@ -170,15 +170,6 @@ mysql-connector-java-5.1.48-bin.jar将其放到lib/目录下
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
     <property>
-            <name>hive.exec.scratchdir</name>
-            <value>/tmp/hive</value>
-    </property>
-    <property>
-            <name>hive.metastore.warehouse.dir</name>
-            <value>hdfs://VM124:9000/hive/warehouse</value>
-    <description>location to default database for the warehouse</description>
-    </property>
-    <property>
             <name>javax.jdo.option.ConnectionURL</name>
             <value>jdbc:mysql://VM124:3306/hivedb?createDatabaseIfNotExist=true</value>
     <description>Hive access metastore using JDBC connectionURL</description>
@@ -197,14 +188,6 @@ mysql-connector-java-5.1.48-bin.jar将其放到lib/目录下
     <description>password to access metastore database</description>
     </property>
     <property>
-            <name>javax.jdo.option.Multithreaded</name>
-            <value>true</value>
-    </property>
-    <property>
-            <name>hive.metasotre.schema.verification</name>
-            <value>true</value>
-    </property>
-    <property>
     		<name>hbase.zookeeper.quorum</name>   
 			<value>VM124,VM125,VM126</value>
   	</property>
@@ -213,7 +196,6 @@ mysql-connector-java-5.1.48-bin.jar将其放到lib/目录下
 			<name>hive.cli.print.header</name>
 			<value>true</value>
 	</property>
-
 	<property>
 	        <name>hive.cli.print.current.db</name>
 	        <value>true</value>
@@ -242,7 +224,9 @@ hdfs dfs -chmod 777 /hive/warehouse
 create table test(id int, name string);
 ```
 
-创建表失败，拒绝连接（未解决，待补充...）
+在default数据库中的表的存储位置hdfs: /user/hive/warehouse
+
+其他数据库的表会在hdfs: /user/hive/warehouse/xxx.db/
 
 
 
@@ -289,5 +273,7 @@ with serdeproperties ("hbase.columns.mapping"=":key,info:name,info:sex,info:age"
 tblproperties("hbase.table.name"="student");
 ```
 
-待补充...
+此时，可以在hive使用sql语句查询到数据，但是hdfs: /user/hive/warehouse 虽然有表（即目录），却没有数据。
+
+
 
