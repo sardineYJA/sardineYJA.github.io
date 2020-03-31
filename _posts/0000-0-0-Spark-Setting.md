@@ -22,17 +22,20 @@ tag: Spark
 3. 主机名修改
 
 
+
 # 配置单机版
 
 1. 配置系统的环境变量:vi /etc/profile
-```
+
+```sh
 ## SPARK_HOME
 export SPARK_HOME=/../spark
 export PATH=$PATH:$SPARK_HOME/bin
 ```
 
 2. cp spark-env.sh.template spark-env.sh
-```
+
+```sh
 export JAVA_HOME=/.../java
 export SPARK_HOME=/.../spark
 export SPARK_MASTER_IP=XXX.XX.XX.XXX  #自己ip
@@ -40,7 +43,8 @@ export SPARK_MASTER_IP=XXX.XX.XX.XXX  #自己ip
 修改pid目录位置：export SPARK_PID_DIR=/.../spark/pids
 
 3. cp slaves.template slaves
-```
+
+```sh
 localhost
 ```
 
@@ -50,9 +54,11 @@ localhost
 
 6. 浏览器查看：`http://master01:8080`
 
+
+
 # 测试
 
-```
+```sh
 bin/spark-submit \
 --class org.apache.spark.examples.SparkPi \
 --master spark://xxx.xxx.xxx.xxx:7077 \
@@ -60,7 +66,7 @@ bin/spark-submit \
 --total-executor-cores 2 \
 examples/jars/spark-examples_2.11-2.1.1.jar 100
 ```
-```
+```sh
 bin/spark-submit \
 --class org.apache.spark.examples.SparkPi \
 --master spark://172.16.7.124:7077 \
@@ -72,7 +78,7 @@ examples/jars/spark-examples_2.11-2.1.1.jar 100
 # 减少输出信息
 
 vi conf/log4j.properties
-```
+```sh
 log4j.rootCategory=INFO, console
 改成：
 log4j.rootCategory=WARN, console
@@ -83,9 +89,10 @@ log4j.rootCategory=WARN, console
 1. 先创建1.txt文本
 
 2. 统计单词数量
-```
+```sh
 sc.textFile("/home/yangja/tmp/1.txt").flatMap(_.split(" ")).map((_,1)).reduceByKey(_+_).saveAsTextFile("/home/yangja/tmp/out")
 ```
+
 
 # spark程序
 
@@ -185,7 +192,7 @@ object WordCount {
 
 4. 上传含依赖的jar，运行：
 
-```
+```sh
 bin/spark-submit \
 --class test.WordCount \
 --master spark://172.16.7.124:7077 \
@@ -230,13 +237,13 @@ cp slaves.template slaves
 cp spark-env.sh.template spark-env.sh
 
 2. slaves 中增加：
-```
+```sh
 slave01
 slave02
 ```
 
 3. spark-env.sh 中增加：
-```
+```sh
 SPARK_MASTER_HOST=master01
 SPARK_MASTER_PORT=7077
 ```
@@ -280,16 +287,25 @@ export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=4000
 -Dspark.history.retainedApplications=3
 -Dspark.history.fs.logDirectory=hdfs://master01:9000/directory"
 ```
+retainedApplications 保存日志个数
+
 4. 注意hdfs://master01:9000/directory 目录要先在hadoop上创建好
 
 5. 同步配置文件到其他节点
 
-6. 启动集群：`../sbin/start-all.sh`
+6. 启动集群：`../sbin/start-all.sh` ，在Master那台启动
 
 7. 启动JobHistory：`../sbin/start-history-server.sh`
 
 8. 浏览器查看：`http://master01:4000`
 
+
+
+## 问题
+
+> failed to launch: nice -n 0 /home/yang/module/spark-2.4.5-bin-hadoop2.7/bin/spark-class org.apache.spark.deploy.master.Master --host VM126 --port 7077 --webui-port 8080
+
+查看日志都是拒绝连接，后来发现临时目录链接有误，hdfs://master01:9000/directory 没有错，后面搭建HA高可用是hdfs://VM124:9000/tmp/SparkJobLog ，拒接连接，原来要写hdfs-site.xml设置的集群名，而且端口不用写，hdfs://mycluster/tmp/SparkJobLog。
 
 
 

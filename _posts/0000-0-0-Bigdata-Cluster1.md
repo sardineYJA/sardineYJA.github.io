@@ -15,6 +15,18 @@ tag: Bigdata
 
 ![png](/images/posts/all/大数据功能节点图.jpg)
 
+```sh
+功能/机器   VM124                                          VM125                            VM126 
+Zookeeper  QuorumPeerMain                                 QuorumPeerMain                   QuorumPeerMain
+HDFS       NameNode DataNode JournalNode                  NameNode DataNode JournalNode    DataNode JournalNode           
+Yarn       ResourceManager NodeManager JobHistoryServer   ResourceManager NodeManager      NodeManager
+Spark      Worker                                         Worker                           Worker Master HistoryServer
+Hbase      HMaster HRegionServer                          HMaster(backup) HRegionServer    HRegionServer
+Hive       Hive
+Flume        
+Kafka
+```
+
 
 # 虚拟机
 
