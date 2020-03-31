@@ -146,9 +146,18 @@ export HADOOP_HOME=/home/yang/module/hadoop-2.7.2
 export HBASE_HOME=/home/yang/module/hbase-1.3.2
 ```
 
-同步到其他机器，数据则是VM125 和 VM126 机器汇总到 VM124
+同步到其他机器
 
-VM125 修改 flume-conf.properties
+
+## 数据流向
+
+VM125 和 VM126 机器汇总到 VM124
+
+VM124 再发送到 kafka 和 hbase
+
+
+## VM125 修改 flume-conf.properties
+
 ```sh
 agent2.sources = r1
 agent2.channels = c1
@@ -170,7 +179,8 @@ agent2.sinks.k1.port = 5555
 ```
 
 
-VM126 修改 flume-conf.properties
+## VM126 修改 flume-conf.properties
+
 ```sh
 agent3.sources = r1
 agent3.channels = c1
@@ -191,5 +201,115 @@ agent3.sinks.k1.hostname = VM124
 agent3.sinks.k1.port = 5555
 ```
 
+
+## VM124 修改 flume-conf.properties
+
+```sh
+agent1.sources = r1
+agent1.channels = kafkaC hbaseC 
+agent1.sinks =  kafkaSink hbaseSink
+
+agent1.sources.r1.type = avro
+agent1.sources.r1.channels = hbaseC kafkaC
+agent1.sources.r1.bind = VM124
+agent1.sources.r1.port = 5555
+agent1.sources.r1.threads = 5
+
+# flume --> hbase
+agent1.channels.hbaseC.type = memory
+agent1.channels.hbaseC.capacity = 100000
+agent1.channels.hbaseC.transactionCapacity = 100000
+agent1.channels.hbaseC.keep-alive = 20
+
+agent1.sinks.hbaseSink.type = asynchbase
+agent1.sinks.hbaseSink.table = weblogs
+agent1.sinks.hbaseSink.columnFamily = info
+agent1.sinks.hbaseSink.channel = hbaseC
+agent1.sinks.hbaseSink.serializer = org.apache.flume.sink.hbase.SimpleAsyncHbaseEventSerializer
+agent1.sinks.hbaseSink.serializer.payloadColumn = datatime,userid,searchname,retorder,cliorder,cliurl
+
+
+#flume  --> kafka
+agent1.channels.kafkaC.type = memory
+agent1.channels.kafkaC.capacity = 100000
+agent1.channels.kafkaC.transactionCapacity = 100000
+agent1.channels.kafkaC.keep-alive = 20
+
+agent1.sinks.kafkaSink.channel = kafkaC
+agent1.sinks.kafkaSink.type = org.apache.flume.sink.kafka.KafkaSink
+agent1.sinks.kafkaSink.brokerList = VM124:9092,VM125:9092,VM126:9092
+agent1.sinks.kafkaSink.topic = weblogs
+agent1.sinks.kafkaSink.zookeeperConnect = VM124:2181,VM124:2181,VM124:2181
+agent1.sinks.kafkaSink.requiredAcks = 1
+agent1.sinks.kafkaSink.batchSize = 1
+agent1.sinks.kafkaSink.serializer.class = kafka.serializer.StringEncoder
+```
+
+
+## 源码修改
+
+
+路径：`apache-flume-1.9.0-src\flume-ng-sinks\flume-ng-hbase-sink\src\main\java\org\apache\flume\sink\hbase`
+
+对 SimpleAsyncHbaseEventSerializer.java 修改 getActions()：
+
+```java
+public List<PutRequest> getActions() {
+        List<PutRequest> actions = new ArrayList<>();
+        if (payloadColumn != null) {
+            byte[] rowKey;
+            try {
+                /*---------------------------代码修改开始---------------------------------*/
+                //解析列字段
+                String[] columns = new String(this.payloadColumn).split(",");
+                //解析flume采集过来的每行的值
+                String[] values = new String(this.payload).split(",");
+                for(int i=0;i < columns.length;i++) {
+                    byte[] colColumn = columns[i].getBytes();
+                    byte[] colValue = values[i].getBytes(Charsets.UTF_8);
+
+                    //数据校验：字段和值是否对应
+                    if (colColumn.length != colValue.length) break;
+                    //时间
+                    String datetime = values[0].toString();
+                    //用户id
+                    String userid = values[1].toString();
+                    //根据业务自定义Rowkey
+                    rowKey = SimpleRowKeyGenerator.getKfkRowKey(userid, datetime);
+                    //插入数据
+                    PutRequest putRequest = new PutRequest(table, rowKey, cf,
+                            colColumn, colValue);
+                    actions.add(putRequest);
+                    /*---------------------------代码修改结束---------------------------------*/
+                }
+            } catch (Exception e) {
+                throw new FlumeException("Could not get row key!", e);
+            }
+        }
+        return actions;
+    }
+```
+
+
+对 SimpleRowKeyGenerator.java 增加：
+
+```java
+public class SimpleRowKeyGenerator {
+  public static byte[] getKfkRowKey(String userid,String datetime)throws UnsupportedEncodingException {
+    return (userid + datetime + String.valueOf(System.currentTimeMillis())).getBytes("UTF8");
+  }
+}
+```
+
+对 flume-ng-hbase-sink 打包成：lume-ng-hbase-sink-1.9.0.jar，放到flume/lib目录下
+
+
 待补充...
 
+
+
+# reference
+
+https://yq.aliyun.com/articles/557454
+
+https://github.com/TALKDATA/JavaBigData/blob/master/news-project.md
