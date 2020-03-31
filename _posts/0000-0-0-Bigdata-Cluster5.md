@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "快速搭建5 —— Spark分析数据"
-date: 2020-03-30
+date: 2020-03-31
 description: "Bigdata"
 tag: Bigdata
 
@@ -91,6 +91,36 @@ bin/spark-submit \
 --total-executor-cores 2 \
 examples/jars/spark-examples_2.11-2.4.5.jar 100
 ```
+
+## Spark on Yarn
+
+修改yarn-site.xml，分发至各个节点，重启。
+```xml
+<property>
+    <name>yarn.nodemanager.vmem-check-enabled</name>
+    <value>false</value>
+</property>
+<property>
+    <name>yarn.nodemanager.vmem-pmem-ratio</name>
+    <value>4</value>
+</property>
+```
+
+测试：
+```sh
+bin/spark-shell --master yarn --deploy-mode client
+sc.parallelize(1 to 100,5).count
+
+bin/spark-submit \
+--class org.apache.spark.examples.SparkPi \
+--master yarn --deploy-mode client  \
+--executor-memory 1G \
+--total-executor-cores 2 \
+examples/jars/spark-examples_2.11-2.4.5.jar 100
+```
+
+打开Yarn Applications：http://VM124:8088
+
 
 ## 脚本
 

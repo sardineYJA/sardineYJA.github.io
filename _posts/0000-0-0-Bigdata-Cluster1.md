@@ -22,9 +22,9 @@ HDFS       NameNode DataNode JournalNode                  NameNode DataNode Jour
 Yarn       ResourceManager NodeManager JobHistoryServer   ResourceManager NodeManager      NodeManager
 Spark      Worker                                         Worker                           Worker Master HistoryServer
 Hbase      HMaster HRegionServer                          HMaster(backup) HRegionServer    HRegionServer
-Hive       Hive
-Flume        
-Kafka
+Hive       Hive     
+Kafka      Kafka                                          Kafka                            Kafka
+Flume      Flume                                          Flume                            Flume
 ```
 
 
@@ -192,4 +192,18 @@ done
 待补充...
 
 
+# 主机
+
+## 增加dns解析
+
+文件：`C:\Windows\System32\drivers\etc\hosts`
+
+增加：
+```sh
+XXX.XXX.XXX.124 VM124
+XXX.XXX.XXX.125 VM125
+XXX.XXX.XXX.126 VM126
+```
+
+刷新命令：`ipconfig /flushdns`
 
