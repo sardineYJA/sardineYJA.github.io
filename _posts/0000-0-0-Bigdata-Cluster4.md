@@ -222,7 +222,7 @@ agent1.channels.hbaseC.transactionCapacity = 100000
 agent1.channels.hbaseC.keep-alive = 20
 
 agent1.sinks.hbaseSink.type = asynchbase
-agent1.sinks.hbaseSink.table = weblogs
+agent1.sinks.hbaseSink.table = weblogs                # Hbase Table
 agent1.sinks.hbaseSink.columnFamily = info
 agent1.sinks.hbaseSink.channel = hbaseC
 agent1.sinks.hbaseSink.serializer = org.apache.flume.sink.hbase.SimpleAsyncHbaseEventSerializer
@@ -238,10 +238,10 @@ agent1.channels.kafkaC.keep-alive = 20
 agent1.sinks.kafkaSink.channel = kafkaC
 agent1.sinks.kafkaSink.type = org.apache.flume.sink.kafka.KafkaSink
 agent1.sinks.kafkaSink.brokerList = VM124:9092,VM125:9092,VM126:9092
-agent1.sinks.kafkaSink.topic = weblogs
+agent1.sinks.kafkaSink.topic = weblogs               # Kafka topic
 agent1.sinks.kafkaSink.zookeeperConnect = VM124:2181,VM124:2181,VM124:2181
 agent1.sinks.kafkaSink.requiredAcks = 1
-agent1.sinks.kafkaSink.batchSize = 1
+agent1.sinks.kafkaSink.batchSize = 20
 agent1.sinks.kafkaSink.serializer.class = kafka.serializer.StringEncoder
 ```
 
@@ -264,7 +264,7 @@ public List<PutRequest> getActions() {
                 String[] columns = new String(this.payloadColumn).split(",");
                 //解析flume采集过来的每行的值
                 String[] values = new String(this.payload).split(",");
-                for(int i=0;i < columns.length;i++) {
+                for(int i=0; i < columns.length; i++) {
                     byte[] colColumn = columns[i].getBytes();
                     byte[] colValue = values[i].getBytes(Charsets.UTF_8);
 
@@ -274,7 +274,7 @@ public List<PutRequest> getActions() {
                     String datetime = values[0].toString();
                     //用户id
                     String userid = values[1].toString();
-                    //根据业务自定义Rowkey
+                    //根据业务自定义Rowkey，这里是userid+datatime+System.currentTimeMillis()作为Key
                     rowKey = SimpleRowKeyGenerator.getKfkRowKey(userid, datetime);
                     //插入数据
                     PutRequest putRequest = new PutRequest(table, rowKey, cf,
@@ -302,6 +302,26 @@ public class SimpleRowKeyGenerator {
 ```
 
 对 flume-ng-hbase-sink 打包成：lume-ng-hbase-sink-1.9.0.jar，放到flume/lib目录下
+
+
+## 启动
+
+kafka开启：
+bin/kafka-console-consumer.sh --zookeeper VM124:2181,VM125:2181,VM126:2181 --from-beginning --topic weblogs
+
+
+
+```sh
+# VM125 
+bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n agent2 -Dflume.root.logger=INFO,console
+
+# VM126
+bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n agent3 -Dflume.root.logger=INFO,console
+
+# VM124
+bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n agent1 -Dflume.root.logger=INFO,console
+```
+
 
 
 待补充...
