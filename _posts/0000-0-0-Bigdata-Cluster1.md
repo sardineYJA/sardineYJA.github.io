@@ -13,18 +13,32 @@ tag: Bigdata
 
 ## 节点功能
 
-![png](/images/posts/all/大数据功能节点图.jpg)
+```java
+功能/机器     VM124                    VM125                       VM126 
 
-```sh
-功能/机器   VM124                                          VM125                            VM126 
-Zookeeper  QuorumPeerMain                                 QuorumPeerMain                   QuorumPeerMain
-HDFS       NameNode DataNode JournalNode                  NameNode DataNode JournalNode    DataNode JournalNode           
-Yarn       ResourceManager NodeManager JobHistoryServer   ResourceManager NodeManager      NodeManager
-Spark      Worker                                         Worker                           Worker Master HistoryServer
-Hbase      HMaster HRegionServer                          HMaster(backup) HRegionServer    HRegionServer
-Hive       Hive     
-Kafka      Kafka                                          Kafka                            Kafka
-Flume      Flume                                          Flume                            Flume
+Zookeeper    QuorumPeerMain            QuorumPeerMain             QuorumPeerMain
+
+Hdfs         NameNode                  NameNode                               
+             DataNode                  DataNode                   DataNode
+             JournalNode               JournalNode                JournalNode
+
+Yarn         ResourceManager           ResourceManager        
+             NodeManager               NodeManager                NodeManager
+             JobHistoryServer
+                                                                          
+Spark        Worker                    Worker                     Master Worker 
+                                                                  HistoryServer
+
+Hbase        HMaster                   HMaster(backup)
+             HRegionServer             HRegionServer              HRegionServer
+
+MySQL        MySQL
+
+Hive         Hive     
+
+Kafka        Kafka                     Kafka                      Kafka
+
+Flume        Flume                     Flume                      Flume
 ```
 
 
