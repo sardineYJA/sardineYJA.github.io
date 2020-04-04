@@ -320,7 +320,7 @@ private AppAccountConfig appAccountConfig;
 ## product_category 表创建相应的类
 
 ```java
-@Entity
+@Entity          // 运行自动会创建ProductCategory表
 @DynamicUpdate   // 当字段相关update_time会随着改变
 @Data            // 简化Setter/Getter,toString等
 public class ProductCategory {
