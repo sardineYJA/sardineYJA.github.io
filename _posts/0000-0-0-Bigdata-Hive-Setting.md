@@ -176,6 +176,16 @@ metastore 库生成后，如果直接用 hive 创建库或表就会报错，去�
 ```
 
 
+## 启动方式
+
+- 命令行模式：进入hive安装目录，输入`bin/hive`或`hive –service cli`，用于Linux平台命令行查询，查询语句基本跟MySQL查询语句类似
+
+
+- 远程服务启动方式：`bin/hive –service hiveserver2 &`，用java，Python等程序实现通过jdbc等驱动的访问hive，程序员最需要的方式。
+
+
+
+
 
 # 操作
 
