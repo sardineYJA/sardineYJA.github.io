@@ -323,7 +323,7 @@ private AppAccountConfig appAccountConfig;
 @Entity          // 运行自动会创建ProductCategory表
 @DynamicUpdate   // 当字段相关update_time会随着改变
 @Data            // 简化Setter/Getter,toString等
-public class ProductCategory {
+public class ProductCategory {   // 相应数据库表product_category
     @Id
     @GeneratedValue
     private Integer categoryId;
@@ -413,7 +413,7 @@ public class BuyerProductController {
 }
 ```
 
-对于返回的数据进行封装成类：
+对于返回的数据进行封装成 VO 类：
 
 ```java
 @Data       // Getter&Setting
@@ -421,7 +421,8 @@ public class ProductVO implements Serializable {  // 序列化
     @JsonProperty("name")  // 表示返回json时，字段名为name，并非categoryName
     private String categoryName;
 
-    // ... 其他字段
+    @JsonProperty("type")
+    private Integer categoryType;
 
     @JsonProperty("foods")
     private List<ProductInfoVO> productInfoVOList; // 字段
@@ -548,6 +549,8 @@ public ModelAndView logout(HttpServletRequest request,
 
 # AOP 身份验证
 
+## aspect 层
+
 通过切片对访问url进行登录身份验证，非登录则抛出异常，并对异常进行捕获处理并调到登录界面。
 
 ```java
@@ -607,9 +610,9 @@ public class SellExceptionHandler {
 
 
 
-# 优化点
+# mybatis 的使用
 
-## mybatis 与 jpa
+## mapper 层
 
 ```xml
 <dependency>
@@ -621,7 +624,7 @@ public class SellExceptionHandler {
 
 ```java
 @SpringBootApplication
-@MapperScan(basePackages = "com.sxdt.dataobject")    // mybatis 操作数据库
+@MapperScan(basePackages = "com.sxdt.dataobject")    // mybatis 操作扫描的包（Mapper接口下）
 @EnableCaching                                       // 使用缓存
 public class SellApplication {
     public static void main(String[] args) {
@@ -629,6 +632,12 @@ public class SellApplication {
     }
 }
 ```
+
+
+## 注解方式
+
+ProductCategoryMapper是接口，mybatis的dao接口不需要实现类。
+jdk proxy 为接口生成了实现对应接口的类。
 
 ```java
 public interface ProductCategoryMapper {
@@ -659,13 +668,44 @@ public interface ProductCategoryMapper {
 }
 ```
 
+## 注解的方式
+
+application-dev.yml，
+```sh
+mybatis:
+  mapper-locations: classpath:mapper/*.xml  # resources/mapper/路径下
+```
+
+resources/mapper/ProductCategoryMapper.xml
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imooc.dataobject.mapper.ProductCategoryMapper" > <!-- ProductCategoryMapper 自动装载类 -->
+
+    <resultMap id="BaseResultMap" type="com.imooc.dataobject.ProductCategory">
+        <id column="category_id" property="categoryId" jdbcType="INTEGER" />
+        <id column="category_name" property="categoryName" jdbcType="VARCHAR" />
+        <id column="category_type" property="categoryType" jdbcType="INTEGER" />
+    </resultMap>
+
+    <select id="selectByCategoryType" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select category_id, category_name, category_type
+        from product_category
+        where category_type = #{category_type, jdbcType=INTEGER}
+    </select>
+</mapper>
+```
+
+
+## 测试类
+
 ```java
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
 public class ProductCategoryMapperTest {
 
-    @Autowired
+    @Autowired     // 自动装载
     private ProductCategoryMapper mapper;
 
     @Test
@@ -712,8 +752,23 @@ public class ProductCategoryMapperTest {
         int result = mapper.deleteByCategoryType(102);
         Assert.assertEquals(1, result);
     }
+
+    @Test        // 这个测试xml方式
+    public void selectByCategoryType() {
+        ProductCategory productCategory = mapper.selectByCategoryType(101);
+        Assert.assertNotNull(productCategory);
+    }
 }
 ```
+
+
+# 优化
+
+## 操作数据库
+
+操作数据库，选择 JPA 或者 MyBatis 都行
+
+但建表时，建议用sql，不用JPA的方法（后期不好维护）
 
 
 ## 高并发情况需要加锁
@@ -742,6 +797,11 @@ public ResultVO list(@RequestParam(value = "sellerId", required = false) String 
 }
 ```
 
+## 部署
+
+tomcat 方式：
+
+java -jar 方式：
 
 
 # reference
