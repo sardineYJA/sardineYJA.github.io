@@ -10,7 +10,32 @@ tag: Spark
 
 # Spark 提交任务
 
-单机测试：
+## 总结
+
+- standlone 模式 driver一定在master之上, Executor在worker之上。
+
+- yarn-client 模式 Driver(初始SparkContext程序) 运行在 Client(提交jar包的节点,与resourcemanager无关)上，应用程序运行结果会在客户端显示。
+
+- yarn-cluster 模式 Driver程序在 YARN 中运行，应用的运行结果不能在客户端显示。
+
+
+## Spark 应用程序执行过程
+
+1. 用户Client端Submit作业，Driver运行创建SparkContext
+
+2. SparkContext向资源管理器（Standalone, yarn, Mesos）注册申请资源
+
+3. 资源分配给Executor
+
+4. SparkContext构建DAG图，并分解成Stage，将Taskset发送给Task Scheduler
+
+5. Executor向SparkContext申请Task，Task Scheduler将Task发送给Executor，SparkContext将程序代码发送给Executor
+
+6. Task在Executor上运行，运行完毕后释放资源
+
+
+
+## 单机测试
 
 ```sh
 bin/spark-submit \
