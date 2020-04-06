@@ -126,7 +126,7 @@ java -jar -Dspring.profiles.active=dev YYY.jar
 
 > Spring Boot Configuration Annotation Processor not found in classpath
 
-解决：
+spring默认使用yml中的配置，但有时候要用传统的xml或properties配置，就需要使用spring-boot-configuration-processor了。
 
 ```xml
 <dependency>
