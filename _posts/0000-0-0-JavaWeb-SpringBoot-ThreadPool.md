@@ -13,6 +13,13 @@ tag: Java Web
 
 2. 配置spring默认的线程池
 
+线程池ThreadPoolExecutor 执行：
+
+![png](/images/posts/all/线程池ThreadPoolExecutor.png)
+
+
+
+
 ## 配置
 
 properties参数配置
