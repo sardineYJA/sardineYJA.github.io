@@ -12,7 +12,7 @@ tag: Java Web
 
 项目下载：https://start.spring.io/
 
-或新建项目 Spring Initializr
+或新建项目 Spring Initializr，选择 Spring Web
 
 ## 部署运行
 
@@ -32,6 +32,8 @@ java -jar -Dspring.profiles.active=dev XXX.jar   # 选择配置文件
 ```
 
 网址：http://localhost:8080
+
+一般都是错误界面：Whitelabel Error Page
 
 ## 测试案例
 
