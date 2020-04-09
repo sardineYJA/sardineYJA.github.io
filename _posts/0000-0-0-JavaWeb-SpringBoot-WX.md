@@ -79,6 +79,9 @@ create table `seller_info` (
 ) comment '卖家信息表';
 ```
 
+手动创建数据库和表
+
+
 
 # 日志
 
@@ -102,6 +105,8 @@ public class Test {
 此配置不仅在控制台输出，并保留在磁盘，info/debug/error/warn日志区分开，按照每天做归档。
 
 在resources下新建logback-spring.xml，配置文件无需任何修改，它也可以被识别。
+
+记得修改：`<property name="log.path" value="D:/log/" />` 目录位置
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -317,6 +322,8 @@ private AppAccountConfig appAccountConfig;
 
 # dao 层
 
+dataobject 层创建数据库表对应的类
+
 ## product_category 表创建相应的类
 
 ```java
@@ -332,6 +339,8 @@ public class ProductCategory {   // 相应数据库表product_category
 ```
 
 ## Repository 操作数据库接口
+
+repository 层创建数据库表对应的类的JPA操作函数（继承接口即可），需要额外功能再接口下增加新的函数
 
 ```java
 public interface ProductCategoryRepository extends JpaRepository<ProductCategory, Integer> {
@@ -357,6 +366,8 @@ public class ProductCategoryRepositoryTest {
 ```
 
 # Service 层
+
+service 层
 
 即对 Repository 数据库操作接口进行一步封装：
 
