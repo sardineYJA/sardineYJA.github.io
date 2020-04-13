@@ -168,6 +168,14 @@ spark：spark的shuffle是在DAGSchedular划分Stage的时候产生的，TaskSch
 简单的说就是将一定范围内的数映射到某一个分区内。
 
 
+## HashShuffle 和 SortShuffle
+
+Hash Shuffle：产生大量磁盘小文件的个数为`maptask*reducetask`
+
+Sort Shuffle：磁盘小文件合并成为了一个大的磁盘小文件
+
+
+
 # 案例
 
 ## WordCount:

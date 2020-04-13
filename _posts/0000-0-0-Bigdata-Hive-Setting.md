@@ -357,15 +357,6 @@ explain SQL语句;             -- 查看执行计划
 explain extended SQL语句;    -- 详情
 ```
 
-## 排序
-
-order by : 数据全局排序
-
-sort by : 局部排序，每个Reducer内部排序
-
-distribute by : 分区排序，按照指定的字段对数据进行划分输出到不同的reducer中
-
-cluster by : 相当于distribute by和sorts by对同一字段排序
 
 
 ## 分桶表

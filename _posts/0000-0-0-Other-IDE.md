@@ -178,6 +178,8 @@ Fiel --> Project Structure --> Project 以及 Modules 以及 SDKs
 
 3. Ctrl + 双击 或 Ctrl + Alt + b 跳转到类的实现
 
+4. 全局搜索字符串：Edit --> Find in path
+
 
 Debug
 

@@ -137,6 +137,17 @@ bucket是更加细的划分，按照指定值进行hash，每个桶就是表目�
 - parquet格式是列式存储，有很好的压缩性能和表扫描功能
 
 
+## 排序
+
+order by : 数据全局排序
+
+sort by : 局部排序，每个Reducer内部排序
+
+distribute by : 分区排序，按照指定的字段对数据进行划分输出到不同的reducer中
+
+cluster by : 相当于distribute by和sorts by对同一字段排序
+
+
 # 常用配置参数
 
 ## hive.fetch.task.conversion=more
