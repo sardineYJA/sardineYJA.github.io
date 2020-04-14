@@ -144,6 +144,20 @@ public static boolean releaseDistributedLock(Jedis jedis, String lockKey, String
 
 ## Redis 做缓存
 
+缓存：@EnableCaching
+
+- @Cacheable 将函数返回的结果（可序列化），放到Cache中，下次再运行时不再运行函数，直接从Cache获取，用在查询函数中
+
+- @CachePut 将函数返回的结果（可序列化），重新放到Cache，用在修改函数中
+
+- @CacheEvict 将Cache清除掉，用在修改函数中
+
+```java
+@Cacheable(cacheNames = "product", key = "#sellerId")
+public ResultVO list(@RequestParam(value = "sellerId", required = false) String sellerId) {
+    pass;
+}
+```
 
 
 # reference
