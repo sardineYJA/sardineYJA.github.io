@@ -215,9 +215,192 @@ select * from student where name = #{0} and age = #{1}
 </select>
 ```
 
-# 分页
-
 
 # SpringBoot 使用 Mybatis
 
+
+## application.properties
+
+```sh
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.username=root
+spring.datasource.password=123456
+spring.datasource.url=jdbc:mysql://192.168.243.124:3306/test?characterEncoding=utf-8&useSSL=false
+```
+
+## 依赖
+
+```xml
+<!-- mysql数据库驱动 -->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>5.1.29</version>
+</dependency>
+<!-- mybatis -->
+<dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>2.0.0</version>
+</dependency>
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.16.12</version>
+</dependency>
+<dependency>
+    <groupId>com.github.pagehelper</groupId>
+    <artifactId>pagehelper-spring-boot-starter</artifactId>
+    <version>1.2.12</version>
+</dependency>
+```
+
+
+## 启动类添加扫描
+
+```java
+@SpringBootApplication  
+@MapperScan("com.example.demo.bigdata.mapper")
+public class DemoApplication {}
+```
+
+## 实体类
+
+bigdata.entity层
+
+```java
+@Data
+public class Student implements Serializable {
+    private int id;
+    private String name;
+    private int age;
+}
+```
+
+## 基于注解操作
+
+bigdata.mapper层
+
+```java
+public interface StudentMapper {
+    @Select("select * from student")
+    List<Student> getAllStudent();
+
+    @Insert("insert into student(id, name, age) values(#{id}, #{name}, #{age})")
+    int insert(Student student);
+}
+```
+
+## 测试
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class TestMybatis {
+    @Autowired
+    StudentMapper studentMapper;
+
+    @Test
+    public void test() {
+        List<Student> allStudent = studentMapper.getAllStudent();
+        System.out.println(allStudent);
+    }
+}
+```
+
+## 注解介绍
+
+扫描接口：@MapperScan("com.example.demo.bigdata.mapper") 或者 @Mapper 两种方式
+```java
+@Mapper
+public interface StudentMapper{...}
+```
+
+@Results()结果映射列表，property是类的属性名，colomn是数据库表的字段名
+```java
+@Results({
+        @Result(property = "id", column = "id"), 
+        @Result(property = "name", column = "name"),
+        @Result(property = "age", column = "age")
+})
+```
+
+
+# XML的方式
+
+## 配置
+
+application.properties增加：
+
+```sh
+mybatis.mapper-locations=classpath:mapper/*.xml
+```
+
+对应的Dao接口也必须在扫描范围：
+```java
+@MapperScan("com.example.demo.bigdata")
+```
+
+## 操作
+
+bigdata.dao层
+
+```java
+public interface StudentService {
+    List<Student> getAllStudent();
+    Student findById(int id);
+    List<Student> getListByName(String name);
+}
+```
+
+
+bigdata.service层，添加分页
+
+```java
+@Service         // Service注解层，可用于@Autowired
+public class StudentService {
+    @Autowired
+    private StudentDao studentDao;
+
+    public List<Student> getPageStudent(int page, int size) {
+        PageHelper.startPage(page, size);
+        return studentDao.getAllStudent();
+    }
+}
+```
+
+
+对应的resource/mapper/StudentMapper.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.bigdata.dao.StudentDao">
+    <select id="getAllStudent" resultType="com.example.demo.bigdata.entity.Student">
+    select * from student
+    </select>
+
+    <select id="findById" parameterType="int" resultType="com.example.demo.bigdata.entity.Student">
+    select * from student where id = #{id}
+    </select>
+
+    <select id="getListByName" parameterType="String" resultType="map">
+    select * from student where name = #{name}
+    </select>
+</mapper>
+```
+
+
+## 分页
+
+```java
+List<Student> pageStudent = studentService.getPageStudent(2, 3);
+System.out.println(pageStudent);
+
+PageInfo<Student> info = new PageInfo<>(pageStudent);
+System.out.println(info);      // 可以得知所有信息，包括第几页，第几行，是否第一页/最后一页
+```
 
