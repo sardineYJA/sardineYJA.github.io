@@ -141,10 +141,36 @@ vi /etc/security/limits.d/XX-nproc.conf
 
 vi /etc/sysctl.conf 
 ```sh
-vm.max_map_count=655360
+vm.max_map_count=262144
 ```
 并执行命令：sysctl -p
 
+
+> memory locking requested for elasticsearch process but memory is not locked
+
+避免es使用swap交换分区设置，bootstrap.memory_lock: true 
+
+但是会报上面错误，测试环境可直接修改false
+
+修改：/etc/security/limits.conf
+```sh
+* soft memlock unlimited
+* hard memlock unlimited
+```
+
+修改：/etc/sysctl.conf
+```sh
+vm.swappiness=0
+```
+
+
+## 内存
+
+vi jvm.options，一般来说默认1g太少了对于业务来说
+```
+-Xms1g
+-Xmx1g
+```
 
 # 安装 Elasticsearch head 插件
 
@@ -166,7 +192,7 @@ npm -v
 ```
 head插件：unzip elasticsearch-head-master.zip -d ../module/
 
-查看当前head插件目录下有无node_modules/grunt目录，没有的话，
+查看当前head插件目录下有无node_modules/grunt目录，没有的话，（root用户）
 执行命令创建：npm install grunt --save
 
 安装head插件：npm install -g cnpm --registry=https://registry.npm.taobao.org
@@ -192,7 +218,7 @@ mkdir base
 cp _site/base/* base/
 ```
 
-elasticsearch-head/目录下启动grunt server：grunt server -d
+elasticsearch-head/目录下启动grunt server：grunt server &
 
 提示grunt的模块没有安装，安装即可
 

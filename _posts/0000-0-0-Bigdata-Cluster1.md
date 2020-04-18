@@ -39,6 +39,22 @@ Hive         Hive
 Kafka        Kafka                     Kafka                      Kafka
 
 Flume        Flume                     Flume                      Flume
+
+ES           Elasticsearch             Elasticsearch              Elasticsearch
+			 Head
+			 Kibana
+```
+
+```sh
+## 版本
+Hadoop 2.7.2
+Zookeeper 3.4.14
+Spark 2.4.5
+Hbase 1.3.2
+Hive 2.1.1
+Kafka 2.11-0.11.0.0
+Flume 1.9.0
+Elasticsearch 7.6.2
 ```
 
 
@@ -50,8 +66,39 @@ Flume        Flume                     Flume                      Flume
 
 - 用户密码：root，123456
 
-- 考虑测试开启多个jps进程，后续可以将内存提升1台4G, 2台3G
+- 考虑测试开启多个jps进程，后续可以将内存提升1台4G(磁盘50G建议大一点), 2台3G(建议大一点)
 
+
+## 扩展磁盘
+
+修改配置，开机后需要挂载
+```sh
+df -h    # 已挂载的磁盘
+
+lsblk    # 所有磁盘
+
+## 开始操作
+
+fdisk /dev/sda  # 对sda进行开垦，将sda空间开垦成sda3
+   --> n （其他默认即可），-->w 完成
+
+
+fdisk -l # 发现sda3 的Id 是83 改成8e跟sda2是一样的 将system 类型改成Linux LVM
+fdisk /dev/sda 
+   --> t -->3 --> L --> 8e --> w 完成
+
+partprobe            # 重新读取分区表
+mkfs.ext4 /dev/sda3  # 将文件格式改成ext4的
+pvcreate /dev/sda3   # 选y 创建sda3
+pvdisplay            # 查看是否创建成功
+
+vgextend centos /dev/sda3   # 磁盘实在太小会无法执行
+lvextend -L +35G /dev/mapper/centos-root   # 35G自定义
+lvs                         # 进行查看
+xfs_growfs /dev/mapper/centos-root
+
+# 参考 https://blog.csdn.net/weixin_40436144/article/details/86235432
+```
 
 ## 网络修改
 
