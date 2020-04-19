@@ -179,6 +179,9 @@ group by name;   # 需要group by
 
 # 优化
 
+
+## 索引
+
 explain显示了mysql如何使用索引来处理select语句以及连接表，可以帮助选择更好的索引和写出更优化的查询语句。
 
 
@@ -211,4 +214,23 @@ limit千万级分页的时候优化（使用between and）而不是limit m，n�
 
 仅列出需要查询的字段，不要使用select * from ...，节省内存。
 
+
+## 慢查询日志
+
+```sql
+show variables like 'slow_query_log%';  # 查询是否开启慢查询
+show variables like 'long_query%';      # 查看慢查询超时时间，默认10s
+
+set global slow_query_log=1;     # 开启
+set global long_query_time=4;    # 修改时间
+
+show global status like '%Slow_queries%';  # 查询全部慢查询数量
+```
+
+永久开启慢查询记录：vi my.cnf
+```sh
+slow_query_log =1                           # 开启
+slow_query_log_file=/tmp/data/slow.log      # log目录
+long_query_time = 10                        # 超时时长
+```
 
