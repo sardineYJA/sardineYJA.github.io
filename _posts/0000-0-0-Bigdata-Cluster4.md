@@ -245,6 +245,14 @@ agent1.sinks.kafkaSink.batchSize = 20
 agent1.sinks.kafkaSink.serializer.class = kafka.serializer.StringEncoder
 ```
 
+## 部分参数
+
+```sh
+batchSize    越高，处理的数据越多，延迟越高
+requiredAcks 多少个副本得到确认后才能判断传递成功
+# 0 无需确认，-1等待所有副本确认
+```
+
 
 ## 源码修改
 
@@ -306,20 +314,15 @@ public class SimpleRowKeyGenerator {
 
 ## 启动
 
-kafka开启：
-bin/kafka-console-consumer.sh --zookeeper VM124:2181,VM125:2181,VM126:2181 --from-beginning --topic weblogs
-
-
-
 ```sh
+# VM124
+bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n agent1 -Dflume.root.logger=INFO,console
+
 # VM125 
 bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n agent2 -Dflume.root.logger=INFO,console
 
 # VM126
 bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n agent3 -Dflume.root.logger=INFO,console
-
-# VM124
-bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n agent1 -Dflume.root.logger=INFO,console
 ```
 
 
