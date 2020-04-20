@@ -99,7 +99,7 @@ sc.textFile("/home/yangja/tmp/1.txt").flatMap(_.split(" ")).map((_,1)).reduceByK
 ## IDEA安装Scala
 
 0. 安装后xml则可以不写依赖
-1. 关闭项目 --> configure --> plugins --> 搜索Scala --> 安装
+1. Setting --> plugins --> 搜索Scala --> 安装
 2. File --> Project Structure --> Global Libraries --> + --> Scala
 
 ## 新建maven项目

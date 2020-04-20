@@ -222,7 +222,7 @@ agent1.channels.hbaseC.transactionCapacity = 100000
 agent1.channels.hbaseC.keep-alive = 20
 
 agent1.sinks.hbaseSink.type = asynchbase
-agent1.sinks.hbaseSink.table = weblogs                # Hbase Table
+agent1.sinks.hbaseSink.table = weblogs
 agent1.sinks.hbaseSink.columnFamily = info
 agent1.sinks.hbaseSink.channel = hbaseC
 agent1.sinks.hbaseSink.serializer = org.apache.flume.sink.hbase.SimpleAsyncHbaseEventSerializer
@@ -238,7 +238,7 @@ agent1.channels.kafkaC.keep-alive = 20
 agent1.sinks.kafkaSink.channel = kafkaC
 agent1.sinks.kafkaSink.type = org.apache.flume.sink.kafka.KafkaSink
 agent1.sinks.kafkaSink.brokerList = VM124:9092,VM125:9092,VM126:9092
-agent1.sinks.kafkaSink.topic = weblogs               # Kafka topic
+agent1.sinks.kafkaSink.topic = weblogs
 agent1.sinks.kafkaSink.zookeeperConnect = VM124:2181,VM124:2181,VM124:2181
 agent1.sinks.kafkaSink.requiredAcks = 1
 agent1.sinks.kafkaSink.batchSize = 20
@@ -321,10 +321,6 @@ bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n agent3 -Dflume.r
 # VM124
 bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n agent1 -Dflume.root.logger=INFO,console
 ```
-
-
-
-待补充...
 
 
 
