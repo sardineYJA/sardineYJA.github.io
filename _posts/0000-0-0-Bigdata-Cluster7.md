@@ -135,16 +135,77 @@ echo "flume agent1 start"
 bin/kafka-console-consumer.sh --zookeeper VM124:2181,VM125:2181,VM126:2181 --topic weblogs  --from-beginning
 ```
 
-问题1：每次启动消费者都会从头消费所有信息
-问题2：kafka消费延迟5s左右
-问题3：flume节点中断，Kafka消费时会丢失数据
+数据格式：访问时间 用户ID [查询词] 该URL在返回结果中的排名 用户点击的顺序号 用户点击的URL
+```
+00:01:31    9418217515675722    [特种部队的大跳]   9 6 games.qq.com/a/20070801/000058.htm
+...
+```
 
 
 ## Spark
 
-（待补充...）
+测试的是Maven项目 Scala 版本 2.12
+
+```xml
+<dependencies>
+    <!--Spark sql-->
+    <dependency>
+        <groupId>org.apache.spark</groupId>
+        <artifactId>spark-sql_2.11</artifactId>
+        <version>2.2.0</version>
+    </dependency>
+    <!--structured streaming-->
+    <dependency>
+        <groupId>org.apache.spark</groupId>
+        <artifactId>spark-sql-kafka-0-10_2.11</artifactId>
+        <version>2.2.0</version>
+    </dependency>
+</dependencies>
+```
+
+
+log4j.properties 测试时为了减少 INFO 的输出
+
+```sh
+log4j.rootLogger=WARN, stdout
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d %p [%c] - %m%n
+log4j.appender.logfile=org.apache.log4j.FileAppender
+log4j.appender.logfile.File=target/spring.log
+log4j.appender.logfile.layout=org.apache.log4j.PatternLayout
+log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
+```
 
 StructuredStreaming 读取 Kafka
+
+```java
+object ReadStreaming {
+  def main(args: Array[String]): Unit = {
+    val spark = SparkSession.builder()
+      .master("local[*]")
+      .appName("Readstreaming")
+      .getOrCreate()
+
+    val df = spark
+      .readStream
+      .format("kafka")
+      .option("kafka.bootstrap.servers", "192.168.243.124:9092,192.168.243.125:9092")
+      .option("subscribe", "weblogs")    // topic
+      .load()
+
+    import spark.implicits._
+    val lines = df.selectExpr("CAST(value AS STRING)").as[String] // 每行转为String
+
+    // lines.writeStream.format("console").start().awaitTermination()  // 打印每条数据
+
+    // 数据以\t隔开，但是两个order是以空格隔开，所以这里是5个字段非6个
+    val value = lines.map(_.split("\t")).map(x=>(x(0),x(1),x(2),x(3),x(4)))
+    value.writeStream.format("console").start().awaitTermination()
+  }
+}
+```
+
 ```java
 val spark = SparkSession.builder()
       .master("local[2]")
@@ -157,8 +218,21 @@ val df = spark
   .option("subscribe", "weblogs")
   .load()
 
+// 统计每个关键字搜索的次数
 import spark.implicits._
 val lines = df.selectExpr("CAST(value AS STRING)").as[String]
 val weblog = lines.map(_.split(",")).map(x => Weblog(x(0), x(1), x(2), x(3), x(4), x(5)))
 val titleCount = weblog.groupBy("searchname").count().toDF("titleName", "webcount")
+
+// 结果保存到mysql
+val url = "jdbc:mysql://master:3306/weblog?useSSL=false"
+val username = "root"
+val password = "123456"
+val writer = new JdbcSink(url, username, password)
+val weblogcount = titleCount.writeStream
+  .foreach(writer)
+  .outputMode("update")
+  .start()
+
+weblogcount.awaitTermination()
 ```
