@@ -173,6 +173,84 @@ filteredWaitJoinRdd = waitJoinRdd.flatMap(func1)
 resultRdd = randomedRdd1.union(filteredWaitJoinRdd)
 ```
 
+## hadoop MapReduce 的 Map join
+
+
+驱动类加载小表的内容，而且无需Reduce阶段
+```java
+job.addCacheFile(new URL("file://E:/pd.txt"));
+job.setNumReduceTasks(0);
+```
+
+Mapper类，初始函数setup读取路径文件，切割保存成Map
+```java
+Map<String, String> pdMap = new HashMap<>();
+
+@Override
+protected void setup(Mapper<LongWritable, Text, Text, NullWritable>.Context context) throws IOException, InterruptedException {
+	// 获取缓存的文件
+	URI[] cacheFiles = context.getCacheFiles();
+	String path = cacheFiles[0].getPath().toString();
+	
+	BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+	String line;
+	while(StringUtils.isNotEmpty(line = reader.readLine())){
+		String[] fields = line.split("\t");
+		pdMap.put(fields[0], fields[1]);
+	}
+	reader.close();
+}
+```
+
+Mapper类，map函数对另一个表进行读取并一一操作，从Map中找出相应的值
+
+```java
+Text k = new Text();
+@Override
+protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+	// 获取大表一行
+	String line = value.toString();
+	String[] fields = line.split("\t");
+	String pId = fields[1];
+	
+	// 从小表中找相应的值，相当于Map端Join
+	String pdName = pdMap.get(pId);  
+	
+	// 拼接写出
+	k.set(line + "\t"+ pdName);
+	context.write(k, NullWritable.get());
+}
+```
+
+
+## Spark 的 Map join
+
+广播小表，大表处理
+
+```java
+val little_table = sc.parallelize(Array(("1","华为"),("2","小米"))).collectAsMap()
+val little_table_bc = sc.broadcast(little_table)
+```
+
+```java
+// 大表order_all，使用mapPartition减少创建broadCastMap.value的空间消耗
+val res = order_all.mapPartitions(iter =>{
+	val map = little_table_bc.value
+	val arrayBuffer = ArrayBuffer[(String,String,String)]()
+
+	iter.foreach{case (id,date,sno) =>{
+		if(map.contains(id)){
+			arrayBuffer.+= ((id, map.getOrElse(id,""), date))
+		}
+	}}
+	arrayBuffer.iterator
+})
+```
+
+
+ 
+
 
 # 参考
 
