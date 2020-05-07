@@ -41,8 +41,8 @@ Kafka        Kafka                     Kafka                      Kafka
 Flume        Flume                     Flume                      Flume
 
 ES           Elasticsearch             Elasticsearch              Elasticsearch
-			 Head
-			 Kibana
+             Head
+             Kibana
 ```
 
 ```sh

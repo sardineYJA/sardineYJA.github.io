@@ -17,6 +17,9 @@ https://www.elastic.co/downloads/kibana
 
 https://github.com/medcl/elasticsearch-analysis-ik/releases
 
+https://www.elastic.co/downloads/logstash
+
+
 ## ES
 
 创建目录：data和logs，修改：config/elasticsearch.yml
@@ -91,7 +94,7 @@ kibana.index: ".kibana"
 测试：http://192.168.243.124:5601
 
 
-## 分词
+## ik 分词
 
 解压到ES的plugins目录下，修改目录名为ik，重启
 
@@ -99,6 +102,10 @@ kibana.index: ".kibana"
 unzip elasticsearch-analysis-ik-X.X.X.zip -d ../module/elasticsearch-X.X.X/plugins/ik
 ```
 
+
+## logstash
+
+待补充...
 
 
 

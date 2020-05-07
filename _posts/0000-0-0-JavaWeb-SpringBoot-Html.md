@@ -69,7 +69,7 @@ public class SearchController {
 
     @RequestMapping("search")
     public String search() {
-        return "search";  // 跳转 search.html
+        return "/search";  // 跳转 search.html
     }
 
     @Autowired
