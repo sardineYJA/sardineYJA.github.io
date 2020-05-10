@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "基于ES7的简易博客搜索"
+title: "基于ES7的简易博客搜索DSL部分"
 date: 2020-05-02
 description: "基于ES7的简易博客搜索"
 tag: Elasticsearch
@@ -15,8 +15,8 @@ tag: Elasticsearch
 PUT /blog
 {
   "settings": {
-	"number_of_shards": 3,
-	"number_of_replicas": 1
+	"number_of_shards": 1,
+	"number_of_replicas": 0
   },
 
   "mappings": {
@@ -53,71 +53,25 @@ POST /blog/_doc/101
   "createDate": "1995-08-11",
   "content": "测试搜索文本，这是很长的一段文字"
 }
-```
-
-## IndexRequest & DeleteRequest
-
-```java
-request = new IndexRequest("index", "doc", "1");  // 索引，类型，文档id  
-request = new DeleteRequest("index", "doc", "1"); 
-
-// 需要将对象JSON化，可以Alibaba的fastjson
-request.source(JSON.toJSON(entity), XContentType.JSON);
-
-// 可选参数
-request.routing("routing");   // 路由值
-request.parent("parent");     // parent值
-request.timeout(TimeValue.timeValueMinutes(2));                   // 超时
-request.setRefreshPolicy(WriteRequest.RefreshPolicy.WAIT_UNTIL);  // 刷新策略
-```
-
-## 代码
-
-GitHub仓库中
 
 
-
-## 练习
-
-```json
-PUT /test-index
+// 查询，就显示title字段
+GET blog/_search
 {
-  "mappings": {
-    "doc": {
-      "dynamic": true,
-      "properties": {
-
-        "name": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword"
-            }
-          }
-        },
-
-        "age": {
-          "type": "integer"
-        },
-
-        "birthdate": {
-          "type": "date",
-          "format": "yyyy-MM-dd"
-        },
-
-      }
+  "size": 200,
+  "_source": ["title","id"],
+  "query":{
+    "match_all":{
     }
   }
 }
 
-
-POST /test-index/
-{
-  "name": "李小龙",
-  "age": 13,
-  "birthdate": "2020-02-02"
-}
+// 注意：from + size must be less than or equal to: [10000]
 ```
+
+
+
+# 查询
 
 ```json
 // 精确查询 term
