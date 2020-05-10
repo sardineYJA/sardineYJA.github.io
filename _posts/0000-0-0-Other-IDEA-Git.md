@@ -28,6 +28,12 @@ File → Settings → Version Control → GitHub，登录的GitHub账号
 4. VCS → Import into Version Control → Share Project on GitHub，上传项目到GitHub中。
 
 
+## 更新文件
+
+先commit，之后 VCS --> Git --> Push 
+
+
+
 ## 文件颜色
 
 - 红色，未加入版本控制

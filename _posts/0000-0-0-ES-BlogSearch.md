@@ -55,7 +55,7 @@ POST /blog/_doc/101
 }
 
 
-// 查询，就显示title字段
+// 查询，就显示title id 字段
 GET blog/_search
 {
   "size": 200,
@@ -67,6 +67,7 @@ GET blog/_search
 }
 
 // 注意：from + size must be less than or equal to: [10000]
+// head 查询前50条
 ```
 
 

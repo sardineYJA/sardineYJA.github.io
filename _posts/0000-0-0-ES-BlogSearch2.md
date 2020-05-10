@@ -7,6 +7,14 @@ tag: Elasticsearch
 
 ---
 
+## 未解决
+
+因为主要是用于搜索，这里用ik_max_word。但是如文章分词"设置"，搜索"设"，却找不到。
+
+Html这里缺少关键字高亮，以及换行符
+
+scrollSearch，未测试，只需要导入10000条以上的数据即可测试
+
 
 ## IndexRequest & DeleteRequest
 
