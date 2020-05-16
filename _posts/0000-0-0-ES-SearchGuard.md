@@ -36,16 +36,59 @@ plugins/search-guard-7/tools/install_demo_configuration.sh
 - elasticsearch.yml中修改searchguard.ssl.http.enabled: false（安装后默认true，即https访问），就会可http访问
 
 
-
 > Search Guard not initialized (SG11).          
 
-尚未解决，导致后面无法进行？？？
+需要初始化searchguard索引.
 
 
+
+## search-guard-ssl 使用
+
+https://github.com/floragunncom/search-guard-ssl
+
+```sh
+./gen_root_ca.sh capass changeit                 # CA  TS
+./gen_node_cert.sh 0 changeit capass             # node  KS  CA
+./gen_client_node_cert.sh kirk changeit capass   # 客户端 KS CA
+```
+
+elasticsearch/config/: truststore.jk, node-0-keystore.jks
+
+plugins/search-guard-6/sgconfig/: truststore.jks, kirk-keystore.jks
+
+证书一次生成，拷贝分发各个节点，之后一台执行即可下面：
+```sh
+./sgadmin -cn 集群名 -h IP地址 -cd ../sgconfig/ -ks kirk-keystore.jks -ts truststore.jks -nhnv
+```
+
+
+```sh
+# 配置ssl，让elasticsearch使用tls加密通讯
+searchguard.ssl.transport.enabled: true
+searchguard.ssl.transport.keystore_filepath: node-0-keystore.jks
+searchguard.ssl.transport.keystore_password: kspass
+searchguard.ssl.transport.truststore_filepath: truststore.jks
+searchguard.ssl.transport.truststore_password: tspass
+searchguard.ssl.transport.enforce_hostname_verification: false
+searchguard.ssl.transport.resolve_hostname: false
+
+# 配置 SeachGuard 初始化
+searchguard.authcz.admin_dn:
+  - CN=kirk, OU=client, O=client, L=Test, C=DE  
+
+searchguard.ssl.http.enabled: false
+searchguard.ssl.http.keystore_filepath: node-0-keystore.jks
+searchguard.ssl.http.keystore_password: kspass
+searchguard.ssl.http.truststore_filepath: truststore.jks
+searchguard.ssl.http.truststore_password: tspass
+searchguard.allow_all_from_loopback: true
+```
 
 
 
 ## 设置用户和密码
+
+一般使用Kibana管理权限，角色，用户
 
 ```sh
 ./tools/hash.sh -p 123456
@@ -65,16 +108,6 @@ myself:
   - "admin"
 ```
 
-分发新配置到es集群
-
-```sh
-# tools/执行
-./sgadmin.sh -cd ../sgconfig/ -icl -nhnv \
-   -cacert ../../../config/root-ca.pem \
-   -cert ../../../config/kirk.pem \
-   -key ../../../config/kirk-key.pem 
-```
-
 
 ## 删除
 
@@ -83,56 +116,52 @@ myself:
 2. elasticsearch.yml 将 search-guard 配置删除
 
 
+# 其他
+
+## 权限管理等级
+
+Permissions on the cluster level (Community)
+Permissions on index level (Community)
+Permissions on document level (Enterprise)
+Permissions on field level (Enterprise)
+
+Since document types are deprecated in Elasticsearch 6, document type level permissions will be removed in Search Guard 7.
 
 
-
-# ssl
-
-下载：
-https://git.floragunn.com/search-guard/search-guard-ssl#
+## API
 
 ```sh
-example-pki-scripts/example.sh
-cp truststore.jks node-1-keystore.jks %ES_HOME%/config/
-vim config/elasticsearch.yml
-```
-
-```sh
-# 配置ssl，让elasticsearch使用tls加密通讯
-searchguard.ssl.transport.enabled: true
-searchguard.ssl.transport.keystore_filepath: node-0-keystore.jks
-searchguard.ssl.transport.keystore_password: kspass
-searchguard.ssl.transport.truststore_filepath: truststore.jks
-searchguard.ssl.transport.truststore_password: tspass
-searchguard.ssl.transport.enforce_hostname_verification: false
-searchguard.ssl.transport.resolve_hostname: false
-
-# 配置 SeachGuard 初始化
-searchguard.authcz.admin_dn:
-  - CN=cn_name, OU=client, O=client, L=Test, C=DE  
-
-# http配置，这里我只是为了测试方便，配置完，应该设置为true
-searchguard.ssl.http.enabled: false
-searchguard.ssl.http.keystore_filepath: node-0-keystore.jks
-searchguard.ssl.http.keystore_password: kspass
-searchguard.ssl.http.truststore_filepath: truststore.jks
-searchguard.ssl.http.truststore_password: tspass
-searchguard.allow_all_from_loopback: true
+# GET PUT DELETE
+GET /_searchguard/api/internalusers/
+GET /_searchguard/api/internalusers/{username}
+GET /_searchguard/api/roles/{rolename}
+GET /_searchguard/api/rolesmapping/{rolename}
+GET /_searchguard/api/actiongroups/{actiongroup}
 ```
 
 
-## 初始化searchguard索引
+## User cache settings
+
+Search Guard uses a cache to store the roles of authenticated users.
+
+elasticsearch.yml:
+`searchguard.cache.ttl_minutes: <integer, ttl in minutes>`
+
+Setting the value to 0 will completely disable the cache.
+
+It is recommended to leave the cache settings untouched for LDAP and Internal User Database. Disabling the cache can severely reduce the performance of these authentication domains.
 
 
-cp example-pki-scripts/cn_name-keystore.jks %ES_HOME%/plugins/search-guard-5/sgconfig/
+## Managing the Search Guard index
+
+Search Guard index 名称：`searchguard`，replica shards is set to the number of nodes-1（即每个节点都有）
 
 
-$ tools/sgadmin.sh \
-> -ts %ES_HOME%/config/trustore.jks \
-> -tspass tspass \
-> -ks sgconfig/cn_name-keystore.jks \
-> -kspass kspass \
-> -cd sgconfig/ \
-> -icl -nhnv -h localhost
+## searchguard index replica 禁止自动扩展的场景：
+
+- When using a Hot/Warm Architecture
+- Running multiple instances of Elasticsearch on the same host machine
+- When cluster.routing.allocation.same_shard.host is set to false
+- The searchguard index stays constantly yellow
 
 
