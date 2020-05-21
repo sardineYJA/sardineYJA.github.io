@@ -79,3 +79,19 @@ bin/logstash -f test.conf --config.test_and_exit
 bin/logstash -f test.conf -r
 ```
 
+
+## logstash 输出到 ES
+```sh
+output {
+	elasticsearch {
+		index => "logstash-%{+YYYY.MM.dd}"
+		hosts => ["xxx.xxx.xxx.xxx:9200", "..."]
+		document_id => "..."
+		action => create   # 默认index，使用create必须和document_id一起
+		user => admin
+		password =>admin
+		ssl => false
+		sniffing => true
+	}
+}
+```
