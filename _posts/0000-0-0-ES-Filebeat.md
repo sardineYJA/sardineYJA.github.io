@@ -72,9 +72,7 @@ filebeat:
     # 这个文件记录日志读取的位置，如果重启可以从记录的位置开始取日志
     registry_file: /usr/share/filebeat/data/registry
 
-output:
-  # 输出到logstash中,logstash更换为自己的ip
-  logstash:
+output.logstash:
     hosts: ["XXX.XXX.XXX.XXX:5044"]
 ```
 启动：` nohup ./filebeat -e -c filebeat.yml -d publish &`
@@ -88,28 +86,27 @@ input {
 		port => 5044
 	}
 }
-filter {
-	 if "java-logs" in [tags]{ 
-	     grok {
-	        # 筛选过滤
-	        match => {
-	           "message" => "(?<date>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3})\]\[(?<level>[A-Z]{4,5})\]\[(?<thread>[A-Za-z0-9/-]{4,40})\]\[(?<class>[A-Za-z0-9/.]{4,40})\]\[(?<msg>.*)"
-	        }
-	        remove_field => ["message"]
-	     }
-	     # 不匹配正则则删除，匹配正则用=~
-	     if [level] !~ "(ERROR|WARN|INFO)" {
-	         drop {}
-	     }
-     }
-}
-output {
-    elasticsearch {
-        hosts => "XXX.XXX.XXX.XXX:9200"
-    }
-}
 ```
 
+```sh
+filebeat.prospectors:
+- type: log
+  enable: true
+  paths:
+  - /test/access.log
+  tags: ["access"]
+ 
+- type: log
+  enable: true
+  paths:
+  - /test/error.log
+  tags: ["error"]
+  
+filebeat:
+  registry_file: my_registry
+  registry_file_permissions: 600
+
+```
 
 
 
