@@ -78,6 +78,8 @@ output.logstash:
 启动：` nohup ./filebeat -e -c filebeat.yml -d publish &`
 
 
+启动过程中不要使用-e参数，-e是强制输出到syslog，此时不会产生日志问价。
+日志等级：debug, info, warning, error, critical
 
 过滤：`nohup bin/logstash -f test.conf &`
 ```sh
@@ -106,6 +108,14 @@ filebeat:
   registry_file: my_registry
   registry_file_permissions: 600
 
+logging.level: warning
+logging.to_files: true
+logging.to_syslog: false
+logging.files:
+  path: /var/log/mybeat.log
+  name: mybeat.log
+  keepfiles: 7
+  permissions: 0644
 ```
 
 
