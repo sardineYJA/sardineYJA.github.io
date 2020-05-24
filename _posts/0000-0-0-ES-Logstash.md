@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Logstash 插件使用"
+title: "Logstash 介绍"
 date: 2020-05-16
 description: "Elasticsearch"
 tag: Elasticsearch
@@ -8,9 +8,13 @@ tag: Elasticsearch
 ---
 
 
-# Logstash
+## 原理简介
 
-## 安装Xpack后老是警告：
+数据源 ==> Input Plugin ==> Filter Plugin ==> Output Plugin ==> 目标位置
+
+
+
+## 安装Xpack后老是警告
 
 > {:healthcheck_url=>http://logstash_system:xxxxxx@localhost:9200/, :path=>"/"}
 [2017-12-18T19:39:14,367][WARN ][logstash.outputs.elasticsearch] Attempted to resurrect connection to dead ES instance, but got an error. {:url=>#<Java::JavaNet::URI:0x90152ca>, :error_type=>LogStash::Outputs::ElasticSearch::HttpClient::Pool::HostUnreachableError, :error=>"Elasticsearch Unreachable: [http://logstash_system:xxxxxx@localhost:9200/][Manticore::SocketException] Connection refused (Connection refused)"}
@@ -40,48 +44,45 @@ config.support_escapes: true
 ```
 
 
-读取过数据，即使重启也不会再读。
+# 使用案例
+
+
+## 启动
 
 ```sh
-bin/logstash -e 'input { stdin { } } output { stdout {} }'
+bin/logstash -f cofig/test.conf         # 启动
 
+nohup bin/logstash -f cofig/test.conf   # 后台启动
+
+bin/logstash -f cofig/test.conf -t      # 测试配置文件
+
+bin/logstash -f cofig/test.conf -r      # 修改配置文件无需关闭重启
+```
+
+```sh
+# 测试输入输出
+bin/logstash -e 'input { stdin {} } output { stdout {} }'
+
+
+# 监控日志文件
 input{
     file {
         path => "/usr/local/log/*/*/*.log"
         start_position => "beginning"
-    }   
+
+        sincedb_path => "/home/yang/test"      # 默认的 $HOME/.sincedb 保存读取的进度
+    }    
 }
 
 output {
    stdout { 
-    codec => json
+    codec => json  # json 和 rubydebug 打印格式  
    }
 }
 
 
-input {
-    stdin {
-    }
-}
+# 输出到 ES
 
-output {
-   stdout { 
-    codec => rubydebug
-   }
-}
-```
-
-```sh
-# 验证配置文件
-bin/logstash -f test.conf --config.test_and_exit
-
-# 修改后不需要停止或重启logstash
-bin/logstash -f test.conf -r
-```
-
-
-## logstash 输出到 ES
-```sh
 output {
 	elasticsearch {
 		index => "logstash-%{+YYYY.MM.dd}"
