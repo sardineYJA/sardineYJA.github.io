@@ -145,8 +145,44 @@ output.logstash:
     hosts: ["XXX.XXX.XXX.XXX:5044"]     # 指定汇总logstash以及端口
 ```
 
+## 模板使用
 
+all.yml 文件，启动：./filebeat -c all.yml
 
+```sh
+filebeat.config.prospectors:
+  enable: true
+  path: prospectors.d/*.yml
+  reload.enable: true       # 启用动态配置重新加载
+  reload.period: 10s        # 检查的间隔时间
+
+filebeat:
+  registry_file: my_registry
+  registry_file_permissions: 600
+
+logging.level: info
+logging.to_files: true
+logging.to_syslog: false
+logging.files:
+  path: /var/log/mybeat.log
+  name: mybeat.log
+  keepfiles: 7
+  permissions: 0644
+
+output.logstash:
+    hosts: ["XXX.XXX.XXX.XXX:5044"]     # 指定汇总logstash以及端口
+```
+
+prospectors.d/nginx.yml 
+
+```sh
+filebeat.prospectors:
+- type: log
+  enable: true
+  paths:
+  - /test/Nginx/access.log
+  tags: ["access"]
+```
 
 
 
