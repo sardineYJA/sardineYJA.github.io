@@ -57,6 +57,19 @@ nohup bin/logstash -f cofig/test.conf   # 后台启动
 bin/logstash -f cofig/test.conf -t      # 测试配置文件
 
 bin/logstash -f cofig/test.conf -r      # 修改配置文件无需关闭重启
+
+--path.data PATH         # 需要存储数据时使用此目录，默认值是Logstash主目录下的data目录。
+
+-l, --path.logs PATH     # 将内部日志写入到的目录
+
+--log.level LEVEL   # 设置Logstash的日志级别，可能的值是：
+fatal：记录非常严重的错误消息，这通常会导致应用程序中止
+error：错误日志
+warn：警告日志
+info：详细日志信息（这是默认信息）
+debug：调试日志信息（针对开发人员）
+trace ：记录除调试信息之外的细粒度消息
+
 ```
 
 ```sh
