@@ -41,13 +41,10 @@ pipeline.workers: 10        # cpu数
 
 
 http.host: "XXX.XXX.XXX.XXX"
-xpack.monitoring.enabled: true
+xpack.monitoring.enabled: true  # 直接关掉 false
 xpack.monitoring.elasticsearch.url: "http://XXX.XXX.XXX.XXX:9200"
 xpack.monitoring.elasticsearch.username: "logstash_system" 
 xpack.monitoring.elasticsearch.password: "changeme"
-
-# 直接关掉
-xpack.monitoring.enabled: false
 
 # \n，\t特殊符号才能识别
 config.support_escapes: true        
@@ -55,7 +52,6 @@ config.support_escapes: true
 
 
 # 使用案例
-
 
 ## 启动
 
