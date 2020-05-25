@@ -185,14 +185,18 @@ prospectors.d/nginx.yml
 ```
 
 ## 问题
+
 ```sh
-reload.enable: true       # 启用动态配置重新加载
+reload.enabled: true       # 启用动态配置重新加载
 reload.period: 10s        # 检查的间隔时间
 ```
+
 修改nginx.yml的tags: ["test"]发现并不会自动加载，发送数据logstash还是接收的还是access。
 ```sh
 async.go:235: ERR Failed to publish events caused by: write tcp filebeat的IP:41144  ->  logstash的ip:123800: write: connection reset by peer
 output.go:92: ERR Failed to publish events: write tcp filebeat的IP:41144  ->  logstash的ip:123800: write: connection reset by peer
 ```
+原因：reload.enabled 写成了 reload.enable，修改即可以自动重加载
+
 
 
