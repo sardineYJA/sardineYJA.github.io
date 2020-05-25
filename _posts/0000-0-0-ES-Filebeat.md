@@ -176,7 +176,7 @@ output.logstash:
 prospectors.d/nginx.yml 
 
 ```sh
-filebeat.prospectors:
+# type 开头即可
 - type: log
   enable: true
   paths:
