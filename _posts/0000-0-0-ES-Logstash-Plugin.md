@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Logstash 常用继续插件"
+title: "Logstash 常用解析插件"
 date: 2020-05-24
 description: "Elasticsearch"
 tag: Elasticsearch
