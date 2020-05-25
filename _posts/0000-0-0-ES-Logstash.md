@@ -12,6 +12,16 @@ tag: Elasticsearch
 
 数据源 ==> Input Plugin ==> Filter Plugin ==> Output Plugin ==> 目标位置
 
+![png](/images/posts/all/Logstash架构图.png)
+
+```sh
+# Queue 介绍
+queue.type:persisted # 默认是memory
+queue.max_bytes:4gb  # 队列存储最大数据量，默认1G
+## In Memory ： 无法处理进程Crash、机器宕机等情况，会导致数据丢失
+## Persistent Queue In Disk：可处理进程Crash等情况，保证数据不丢失，保证数据至少消费一次，充当缓冲区，可以替代kafka等消息队列的作用
+```
+
 
 
 ## 安装Xpack后老是警告
@@ -58,7 +68,7 @@ bin/logstash -f cofig/test.conf -t      # 测试配置文件
 
 bin/logstash -f cofig/test.conf -r      # 修改配置文件无需关闭重启
 
---path.data PATH         # 需要存储数据时使用此目录，默认值是Logstash主目录下的data目录。
+--path.data PATH         # 需要存储数据时使用此目录，默认值是Logstash主目录下的data目录
 
 -l, --path.logs PATH     # 将内部日志写入到的目录
 
@@ -83,7 +93,7 @@ input{
         path => "/usr/local/log/*/*/*.log"
         start_position => "beginning"
 
-        sincedb_path => "/home/yang/test"      # 默认的 $HOME/.sincedb 保存读取的进度
+        sincedb_path => "/home/yang/test"      # 默认的 $HOME/.sincedb 保存(重启)读取的进度
     }    
 }
 
