@@ -1,11 +1,14 @@
 ---
 layout: post
-title: "IDEA 交互 Github 项目"
+title: "IDEA, Pycharm 常用操作"
 date: 2019-12-01
-description: "IDEA 交互 Github 项目"
+description: "常用操作"
 tag: Other
 
 ---
+
+
+# IDEA 交互 Github 项目
 
 ## 配置
 
@@ -71,4 +74,48 @@ VCS --> Checkout from Version Control --> Git --> 仓库地址 --> clone
 
 > 下载后自动会创建项目，但是下载速度太慢了，还不下载直接导入
 
+
+
+# Pycharm
+
+## pycharm 调试快捷键
+
+```sh
+Ctrl + Shift + F8    查找全部断点
+
+F7                   单步进入
+
+F8                   单步不进入
+
+Shift + F8           跳出
+
+F9                   下一个断点
+```
+
+
+
+
+
+# Shell
+
+
+## vim 删除空格：
+
+删除空格行：`:g/^$/d`
+
+删除行首空格：`:%s/^\s*//g`
+
+删除行尾空格：`:%s/\s*$//g`
+
+
+## 命令
+
+```sh
+ps -ef | grep elasticsearch
+
+-e 所有用户所有进程 -f 详细信息，-a 是当前用户所有进程
+
+端口：lsof -i :5601   # 查看kibana进程
+
+```
 
