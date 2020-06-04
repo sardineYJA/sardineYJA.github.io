@@ -200,3 +200,13 @@ output.go:92: ERR Failed to publish events: write tcp filebeat的IP:41144  ->  l
 
 
 
+## 增加输出字段
+
+配置文件中增加字段，并通过环境变量配置ip地址，在es索引中增加“host_ip"字段，值为客户端的真实IP。（默认输出host字段，但却是服务器的hostname）
+配置增加以下部分：
+```sh
+fields_under_root: true
+fields:
+  host_ip: ${serverIP}
+#serverIP 为系统环境变量，具体值为本机IP：192.168.xxx.xxx
+```
