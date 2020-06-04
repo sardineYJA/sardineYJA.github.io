@@ -198,6 +198,7 @@ output.go:92: ERR Failed to publish events: write tcp filebeat的IP:41144  ->  l
 ```
 原因：reload.enabled 写成了 reload.enable，修改即可以自动重加载
 
+> 注意：修改all.yml是不会重加载的，需要重启
 
 
 ## 增加输出字段
@@ -205,8 +206,13 @@ output.go:92: ERR Failed to publish events: write tcp filebeat的IP:41144  ->  l
 配置文件中增加字段，并通过环境变量配置ip地址，在es索引中增加“host_ip"字段，值为客户端的真实IP。（默认输出host字段，但却是服务器的hostname）
 配置增加以下部分：
 ```sh
+paths:
+  - /test/Nginx/access.log
 fields_under_root: true
 fields:
   host_ip: ${serverIP}
-#serverIP 为系统环境变量，具体值为本机IP：192.168.xxx.xxx
+#serverIP 为系统环境变量 192.168.xxx.xxx
 ```
+
+> 注意：fields_under_root: true 表示新增字段在全局下，如果没有fields_under_root则新增加的字段会作为数组值添加到fields这个字段里。
+> 注意：系统环境变量需要 source /etc/profile，获取不到${serverIP} 启动报错：missing field accessing 'filebeat.prospectors.0.fields.ip'
