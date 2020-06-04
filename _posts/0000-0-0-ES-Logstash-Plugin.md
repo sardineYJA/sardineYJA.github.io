@@ -169,5 +169,21 @@ filter {
 
 ## ruby 解析
 
-待补充...
+filebeat -> logstash -> elasticsearch 数据链路中，logstash接收时会自动生成@timestamp 表示接收事件时间，但是往往项目更需要的是message里的时间。
+所以常常需要将message解析出时间ftime，并将其减去8小时，覆盖掉@timestamp，@timestamp作为事件发生时间。
+```sh
+date {
+    match => ["ftime", "YYYY-MM-dd HH:mm:ss"]
+    target => "@timestamp"
+}
+ruby {
+	code => "
+		event.set('temp_time', event.get('@timestamp').time.localtime - 8*60*60)
+		event.set('@timestamp', event.get('temp_time'))
+	"
+	remove_field => ["temp_time"]
+}
+```
+之所以减少8小时，目的后续时间范围查询是以@timestamp为目标字段（now也是UTC时间）
+
 
