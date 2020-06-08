@@ -58,7 +58,7 @@ config.support_escapes: true
 ```sh
 bin/logstash -f cofig/test.conf         # 启动
 
-nohup bin/logstash -f cofig/test.conf   # 后台启动
+nohup bin/logstash -f cofig/test.conf & # 后台启动
 
 bin/logstash -f cofig/test.conf -t      # 测试配置文件
 
