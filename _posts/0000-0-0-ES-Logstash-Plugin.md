@@ -163,8 +163,22 @@ filter {
 # 结果："ftime" => 2020-09-10T17:33:04.000Z   (自动减8小时，且不是字符串格式了)
 ```
 
-
 ![png](/images/posts/all/时间匹配规则表.png)
+
+```sh
+# 10位数字的时间戳转换成 2020-05-22T05:30:22.000Z
+date {
+    # timestamp_mysql 10位数字的时间戳，
+    match => ["timestamp_mysql","UNIX"]
+    target => "ftime_utc"
+}
+# 注意转换之后会减掉8小时，可格式化的同时加会8小时
+# 进一步格式化 yyyy-MM-dd HH:mm:ss
+ruby {  # 自动加8小时
+	code => "event.set('ftime', event.get('ftime_utc').time.localtime.strftime('%Y-%m-%d %H:%M:%S'))"
+}
+```
+
 
 
 ## ruby 解析
