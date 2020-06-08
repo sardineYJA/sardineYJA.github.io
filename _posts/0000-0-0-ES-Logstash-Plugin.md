@@ -183,7 +183,7 @@ ruby {  # 自动加8小时
 
 ## ruby 解析
 
-filebeat -> logstash -> elasticsearch 数据链路中，logstash接收时会自动生成@timestamp 表示接收事件时间，但是往往项目更需要的是message里的时间。
+filebeat -> logstash -> elasticsearch 数据链路中，logstash接收时会自动生成@timestamp 表示接收事件时间(可以将@timestamp赋值与logstash_time后期用户kibana展示)，但是往往项目更需要的是message里的时间。
 所以常常需要将message解析出时间ftime，并将其减去8小时，覆盖掉@timestamp，@timestamp作为事件发生时间。
 ```sh
 date {
