@@ -54,6 +54,13 @@ filebeat.shutdown_timeout: 5s
 ```
 
 
+## 滚动rolling日志依然正确读取文件
+
+- close_inactive 当被监控的文件多长时间没有变化后就关闭文件句柄(file handle)。官方建议将这个参数设置为一个比文件最大更新间隔大的值。默认值为5min.
+- scan_frequency 指定Filebeat搜索新文件的频率(时间间隔)。当发现新的文件被创建时，Filebeat会为它再启动一个 harvester 进行监控。默认为10s。
+
+综合以上两个机制，当logback完成日志切割后(即重命名)，此时老的harvester仍然在监控重命名后的日志文件，但是由于该文件不会再更新，因此会在close_inactive时间后关闭这个文件的 harvester。当scan_frequency时间过后，Filebeat会发现目录中出现了新文件，于是为该文件启动 harvester 进行监控。这样就保证了切割日志时也能不丢不重的传输数据。(不重是通过为每个日志文件保存offset实现的)
+
 
 # 测试
 
