@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Python Demo"
+title: "Python 操作 ES"
 date: 2020-06-10
 description: "python"
 tag: Python
