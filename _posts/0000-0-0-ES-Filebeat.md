@@ -259,8 +259,9 @@ filebeat.prospectors:    # 每一个prospectors，起始于一个破折号"-"
 
 # filebeat 全局配置
 filebeat:
-  registry_file: ${path.data}/my_registry    # 注册表文件
+  registry_file: ${path.data}/my_registry    # 注册表文件，只写文件名会创建在默认的${path.data}
   registry_file_permissions: 600             # 注册表文件权限
+  registry_flush: 3s   # 刷新时间，默认为0实时刷新，filebeat处理一条日志就实时的将信息写入到registry文件中，这在日志量大的时候会频繁读写registry文件，可考虑适当增加这个值来降低磁盘开销
   spool_size: 2048     # 后台事件计数阈值，超过后强制发送，默认2048
   idle_timeout: 5s     # 后台刷新超时时间，超过定义时间后强制发送，不管spool_size是否达到，默认5秒
   config_dir:          # 定义filebeat配置文件目录，必须指定一个不同于filebeat主配置文件所在的目录
