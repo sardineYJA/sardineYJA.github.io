@@ -136,8 +136,20 @@ GET test-index/_search
     "match_phrase": {
       "address": "广州市区"
     }
+    "bool": {
+       "must": 
+       [{
+         "range": {
+	    "@timestamp": {
+	       "gte": "now-1d/d",
+	       "lte": "now/d"
+	    }
+	 }
+       }]
+    }
   }
 }
+
 
 // 多字段查询
 GET test-index/_search
