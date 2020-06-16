@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "基于ES7的简易博客搜索DSL部分"
-date: 2020-05-02
+title: "基于ES7的简易博客搜索SpringBoot部分"
+date: 2020-05-05
 description: "基于ES7的简易博客搜索"
 tag: Elasticsearch
 
@@ -72,367 +72,39 @@ GET blog/_search
 
 
 
-# 查询
+## 未解决
 
-```json
-// 精确查询 term
-GET test-index/_search
-{
-  "query": {
-    "term": {
-      "name.keyword": {
-        "value": "成龙"
-      }
-    }
-  }
-}
+因为主要是用于搜索，这里用ik_max_word。但是如文章分词"设置"，搜索"设"，却找不到。
 
-// 多内容精确查询
-GET test-index/_search
-{
-  "query": {
-    "terms": {
-      "name.keyword": [
-        "小龙",
-        "中龙",
-        "大龙"
-      ]
-    }
-  }
-}
-```
+Html这里缺少关键字高亮，以及换行符
 
-```json
-// 匹配查询 match
-GET test-index/_search
-{
-  "query": {
-    "match_all":{}
-  },
-  "from": 0,
-  "size": 10,
-  "sort": [
-    {
-      "age": {
-        "order": "asc"
-      }
-    }
-  ]
-}
-
-GET test-index/_search
-{
-  "query": {
-    "match": {
-      "name": "龙"
-    }
-  }
-}
-
-// 词语匹配
-GET test-index/_search
-{
-  "query": {
-    "match_phrase": {
-      "address": "广州市区"
-    }
-    "bool": {
-       "must": 
-       [{
-         "range": {
-	    "@timestamp": {
-	       "gte": "now-1d/d",
-	       "lte": "now/d"
-	    }
-	 }
-       }]
-    }
-  }
-}
+scrollSearch，未测试，只需要导入10000条以上的数据即可测试
 
 
-// 多字段查询
-GET test-index/_search
-{
-  "query": {
-    "multi_match": {
-      "query": "龙",
-      "fields": ["name", "address"]
-    }
-  }
-}
+## IndexRequest & DeleteRequest
+
+官网：https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.4/java-rest-high-supported-apis.html
+
+其他以后有空再测试...
+
+```java
+request = new IndexRequest("index", "doc", "1");  // 索引，类型，文档id  
+request = new DeleteRequest("index", "doc", "1"); 
+
+// 需要将对象JSON化，可以Alibaba的fastjson
+request.source(JSON.toJSON(entity), XContentType.JSON);
+
+// 可选参数
+request.routing("routing");   // 路由值
+request.parent("parent");     // parent值
+request.timeout(TimeValue.timeValueMinutes(2));                   // 超时
+request.setRefreshPolicy(WriteRequest.RefreshPolicy.WAIT_UNTIL);  // 刷新策略
 ```
 
 
-```json
-// 模糊查询
-GET test-index/_search
-{
-  "query": {
-    "fuzzy": {
-      "name": "龙"
-    }
-  }
-}
-```
+## 代码
 
-```json
-// 范围查询
-GET test-index/_search
-{
-  "query": {
-    "range": {
-      "age": {
-        "gte": 30
-      }
-    }
-  }
-}
+地址：https://github.com/sardineYJA/blogsearch
 
-GET test-index/_search
-{
-  "query": {
-    "range": {
-      "birthdate": {
-        "gte": "now-30y"
-      }
-    }
-  }
-}
-
-// now-1h 查询一小时内范围
-// now-1d 查询一天内时间范围
-// now-1y 查询最近一年内的时间范围
-```
-
-```json
-// 通配符查询 wildcard
-GET test-index/_search
-{
-  "query": {
-    "wildcard": {
-      "name.keyword": {
-        "value": "*龙"
-      }
-    }
-  }
-}
-```
-
-```json
-// 布尔查询
-GET test-index/_search
-{
-  "query": {
-    "bool": {
-
-      "filter": {
-        "range": {
-          "birthdate": {
-            "format": "yyyy",
-            "gte": 1990,
-            "lte": 2020
-          }
-        }
-      },
-
-      "must": [
-        {
-          "terms": {
-            "address.keyword": [
-              "天河区",
-              "黄埔区",
-              "越秀区"
-            ]
-          }
-        }
-      ]
-
-    }
-  }
-}
-```
-
-
-# 聚合 aggs
-
-```json
-// _stats 得到总个数、最高值、最低值、平均值、总和
-GET test-index/_search
-{
-  "size": 0,               // 返回0条数据
-  "aggs": {
-    "salary_stats": {
-      "stats": {
-        "field": "salary"
-      }
-    }
-  }
-}
-
-// 分别求
-GET test-index/_search
-{
-  "size": 0,
-  "aggs": {
-
-    "salary_min": {
-      "min": {
-        "field": "salary"
-      }
-    },
-
-    "salary_max": {
-      "max": {
-        "field": "salary"
-      }
-    },
-
-    // _avg  _count
-
-    // 统计员工工资百分位
-    "salary_percentiles": {
-      "percentiles": {
-        "field": "salary"
-      }
-    }
-
-  }
-}
-```
-
-## 分桶 Bucket 
-
-```json
-// 统计各个岁数的人数
-GET test-index/_search
-{
-  "size": 0,
-  "aggs": {
-    "age_bucket": {
-      "terms": {
-        "field": "ages",
-        "size": "10"
-      }
-    }
-  }
-}
-
-// 范围分桶
-GET test-index/_search
-{
-  "aggs": {
-    "salary_range_bucket": {
-      "range": {
-        "field": "salary",
-        "ranges": [
-          {
-            "key": "低级",    // 3000-5000
-            "to": 3000
-          }, {
-            "key": "中级",    // 5000-9000
-            "from": 5000,
-            "to": 9000
-          }, {
-            "key": "高级",    // 9000-以上
-            "from": 9000
-          }
-        ]
-      }
-    }
-  }
-}
-
-// 时间范围分桶
-GET test-index/_search
-{
-  "aggs": {
-    "date_range_bucket": {
-      "date_range": {
-        "field": "birthdate",
-        "format": "yyyy",
-        "ranges": [
-          {
-            "key": "2000-2010的人",
-            "from": "2000",
-            "to": "2010"
-          }, {
-            "key": "2010-2020的人",
-            "from": "2010",
-            "to": "2020"
-          }
-        ]
-      }
-    }
-  }
-}
-
-
-// 0-12000，区段间隔为3000分桶
-GET test-index/_search
-{
-  "size": 0,
-  "aggs": {
-    "salary_histogram": {
-      "histogram": {
-        "field": "salary",
-        "extended_bounds": {
-          "min": 0,
-          "max": 12000
-        },
-        "interval": 3000
-      }
-    }
-  }
-}
-
-// 出生日期分桶
-GET test-index/_search
-{
-  "size": 0,
-  "aggs": {
-    "birthdate_histogram": {
-      "date_histogarm": {
-        "format": "yyyy",
-        "field": "birthdate",
-        "interval": "year"
-      }
-    }
-  }
-}
-```
-
-```json
-// 分桶后再聚合
-// 统计每个岁数中工资最高者
-GET test-index/_search
-{
-  "size": 0,
-  "aggs": {
-    "salary_bucket": {
-
-      "terms": {              // 分桶
-        "field": "age",
-        "size": "10"
-      },
-
-      "aggs": {               // 聚合
-        "salary_max_user": {
-          "top_hits": {
-            "size": 1,
-            "sort": [
-              {
-                "salary": {
-                  "order": "desc"
-                }
-              }
-            ]
-          }
-        }
-      }
-
-    }
-  }
-}
-```
+待补充...
 
