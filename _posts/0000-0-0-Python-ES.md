@@ -9,6 +9,7 @@ tag: Python
 
 
 ## urllib 直接操作 ES
+
 ```python
 username = ""
 password = ""
@@ -17,12 +18,39 @@ headers = {"Content-Type": 'application/json'}
 
 headers.update(urllib3.make_headers(basic_auth=username+":"+password))
 url = cluster_name + "/" + index_name + '/_search'
-dsl = {"size":100, "query":{"match_all":{}}}
+dsl = '{"size":100, "query":{"match_all":{}}}'
 data = json.dumps(dsl)
 req = urllib.request.Request(method='GET', url=url, data=bytes(data,encoding='utf-8'), headers=headers)
-res = urllib.request.urlopen(req, timeout=120)
+res = urllib.request.urlopen(req, timeout=10)    # 超时单位s
 result = json.loads(res.read.decode('utf-8'))
 ```
+
+
+## bulk 处理时序列化问题
+
+```sh
+POST /test/doc/_bulk
+{ "index" : {"_id" : "1", "retry_on_conflict": 3}}
+{ "field1" : "value1" }
+```
+```sh
+dsl = [
+    { "index" : {"_id" : "1", "retry_on_conflict": 3}},
+    { "field1" : "value1" },
+    { "index" : {"_id" : "1", "retry_on_conflict": 3}},
+    { "field1" : "value1" }
+]
+```
+```python
+data = ''
+for l in dsl:
+    data = data + json.dumps(l) + '\n'
+```
+> 注意1. 每个json都需要json序列化，不可直接序列化多行json
+> 注意2. 每行结束为`\n`
+
+
+
 
 
 # HTTP Server
