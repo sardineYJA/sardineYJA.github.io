@@ -22,6 +22,30 @@ queue.max_bytes:4gb  # 队列存储最大数据量，默认1G
 ## Persistent Queue In Disk：可处理进程Crash等情况，保证数据不丢失，保证数据至少消费一次，充当缓冲区，可以替代kafka等消息队列的作用
 ```
 
+## 配置
+
+```sh
+node.name: node124
+
+path.logs: /log/logstash
+
+## 增大接收数量
+pipeline.batch.size: 8000
+pipeline.workers: 12
+pipeline.output.workers: 6
+pipeline.batch.delay: 6          # 毫秒
+
+
+## 设置 Kibana 监控
+http.host: "XXX.XXX.XXX.XXX"
+xpack.monitoring.enabled: true  
+xpack.monitoring.elasticsearch.url: "http://XXX.XXX.XXX.XXX:9200"
+xpack.monitoring.elasticsearch.username: "admin" 
+xpack.monitoring.elasticsearch.password: "admin"
+
+# \n，\t特殊符号才能识别
+config.support_escapes: true        
+```
 
 
 ## 安装Xpack后老是警告
@@ -31,24 +55,7 @@ queue.max_bytes:4gb  # 队列存储最大数据量，默认1G
 
 解决：xpack.monitoring.enabled: false
 
-```sh
-node.name: node124
 
-path.logs: /log/logstash
-pipeline.batch.size: 8000
-pipeline.batch.delay: 5     # 毫秒
-pipeline.workers: 10        # cpu数
-
-
-http.host: "XXX.XXX.XXX.XXX"
-xpack.monitoring.enabled: true  # 直接关掉 false
-xpack.monitoring.elasticsearch.url: "http://XXX.XXX.XXX.XXX:9200"
-xpack.monitoring.elasticsearch.username: "logstash_system" 
-xpack.monitoring.elasticsearch.password: "changeme"
-
-# \n，\t特殊符号才能识别
-config.support_escapes: true        
-```
 
 
 # 使用案例

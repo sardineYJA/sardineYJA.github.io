@@ -225,6 +225,7 @@ fields:
 > 注意：系统环境变量需要 source /etc/profile，获取不到${serverIP} 启动报错：missing field accessing 'filebeat.prospectors.0.fields.ip'
 
 # 配置
+
 ```sh
 filebeat.prospectors:    # 每一个prospectors，起始于一个破折号"-"
 - type: log              # 默认log，从日志文件读取每一行。stdin，从标准输入读取
@@ -240,31 +241,36 @@ filebeat.prospectors:    # 每一个prospectors，起始于一个破折号"-"
   exclude_files: [".gz$"]          # 排除文件，后接一个正则表达式的列表，默认无
 
   multiline.pattern:  ^\[       # 多行匹配模式，后接正则表达式，默认无
-  multiline.negate: false       # 定义上边pattern匹配到的行是否用于多行合并，也就是定义是不是作为日志的一部分
+  multiline.negate: true       # 定义上边pattern匹配到的行是否用于多行合并，也就是定义是不是作为日志的一部分
   multiline.match: after        # 定义多行内容被添加到模式匹配行之后还是之前，默认无，可以被设置为after或者before
   multiline.max_lines: 500      # 单一多行匹配聚合的最大行数，超过定义行数后的行会被丢弃，默认500
   multiline.timeout: 5s         # 多行匹配超时时间，超过超时时间后的当前多行匹配事件将停止并发送，然后开始一个新的多行匹配事件，默认5秒
   
-  tail_files: false        # 定义是从文件开头读取日志还是结尾。true从现在开始收集，之前已存在的不管
+  tail_files: true         # 定义是从文件开头读取日志还是结尾。true从现在开始收集，之前已存在的不管
+  close_timeout: 10m       # 防止删除文件后还占用文件描述符
   close_renamed: false     # 当文件被重命名或被轮询时关闭重命名的文件处理。注意：潜在的数据丢失。默认false
   close_removed: true      # 如果文件不存在，立即关闭文件处理。如果后面文件又出现了，会在scan_frequency之后继续从最后一个已知position处开始收集，默认true
  
   encoding: plain          # 编码，默认无，plain(不验证或者改变任何输入) latin1, utf-8, utf-16be-bom, gb18030 ...
   ignore_older: 0          # 排除更改时间超过定义的文件，时间字符串可以用2h表示2小时，5m表示5分钟，默认0
   document_type: log       # 该type会被添加到type字段，对于输出到ES来说，这个输入时的type字段会被存储，默认log
-  scan_frequency: 10s      # prospector扫描新文件的时间间隔，默认10秒
-  max_bytes: 10485760      # 单文件最大收集的字节数，单文件超过此字节数后的字节将被丢弃，默认10MB，需要增大，保持与日志输出配置的单文件最大值一致即可
+  scan_frequency: 10s      # prospector检测文件更新的时间间隔，默认10秒。如果设置为0s，则Filebeat会尽可能快地感知更新（占用的CPU会变高）
+  max_bytes: 10485760      # 单个日志消息允许的最大字节数。超过max_bytes的字节将被丢弃且不会被发送，默认10MB
 
-
+max_procs: 1           # 核数
+clean_inactive: 24h    
+close_timeout: 10m 
 
 # filebeat 全局配置
 filebeat:
   registry_file: ${path.data}/my_registry    # 注册表文件，只写文件名会创建在默认的${path.data}
   registry_file_permissions: 600             # 注册表文件权限
   registry_flush: 3s   # 刷新时间，默认为0实时刷新，filebeat处理一条日志就实时的将信息写入到registry文件中，这在日志量大的时候会频繁读写registry文件，可考虑适当增加这个值来降低磁盘开销
+  config_dir:          # 定义filebeat配置文件目录，必须指定一个不同于filebeat主配置文件所在的目录
+
+## 版本6已抛弃
   spool_size: 2048     # 后台事件计数阈值，超过后强制发送，默认2048
   idle_timeout: 5s     # 后台刷新超时时间，超过定义时间后强制发送，不管spool_size是否达到，默认5秒
-  config_dir:          # 定义filebeat配置文件目录，必须指定一个不同于filebeat主配置文件所在的目录
 
 
 # 日志
@@ -280,3 +286,23 @@ logging:
     rotateeverybytes: 10485760     # 日志轮循大小，默认10MB
     keepfiles: 7                   # 日志轮循文件保存数量，默认7
 ```
+
+
+# 优化
+
+## queue
+
+```sh
+queue.mem:
+  events: 4096             # 队列可以存储的事件数。默认值为4096个事件。
+  flush.min_events: 512    # 发布所需的最少事件数。默认值为0，则输出可以开始发布事件而无需额外的等待时间。否则输出必须等待更多事件变为可用。
+  flush.timeout: 5s        # 最长等待时间flush.min_events。默认值为0，则事件将立即可供使用。
+
+## bulk_max_size
+output.logstash:
+  hosts: ["127.0.0.1:12380",...]
+  loadbalance: true    # 默认false，sends all events to only one host
+  worker: 2
+  bulk_max_size: 2048  # 默认2048，The maximum number of events to bulk in a single Logstash request.如果publishes batch 大于 bulk_max_size，batch 会被切割。将bulk_max_size设置为小于或等于0的值将禁用batch拆分。queue将决定每batch的events数量
+```
+
