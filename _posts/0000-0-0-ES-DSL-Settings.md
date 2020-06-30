@@ -13,7 +13,7 @@ tag: Elasticsearch
 ```sh
 PUT _template/your-name_tpl
 {
-  "order" : 1,               # 优先级，越大越优先
+  "order" : 1,               # 优先级，越大越优先，多个 template ，那么就会先应用 order 数值小的 template 设置，然后再应用一遍 order 数值高的作为覆盖，最终达到一个 merge 的效果，所以更多时候公用模板autoindex 匹配 * ，order 0，其他模板为1。
   "index_patterns" : [
     "my-index-*"           # 匹配名
   ],

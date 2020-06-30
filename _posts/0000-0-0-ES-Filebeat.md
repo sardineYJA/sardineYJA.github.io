@@ -288,21 +288,5 @@ logging:
 ```
 
 
-# 优化
 
-## queue
-
-```sh
-queue.mem:
-  events: 4096             # 队列可以存储的事件数。默认值为4096个事件。
-  flush.min_events: 512    # 发布所需的最少事件数。默认值为0，则输出可以开始发布事件而无需额外的等待时间。否则输出必须等待更多事件变为可用。
-  flush.timeout: 5s        # 最长等待时间flush.min_events。默认值为0，则事件将立即可供使用。
-
-## bulk_max_size
-output.logstash:
-  hosts: ["127.0.0.1:12380",...]
-  loadbalance: true    # 默认false，sends all events to only one host
-  worker: 2
-  bulk_max_size: 2048  # 默认2048，The maximum number of events to bulk in a single Logstash request.如果publishes batch 大于 bulk_max_size，batch 会被切割。将bulk_max_size设置为小于或等于0的值将禁用batch拆分。queue将决定每batch的events数量
-```
 

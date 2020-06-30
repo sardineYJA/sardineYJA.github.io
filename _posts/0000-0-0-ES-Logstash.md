@@ -22,6 +22,13 @@ queue.max_bytes:4gb  # 队列存储最大数据量，默认1G
 ## Persistent Queue In Disk：可处理进程Crash等情况，保证数据不丢失，保证数据至少消费一次，充当缓冲区，可以替代kafka等消息队列的作用
 ```
 
+
+## 安装Xpack
+
+`./bin/logstash-plugin install file:///home/out/x-pack-6.1.1.zip`
+
+
+
 ## 配置
 
 ```sh
@@ -46,16 +53,6 @@ xpack.monitoring.elasticsearch.password: "admin"
 # \n，\t特殊符号才能识别
 config.support_escapes: true        
 ```
-
-
-## 安装Xpack后老是警告
-
-> {:healthcheck_url=>http://logstash_system:xxxxxx@localhost:9200/, :path=>"/"}
-[2017-12-18T19:39:14,367][WARN ][logstash.outputs.elasticsearch] Attempted to resurrect connection to dead ES instance, but got an error. {:url=>#<Java::JavaNet::URI:0x90152ca>, :error_type=>LogStash::Outputs::ElasticSearch::HttpClient::Pool::HostUnreachableError, :error=>"Elasticsearch Unreachable: [http://logstash_system:xxxxxx@localhost:9200/][Manticore::SocketException] Connection refused (Connection refused)"}
-
-解决：xpack.monitoring.enabled: false
-
-
 
 
 # 使用案例

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "IDEA, Pycharm 常用操作"
+title: "IDEA, Pycharm, Shell常用操作"
 date: 2019-12-01
 description: "常用操作"
 tag: Other
@@ -94,8 +94,6 @@ F9                   下一个断点
 
 
 
-
-
 # Shell
 
 
@@ -110,12 +108,35 @@ F9                   下一个断点
 
 ## 命令
 
+
 ```sh
+free -h                    # 内存
+
+df -h                      # 磁盘
+
+systemctl status 程序名    # 状态
+
+netstat -an | grep 端口号  # 端口 
+
+nc -lk 端口                # 发送数据
+
+kill -9 进程号             # 杀死进程
+ 
+ps -A                     # 所有进程
+
+chmod  777 文件名         # 修改文件权限
+
+rsync 和 scp              # 远程传输文件                  
+
+
+
 ps -ef | grep elasticsearch
+# -e 所有用户所有进程 -f 详细信息，-a 是当前用户所有进程
 
--e 所有用户所有进程 -f 详细信息，-a 是当前用户所有进程
+lsof -i :5601   # 根据端口查看具体进程
 
-端口：lsof -i :5601   # 查看kibana进程
 
+# java GC
+jstat -gccause ${PID} 1000 10    # 每隔1000毫秒打印一次，共10次
 ```
 

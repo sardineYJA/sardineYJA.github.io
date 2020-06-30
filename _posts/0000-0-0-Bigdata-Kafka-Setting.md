@@ -94,6 +94,24 @@ export PATH=$PATH:$KAFKA_HOME/bin
 8. 启动一个生产者：bin/kafka-console-producer.sh --broker-list xxx.xxx.xxx.xxx:9092 --topic MyTopic
 
 
+
+## 查看offset消费情况
+
+使用kafka的bin目录下面的kafka-consumer-groups.sh命令可以查看offset消费情况。
+
+注意，如果你的offset是存在kafka集群上的，就指定kafka服务器的地址bootstrap-server：
+
+```sh
+./kafka-consumer-groups.sh --bootstrap-server 172.17.6.10:9092 --describe dylog --group dylog
+```
+```
+Note: This will only show information about consumers that use the Java consumer API (non-ZooKeeper-based consumers).
+TOPIC     PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG   CONSUMER-ID                                       HOST            CLIENT-ID
+friend    0          13949           13949           0     consumer-1-25efc288-c534-4b1b-a57b-4cfdce853439   /172.17.6.181   consumer-1
+```
+
+
+
 # 测试
 
 ## 消费组
