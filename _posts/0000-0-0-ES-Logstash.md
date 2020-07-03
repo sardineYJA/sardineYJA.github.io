@@ -23,12 +23,6 @@ queue.max_bytes:4gb  # 队列存储最大数据量，默认1G
 ```
 
 
-## 安装Xpack
-
-`./bin/logstash-plugin install file:///home/out/x-pack-6.1.1.zip`
-
-
-
 ## 配置
 
 ```sh
@@ -41,14 +35,6 @@ pipeline.batch.size: 8000
 pipeline.workers: 12
 pipeline.output.workers: 6
 pipeline.batch.delay: 6          # 毫秒
-
-
-## 设置 Kibana 监控
-http.host: "XXX.XXX.XXX.XXX"
-xpack.monitoring.enabled: true  
-xpack.monitoring.elasticsearch.url: "http://XXX.XXX.XXX.XXX:9200"
-xpack.monitoring.elasticsearch.username: "admin" 
-xpack.monitoring.elasticsearch.password: "admin"
 
 # \n，\t特殊符号才能识别
 config.support_escapes: true        

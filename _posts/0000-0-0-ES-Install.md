@@ -36,7 +36,7 @@ transport.tcp.port: 9300
 # 监听端口（默认9200），（Web界面）
 http.port: 9200
 # 增加参数，使head插件可以访问es（端口9100）
-http.cors.enabled: true
+http.cors.enabled: true        ## 加入跨域配置
 http.cors.allow-origin: "*"
 ```
 

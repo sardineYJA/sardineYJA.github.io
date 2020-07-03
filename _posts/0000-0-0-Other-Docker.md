@@ -133,3 +133,78 @@ docker push username/ubuntu:18.04  # 将自己的镜像推送到 Docker Hub
 # reference
 
 https://www.runoob.com/docker/docker-container-connection.html
+
+
+# ELK
+
+ELK docker 镜像：`https://www.docker.elastic.co/`
+
+docker 目录：`/var/lib/docker/`
+
+## ES
+
+```sh
+# 查找
+docker search elasticsearch
+
+# 拉取镜像
+docker pull docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+
+# 查看
+docker images
+
+# 运行
+docker run -d --name es -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+
+# -d 后台运行
+# --name 容器名
+# -p 指定端口映射，主机端口：容器端口
+# -e 设置环境变量
+
+# 进入容器
+docker exec -it es /bin/bash
+
+# 修改配置，测试加入跨域配置
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+
+# 重启
+docker restart es
+
+# 测试访问 
+curl http://xxx.xxx.xxx.xxx:9200
+
+# 导出
+docker save -o es.tar docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+
+# -o :输出到的文件
+
+# 导入
+docker load < /.../es.tar
+
+# 查看日志
+docker logs -f --tail=200 es
+```
+
+
+## kibana
+
+```sh
+docker pull docker.elastic.co/kibana/kibana:6.1.1
+
+docker run --name kibana -p 5601:5601 -d docker.elastic.co/kibana/kibana:6.1.1
+
+http://127.0.0.1:5601
+```
+
+
+
+## logstash
+
+```sh
+docker pull docker.elastic.co/logstash/logstash:6.1.1
+docker run --name logstash docker.elastic.co/logstash/logstash:6.1.1
+docker exec -it logstash /bin/bash
+```
+
+
