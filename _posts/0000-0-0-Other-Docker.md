@@ -129,82 +129,232 @@ docker push username/ubuntu:18.04  # 将自己的镜像推送到 Docker Hub
 
 
 
-
-# reference
-
-https://www.runoob.com/docker/docker-container-connection.html
-
-
 # ELK
 
 ELK docker 镜像：`https://www.docker.elastic.co/`
 
 docker 目录：`/var/lib/docker/`
 
+容器启动时所目录：`/usr/share/`
+
+ELK docker images 下载：https://www.docker.elastic.co/
+
+版本区别：
+- 无 oss 如：elasticsearch:6.1.1 自带 x-pack
+- 有 oss 如：elasticsearch-oss:6.1.1 纯净版，无安装插件（推荐）
+
+
 ## ES
+
 
 ```sh
 # 查找
 docker search elasticsearch
 
 # 拉取镜像
-docker pull docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+docker pull docker.elastic.co/elasticsearch/elasticsearch-oss:6.1.1
 
 # 查看
 docker images
 
 # 运行
-docker run -d --name es -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:6.1.1
-
+docker run -d --name es -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch-oss:6.1.1
 # -d 后台运行
 # --name 容器名
 # -p 指定端口映射，主机端口：容器端口
 # -e 设置环境变量
+# --privileged=true 使用该参数，container内的root拥有真正的root权限
+
+
+# 查看运行中的容器
+docke ps -a
+# -a 显示所有的容器，包括未运行的
 
 # 进入容器
 docker exec -it es /bin/bash
+# -i :即使没有附加也保持STDIN 打开
+# -t :分配一个伪终端
+```
 
-# 修改配置，测试加入跨域配置
-http.cors.enabled: true
+
+```sh
+# 拷贝文件，本地->容器
+docker cp ./x-pack-6.1.1.zip es:/usr/share/elasticsearch/    
+
+# 拷贝文件，容器->本地
+docker cp es:/usr/share/elasticsearch/config/elasticsearch.yml ./
+
+# 可以通过这样的方式修改启动不了无法进入的容器配置
+```
+
+```sh
+## 解压安装插件并修改目录名，需要将文件拷贝进容器
+unzip elasticsearch-analysis-ik-6.1.1.zip -d ./plugins/
+mv plugins/elasticsearch plugins/ik
+
+unzip elasticsearch-analysis-pinyin-6.1.1.zip -d ./plugins/
+mv plugins/elasticsearch plugins/pinyin
+
+bin/elasticsearch-plugin install file:///..../search-guard-6-6.1.1-20.1.zip
+
+bin/elasticsearch-plugin install file:///..../x-pack-6.1.1.zip
+```
+
+
+
+```sh
+# search-guard-ssl 生成证书
+./gen_root_ca.sh capass changeit                 # CA密码     TS密码
+./gen_node_cert.sh 0 changeit capass             # node   KS密码    CA密码
+./gen_client_node_cert.sh kirk changeit capass   # 客户端  KS密码    CA密码
+
+# 分发到目录
+elasticsearch/config/: truststore.jk, node-0-keystore.jks
+plugins/search-guard-6/sgconfig/: truststore.jks, kirk-keystore.jks
+
+# 执行脚本：
+chmod +x  plugins/search-guard-7/tools/install_demo_configuration.sh
+./install_demo_configuration.sh
+# 安装后发现config/elasticsearch.yml中写入search-guard的内容
+```
+
+修改 elasticsearch.yml
+```sh
+cluster.name: es-cluster
+node.name: es-data-175
+network.host: 0.0.0.0
+
+node.master: true 
+node.data: true 
+node.ingest: true
+
+path.data: /data/node1,/date/node2,/date/node3
+path.logs: /raid/log/elasticsearch/
+
+bootstrap.memory_lock: false
+bootstrap.system_call_filter: false
+
+discovery.zen.minimum_master_nodes: 1
+discovery.zen.ping.unicast.hosts: ["xxx.xxx.xxx.xxx:9300", "..."]
+
+http.port: 9200
+transport.tcp.port: 9300
+
+## 加入跨域配置
+http.cors.enabled: true        
 http.cors.allow-origin: "*"
 
+# xpack 
+xpack.monitoring.enabled: true
+xpack.security.enabled: false   
+xpack.graph.enabled: false
+xpack.ml.enabled: false
+xpack.watcher.enabled: false
+
+
+# 配置 SeachGuard 初始化
+searchguard.authcz.admin_dn:
+  - CN=kirk, OU=client, O=client, L=Test, C=DE  
+
+# 配置ssl
+searchguard.ssl.transport.enabled: true
+searchguard.ssl.transport.keystore_filepath: node-0-keystore.jks
+searchguard.ssl.transport.keystore_password: kspass
+searchguard.ssl.transport.truststore_filepath: truststore.jks
+searchguard.ssl.transport.truststore_password: tspass
+searchguard.ssl.transport.enforce_hostname_verification: false
+searchguard.ssl.transport.resolve_hostname: false
+
+searchguard.ssl.http.enabled: false
+searchguard.ssl.http.keystore_filepath: node-0-keystore.jks
+searchguard.ssl.http.keystore_password: kspass
+searchguard.ssl.http.truststore_filepath: truststore.jks
+searchguard.ssl.http.truststore_password: tspass
+searchguard.allow_all_from_loopback: true
+
+searchguard.restapi.roles_enabled: ["sg_all_access"]
+cluster.routing.allocation.same_share.host: true
+```
+
+启动报错：
+
+>  Demo certificates found but searchguard.allow_unsafe_democertificates is set to false.
+
+增加参数：
+```sh
+searchguard.allow_unsafe_democertificates: true
+searchguard.allow_default_init_sgindex: true
+```
+
+
+
+```sh
 # 重启
 docker restart es
 
-# 测试访问 
-curl http://xxx.xxx.xxx.xxx:9200
+curl -X GET "http://xxx.xxx.xxx.xxx:9200" -H "Content-Type:application/json" -u "admin:admin"
 
-# 导出
-docker save -o es.tar docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+# 访问集群提示：Search Guard not initialized (SG11).则需要执行   
+./sgadmin.sh -cn 集群名 -h IP地址 -cd ../sgconfig/ -ks kirk-keystore.jks -ts truststore.jks -nhnv
 
-# -o :输出到的文件
-
-# 导入
-docker load < /.../es.tar
 
 # 查看日志
-docker logs -f --tail=200 es
+docker logs es                # 查看日志
+docker logs -f --tail=200 es  # 实时查看日志
+# -f : 跟踪日志输出
+```
+
+```sh
+# 导出镜像
+docker save -o es-oss.tar docker.elastic.co/elasticsearch/elasticsearch-oss:6.1.1
+# -o :输出到的文件
+
+# 导入镜像
+docker load < /.../es-oss.tar
+
+# 打包容器
+docker export > es-node.tar
+
+# 导入容器为镜像
+docker import es-node.tar  es/es:1.0
+
+# 启动
+docker run -d --name es -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" es/es:1.0 /bin/bash -c "/usr/share/elasticsearch/bin/elasticsearch"
 ```
 
 
 ## kibana
 
 ```sh
+# 拉取镜像
 docker pull docker.elastic.co/kibana/kibana:6.1.1
 
+# 启动
 docker run --name kibana -p 5601:5601 -d docker.elastic.co/kibana/kibana:6.1.1
 
-http://127.0.0.1:5601
+# 拷贝插件到容器
+docker cp ./xxx.zip /usr/share/kibana/
+
+# 进入终端
+docker exec -it kibana /bin/bash
+
+# 安装插件
+bin/kibana-plugin install file:///usr/share/kiban/search-guard-kibana-plugin-6.1.1-8.zip
+bin/kibana-plugin install file:///usr/share/kiban/x-pack-6.1.1.zip
 ```
 
-
-
-## logstash
-
+修改 kibana.yml
 ```sh
-docker pull docker.elastic.co/logstash/logstash:6.1.1
-docker run --name logstash docker.elastic.co/logstash/logstash:6.1.1
-docker exec -it logstash /bin/bash
-```
+server.name: kibana
+server.host: "0"
+elasticsearch.url: "http://XXX.XXX.XXX.XXX:9200"
+elasticsearch.username: "admin"
+elasticsearch.password: "admin"
 
+xpack.monitoring.enabled: true
+xpack.security.enabled: false 
+xpack.reporting.enabled: false 
+searchguard.session.keepalive: true
+```
+> kibana 第一次启动需要7-8分钟左右
 

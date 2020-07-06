@@ -26,7 +26,6 @@ plugins/search-guard-7/tools/install_demo_configuration.sh
 # 安装后发现config/elasticsearch.yml中写入search-guard的内容
 ```
 
-
 ## 启动访问
 
 - http此时访问不了：http://192.168.243.124:9200/
@@ -47,18 +46,21 @@ plugins/search-guard-7/tools/install_demo_configuration.sh
 https://github.com/floragunncom/search-guard-ssl
 
 ```sh
-./gen_root_ca.sh capass changeit                 # CA  TS
-./gen_node_cert.sh 0 changeit capass             # node  KS  CA
-./gen_client_node_cert.sh kirk changeit capass   # 客户端 KS CA
+./gen_root_ca.sh capass changeit                 # CA密码     TS密码
+./gen_node_cert.sh 0 changeit capass             # node   KS密码    CA密码
+./gen_client_node_cert.sh kirk changeit capass   # 客户端  KS密码    CA密码
 ```
 
 elasticsearch/config/: truststore.jk, node-0-keystore.jks
 
 plugins/search-guard-6/sgconfig/: truststore.jks, kirk-keystore.jks
 
-证书一次生成，拷贝分发各个节点，之后一台执行即可下面：
+证书一次生成，拷贝分发各个节点，之后一台执行即可，生成索引：
 ```sh
-./sgadmin -cn 集群名 -h IP地址 -cd ../sgconfig/ -ks kirk-keystore.jks -ts truststore.jks -nhnv
+./sgadmin.sh -cn 集群名 -h IP地址 -cd ../sgconfig/ -ks kirk-keystore.jks -ts truststore.jks -nhnv
+
+# -nhnv 不验证主机名
+# -cd   指定存储目录
 ```
 
 
