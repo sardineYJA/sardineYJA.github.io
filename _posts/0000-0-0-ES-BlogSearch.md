@@ -3,7 +3,7 @@ layout: post
 title: "基于ES7的简易博客搜索SpringBoot部分"
 date: 2020-05-05
 description: "基于ES7的简易博客搜索"
-tag: Elasticsearch
+tag: ELK
 
 ---
 

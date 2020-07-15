@@ -3,7 +3,7 @@ layout: post
 title: "Settings 部分内容"
 date: 2020-06-20
 description: "Elasticsearch"
-tag: Elasticsearch
+tag: ELK
 
 ---
 

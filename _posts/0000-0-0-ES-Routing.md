@@ -3,7 +3,7 @@ layout: post
 title: "ES routing 机制"
 date: 2020-01-10
 description: "ES routing 机制"
-tag: Elasticsearch
+tag: ELK
 
 ---
 

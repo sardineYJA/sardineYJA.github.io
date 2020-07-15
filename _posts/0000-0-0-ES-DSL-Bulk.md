@@ -3,7 +3,7 @@ layout: post
 title: "Bulk 批量处理"
 date: 2020-06-19
 description: "DSL"
-tag: Elasticsearch
+tag: ELK
 
 ---
 

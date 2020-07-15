@@ -3,7 +3,7 @@ layout: post
 title: "ES 笔记"
 date: 2020-01-15
 description: "ES 笔记"
-tag: Elasticsearch
+tag: ELK
 
 ---
 

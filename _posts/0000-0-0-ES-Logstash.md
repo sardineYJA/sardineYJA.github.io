@@ -89,15 +89,17 @@ output {
    }
 }
 
+```
 
-# 输出到 ES
+## 输出到 ES
 
+```sh
 output {
 	elasticsearch {
 		index => "logstash-%{+YYYY.MM.dd}"
 		hosts => ["xxx.xxx.xxx.xxx:9200", "..."]
 		document_id => "..."
-		action => create   # 默认index，使用create必须和document_id一起
+		action => index   # 默认index
 		user => admin
 		password =>admin
 		ssl => false
@@ -105,6 +107,14 @@ output {
 	}
 }
 ```
+
+aciton 三种：
+
+- index: 不指定document_id则随机，指定id如ES已存在则更新doc，不存在则创建。（写入的效率降低，因为额外增加了查询该document_id 是否存在的过程。）
+
+- create: 必须指定document_id，ES不存在此id则创建成功，存在则返回失败。（只适合用在像是用户创建之后就不能再更新的场景。）
+
+- update: 必须指定document_id，ES不存在此id则返回失败，存在则更新doc。
 
 
 
