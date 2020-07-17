@@ -7,13 +7,196 @@ tag: ELK
 
 ---
 
-
 # Spark 消费 kafka
 
+手动报错 kafka offset 到 ES
+
+```xml
+<dependency>
+    <groupId>org.apache.spark</groupId>
+    <artifactId>spark-core_2.10</artifactId>
+    <version>1.6.2</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.spark</groupId>
+    <artifactId>spark-sql_2.10</artifactId>
+    <version>1.6.2</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.spark</groupId>
+    <artifactId>spark-streaming_2.10</artifactId>
+    <version>1.6.2</version>
+</dependency>
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>1.2.47</version>
+</dependency>
+<dependency>
+    <groupId>org.elasticsearch</groupId>
+    <artifactId>elasticsearch-spark-20_2.10</artifactId>
+    <version>6.1.1</version>
+</dependency>
+```
+
+```java
+val kafka_params = Map(
+	"metadata.broker.list" -> "xxx.xxx.xxx.xxx:9092,xxx.xxx.xxx.xxx:9092"
+	"group.id" -> "yangjingan"
+	)
+val topic = Set("topic_name")
+
+// es 读取 offset
+val es_read_conf = new Configuration()
+es_read_conf.set("es.nodes", es_addr)
+es_read_conf.set("es.port", es_port)
+es_read_conf.set("es.net.http.auth.user", es_user)
+es_read_conf.set("es.net.http.auth.pass", es_pass)
+es_read_conf.set("es.index.read.missing.as.empty", "true")
+es_read_conf.set("es.resource", "your_index/doc")
+es_read_conf.set("es.query", "{\"query\":{your_dsl}}")
+
+// es 更新 offset 
+val es_update_offset_params = Map(
+		"es.nodes" -> es_addr,
+		"es.port" -> es_port,
+		"es.net.http.auth.user" -> es_user,
+		"es.net.http.auth.pass" -> es_pass,
+		"es.index.auto.create" -> "true",
+		"es.mapping.id" -> "id",           // 这里的id指后面传入的Map里的id，将其作为后面doc的_id
+		"es.write.operation" -> "upsert", 
+		// "es.update.script.inline" -> "ctx._source.offsets=10"  // 这样无法动态
+	)
+
+
+// 数据 写 ES
+val es_write_params = Map(
+		"es.nodes" -> es_addr,
+		"es.port" -> es_port,
+		"es.net.http.auth.user" -> es_user,
+		"es.net.http.auth.pass" -> es_pass,
+		"es.index.auto.create" -> "true"
+	)
+```
+
+```java
+val conf = new SparkConf().setMaster("local")
+// 限流设置
+conf.set("spark.streaming.stopGracefullyOnShutdown", "true");
+conf.set("spark.streaming.backpressure.enabled", "true");
+conf.set("spark.streaming.backpressure.initialRate", "1000");
+conf.set("spark.streaming.kafka.maxRatePerPartition", "1000");
+
+val sc = new SparkContext(conf)
+sc.setLogLevel("WARN")
+val ssc = new StreamingContext(sc, Seconds(5))
+```
+
+广播变量存储offset
+```java
+val id_offset_map = mutable.Map.empty[String, String]
+val broadcast_map = broadcast.Broadcast[mutable.Map[String, String]] = sc.broadcast(id_offset_map)
+
+// 从 ES 获取 offset
+val offset_rdd = sc.newAPIHadoopRDD(
+	es_read_conf,
+	classOf[EsInputFormat[Text, MapWritable]],
+	classOf[Text],
+	classOf[MapWritable]
+	)
+if (offset_rdd.count == 0) {
+	// 在ES初始创建保存offset的index
+	EsSpark.saveToEs(sc.makeRDD(Seq(Map("topic"-> topic_name, "offset"->Map("0"->0)))), index_name, es_write_params)
+} else if (offset_rdd.count >= 2) {
+	sys.exit(0)
+}
+
+
+/***
+{
+	"topic": "your_topic",
+	"offset": {
+		"0": 100,    # 分区号和offset
+		"1": 200
+	}
+}
+***/
+// 再次从 ES 获取 offset，并解析，保存到 广播变量
+val offset_rdd2 = sc.newAPIHadoopRDD(
+	es_read_conf,
+	classOf[EsInputFormat[Text, MapWritable]],
+	classOf[Text],
+	classOf[MapWritable]
+	)
+offset_rdd2.foreach(rdd => {
+	broadcast_map.value += ("id" -> rdd._1.toString)
+	val value = rdd._2.keySet().iterator()
+	while (value.hasNext()) {
+		val a = value.next()
+		if (a.toString == "offset") {
+			broadcast_map.value += ("offset" -> rdd._2.get(a).toString)
+		}
+	}
+})
+val topic_id = broadcast_map.value.get("id").iterator.next()
+val topic_offset = broadcast_map.value.get("offset").iterator.next()
+```
+
+格式化 offset
+
+```java
+val offset_json = JSON.parseObject(topic_offset.replace("=",":"))
+var offset_list: List[(String, Int, Long)] = List()
+for (p <- offset_json.size()) {
+	offset_list = offset_list.+:((topic_name, p, offset_json.get(p).toString.toLong))
+}  // List((topic_name, 0, 21L), (topic_name, 1, 45L))
+```
+```java
+def setFromOffsets(list:List[(String, Int, Long)]): Map[TopicAndPartition, Long] = {
+	var fromOffsets: Map[TopicAndPartition, Long] = Map()
+	for (offset <- list) {
+		val tp = TopicAndPartition(offset._1, offset._2)
+		fromOffsets += (tp -> offset._3)
+	}
+	fromOffsets
+} 
+```
+
+写 ES
+
+```java
+val fromOffsets = setFromOffsets(offset_list)
+val messageHandler = (mam:MessageAndMetadata[String, String]) => (mam.topic, mam.message())
+val messages: InputDString[(String, String)] = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder, (String,String)](
+	ssc,
+	kafka_params,
+	fromOffsets,
+	messageHandler
+	)
+messages.foreachRDD(batch => {    // 每batch_time 处理一次
+	EsSpark.saveJsonToEs(batch, "spark-{index}/doc", es_write_params)
+	// 更新offset
+	val offsetsList = batch.asInstanceOf[HasOffsetRanges].offsetRanges
+	offsetsList.foreach(x => {
+		println(x.topic, x.partions, x.fromOffset, x.untilOffset)
+		val update_script = "ctx._source['offset']['" + x.partions + "'] = " + x.untilOffset.toString
+		val conf: Map[String, String] = es_update_offset_params + ("es.update.script.inline" -> update_script)
+		val n = sc.makeRDD(Seq(Map("id" -> topic_id)))
+		EsSpark.saveToEs(n, offset_index_name, conf)
+	})
+})
+
+// EsSparkStreaming.saveJsonToEs(messages.map(_._2), "spark-{index}/doc", es_write_params)
+```
+
+
+
+
+# 问题
 
 ## 本地运行spark 读取 kafka
 
-Couldn't find leader offsets for Set([ndp-topic,0], [ndp-topic,1], [ndp-topic,2])
+> Couldn't find leader offsets for Set([ndp-topic,0], [ndp-topic,1], [ndp-topic,2])
 
 解决方案：要在kafka集群的hosts要配到spark的Driver的hosts里面去（所以修改windown的hosts，C:\Windows\System32\drivers\etc）
 
