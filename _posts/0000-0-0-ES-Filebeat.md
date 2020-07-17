@@ -224,6 +224,56 @@ fields:
 > 注意：fields_under_root: true 表示新增字段在全局下，如果没有fields_under_root则新增加的字段会作为数组值添加到fields这个字段里。
 > 注意：系统环境变量需要 source /etc/profile，获取不到${serverIP} 启动报错：missing field accessing 'filebeat.prospectors.0.fields.ip'
 
+
+
+# 吞吐量
+
+## 问题
+
+filebeat 收集日志 log，但是 log 增量极大，导致无法实时收集，存在一天多的延时。
+
+数据链路：filebeat 收集 --> 外层 logstash 不解析直接转 --> kafka 磁盘存储 --> 内层 logstash 解析字段 --> Elasticsearch 
+
+
+## logstash.yml
+
+性能调优主要参数: 
+- pipeline.workers：设置启动多少个线程执行 fliter 和 output；当 input 的内容出现堆积而 CPU 使用率还比较充足时，可以考虑增加该参数的大小。
+- pipeline.batch.size：设置单个工作线程在执行过滤器和输出之前收集的最大事件数，较大的批量大小通常更高效，但会增加内存开销。输出插件会将每个批处理作为一个输出单元。；例如，ES 输出会为收到的每个批次发出批量请求；调整 batch.size 可调整发送到 ES 的批量请求（Bulk）的大小。
+- pipeline.batch.delay：设置 Logstash 管道的延迟时间， 管道批处理延迟是 Logstash 在当前管道工作线程中接收事件后等待新消息的最长时间（以毫秒为单位）；简单来说，当 batch.size 不满足时，会等待 batch.delay 设置的时间，超时后便开始执行 filter 和 output 操作。
+
+
+```sh
+pipeline.batch.size: 8000              # 默认125，对于生产环境太小
+pipeline.workers: 2
+pipeline.output.workers: 2
+pipeline.batch.delay: 5
+```
+
+## filebeat
+
+```sh
+max_procs: 1
+max_bytes: 10240           # 单个日志消息允许的最大字节数。超过max_bytes的字节将被丢弃且不会被发送，默认10MB
+queue.mem:
+  events: 4096             # 队列可以存储的事件数。默认值为4096个事件。
+  flush.min_events: 512    # 发布所需的最少事件数。默认值为0，则输出可以开始发布事件而无需额外的等待时间。否则输出必须等待更多事件变为可用。
+  flush.timeout: 5s        # 最长等待时间flush.min_events。默认值为0，则事件将立即可供使用。
+
+output.logstash:
+  hosts: ["127.0.0.1:12380",...]  # 不建议使用（绑定多个IP）域名，会导致只有其中一个logstash接收数据
+  loadbalance: true    # 默认false，sends all events to only one host
+  worker: 2
+  bulk_max_size: 2048  # 默认2048，The maximum number of events to bulk in a single Logstash request.如果publishes batch 大于 bulk_max_size，batch 会被切割。将bulk_max_size设置为小于或等于0的值将禁用batch拆分。queue将决定每batch的events数量
+```
+
+
+## filebeat 重复读取问题
+
+当 filebeat 收集 log 文件，将记录 offset 写进 register 中，如果此时修改 log，减少记录使其小于 offset，则 filebeat 会认为是新文件，重头读取造成部分数据重复。
+
+
+
 # 配置
 
 ```sh
