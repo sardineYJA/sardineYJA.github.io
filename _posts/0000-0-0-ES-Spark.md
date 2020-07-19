@@ -7,9 +7,26 @@ tag: ELK
 
 ---
 
-# Spark 消费 kafka
+## Spark 消费 kafka
 
-手动报错 kafka offset 到 ES
+- 消费 kafka 推荐 Direct 方式（自行管理 offset）
+
+## 自行保存 offset:
+
+- 本地保存，禁止此操作，Streaming Job 重启后，executor 都是随机分配的
+
+- 保存到HDFS，对于batch时间间隔小于5分钟的不推荐此做法
+
+- redis
+
+- zookeeper
+
+- mysql 
+
+
+## 手动报错 kafka offset 到 ES
+
+自己写了个 ES 保存 offset，性能与稳定性都未在生产环境测试
 
 ```xml
 <dependency>
@@ -189,6 +206,51 @@ messages.foreachRDD(batch => {    // 每batch_time 处理一次
 // EsSparkStreaming.saveJsonToEs(messages.map(_._2), "spark-{index}/doc", es_write_params)
 ```
 
+
+## redis 保存 offset
+
+```java
+def dumpOffsetRedis(groupId: String, offsetRanges: Array[OffsetRange]): Unit = {
+	try {
+		val jedisClient = new Jedis(redis_addr, redis_port)
+		jedisClient.select(RedisDB)
+		offsetRanges.map{ x => 
+			jedisClient.hset(groupId, x.topic+" "+x.partions, x.fromOffset+" "+x.untilOffset)
+		}
+		jedisClient.close()
+	} catch {
+		case e: IOException => println("can not dump offset to redis: " + e.getMessage)
+		case _ => println("error while dump offset") 
+	}
+}
+```
+```java
+def loadOffsetRedis(groupId: String): Map[TopicAndPartition, Long] = {
+	try {
+		val jedisClient = new Jedis(redis_addr, redis_port)
+		jedisClient.select(RedisDB)
+		val offsetMap = jedisClient.hgetAll(groupId)
+		var fromOffsets: Map[TopicAndPartition, Long] = Map()
+		offsetMap.foreach(kv => {
+			val keyPart = kv._1.split(" ")
+			val valuePart = kv._2.split(" ")
+			val topicAndPartition = TopicAndPartition(keyPart(0), keyPart(1).toInt)
+			fromOffsets += (topicAndPartition -> valuePart(1).toInt)
+		})
+		jedisClient.close()
+		fromOffsets
+	} catch {
+		case e: IOException => {
+			println("can not load offset from redis: " + e.getMessage)
+			null
+		}
+		case _ => {
+			println("error while load offset")
+			null
+		}
+	}
+}
+```
 
 
 

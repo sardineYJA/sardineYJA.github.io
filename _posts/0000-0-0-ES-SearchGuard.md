@@ -118,6 +118,20 @@ myself:
 2. elasticsearch.yml 将 search-guard 配置删除
 
 
+
+## searchguard 证书
+
+修改 com.floragunn.searchguard.configuration.SearchGuard 类，编译成.class
+
+ES 安装 searchguard 后，反编译 search-guard-6-6.1.1-20.1.jar 替换 .class 重新打包
+
+```sh
+SearchGuardIndexSearcherWrapper.class
+SearchGuardLicense.class
+SearchGuardLicense$Type.class
+```
+
+
 # 其他
 
 ## 权限管理等级
