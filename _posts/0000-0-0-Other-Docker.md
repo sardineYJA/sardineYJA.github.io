@@ -216,14 +216,25 @@ docker cp es:/usr/share/elasticsearch/config/elasticsearch.yml ./
 
 ```sh
 ## 解压安装插件并修改目录名，需要将文件拷贝进容器
+
+# ik
 unzip elasticsearch-analysis-ik-6.1.1.zip -d ./plugins/
 mv plugins/elasticsearch plugins/ik
 
+# pinyin
 unzip elasticsearch-analysis-pinyin-6.1.1.zip -d ./plugins/
 mv plugins/elasticsearch plugins/pinyin
 
+# jieba
+unzip elasticsearch-jieba-plugin-6.0.0.zip -d ./plugins/
+# 修改 jieba/plugin-descriptor.properties 对于 ES 版本
+version=6.1.1
+elasticsearch.version=6.1.1
+
+# searchguard
 bin/elasticsearch-plugin install file:///..../search-guard-6-6.1.1-20.1.zip
 
+# x-pack
 bin/elasticsearch-plugin install file:///..../x-pack-6.1.1.zip
 ```
 
@@ -298,7 +309,6 @@ searchguard.ssl.http.keystore_filepath: node-0-keystore.jks
 searchguard.ssl.http.keystore_password: kspass
 searchguard.ssl.http.truststore_filepath: truststore.jks
 searchguard.ssl.http.truststore_password: tspass
-searchguard.allow_all_from_loopback: true
 
 searchguard.restapi.roles_enabled: ["sg_all_access"]
 cluster.routing.allocation.same_share.host: true
@@ -371,8 +381,6 @@ found existing node {es-node-03} with the same id but is a different node instan
 
 对容器打包时，需要将 data/ 目录删除，否则启动在 ZenDiscovery 会有相同 id 导致不能正确形成集群。
 （也可以启动后进入容器内删除，再重启）
-
-
 
 
 
