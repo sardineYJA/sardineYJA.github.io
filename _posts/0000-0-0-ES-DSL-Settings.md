@@ -139,6 +139,12 @@ POST _aliases
 - keyword     不分词
 - ik_max_word 中文分词，最细颗粒
 - ik_smart    中文分词，最粗颗粒
+- pinyin      拼音分词
+- jieba_index    用于索引分词，分词粒度较细
+- jieba_search   用于查询分词，分词粒度较粗
+- jieba_other    全角转半角、大写转小写、字符分词
+
+
 
 ## 测试
 

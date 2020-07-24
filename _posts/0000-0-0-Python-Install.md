@@ -36,6 +36,14 @@ pip install wget
 wget https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tar.xz
 ```
 
+## python3 安装 pip
+
+```sh
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py 
+apt-get install python3-distutils
+python3 get-pip.py
+```
+
 ## 解压编译，在/usr/local/目录下就会有python3目录
 
 ```sh
@@ -74,6 +82,8 @@ mv /usr/bin/pip /usr/bin/pip.bak
 ln -s /usr/local/python3/bin/pip3 /usr/bin/pip
 pip -V
 ```
+
+
 
 
 # virtualenv 虚拟环境

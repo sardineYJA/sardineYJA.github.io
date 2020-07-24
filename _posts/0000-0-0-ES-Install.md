@@ -336,6 +336,64 @@ unzip elasticsearch-analysis-ik-5.2.2.zip -d ../module/elasticsearch-5.2.2/plugi
 地址：https://github.com/medcl/elasticsearch-analysis-pinyin/releases
 
 
+
+# jieba 分词
+
+
+## 结巴分词插件
+
+结巴分词插件提供3个分析器：
+- jieba_index: 用于索引分词，分词粒度较细
+- jieba_search: 用于查询分词，分词粒度较粗
+- jieba_other: 全角转半角、大写转小写、字符分词
+
+地址：https://github.com/sing1ee/elasticsearch-jieba-plugin
+
+```sh
+# jieba没有6.1.1
+unzip elasticsearch-jieba-plugin-6.0.1.zip
+# 解压后需要使用gradle编译（需要安装gradle）
+gradle pz
+```
+
+编译错误：
+
+> Could not find Tools.jar
+
+原因：Gradle 找不到 JDK 目录引起的（一般tools.jar在jdk/lib目录下，但是在es的docker容器只有jre没找到jdk）
+
+解决：找到当前用户目录下的 .gradle 目录，并创建 gradle.properties 文件
+```sh
+org.gradle.java.home=/java_path
+```
+
+编译成功后：./build/distributions/ 会有 elasticsearch-jieba-plugin-6.0.0.zip 
+```sh
+# 将编译好的解压到plugins下
+unzip elasticsearch-jieba-plugin-6.0.0.zip -d ./plugins
+# 修改 plugin-descriptor.properties 对于 ES 版本
+version=6.1.1
+elasticsearch.version=6.1.1
+```
+
+
+
+## 安装 gradle
+
+安装之前需要先安装配置好Java环境:
+
+```sh
+wget https://downloads.gradle.org/distributions/gradle-4.6-bin.zip
+unzip gradle-4.6-bin.zip -d /opt/gradle
+vim /etc/profile
+export PATH=$PATH:/opt/gradle/gradle-4.6/bin
+source /etc/profile
+gradle --version
+```
+
+
+
+
 # reference
 
 https://www.cnblogs.com/zhuzi91/p/8228214.html
