@@ -57,7 +57,7 @@ plugins/search-guard-6/sgconfig/: truststore.jks, kirk-keystore.jks
 
 证书一次生成，拷贝分发各个节点，之后一台执行即可，生成索引：
 ```sh
-./sgadmin.sh -cn 集群名 -h IP地址 -cd ../sgconfig/ -ks kirk-keystore.jks -ts truststore.jks -nhnv
+./sgadmin.sh -cn 集群名 -h IP地址 -cd ../sgconfig/ -ks kirk-keystore.jks -kspass 123456 -ts truststore.jks -tspass 123456 -nhnv
 
 # -nhnv 不验证主机名
 # -cd   指定存储目录

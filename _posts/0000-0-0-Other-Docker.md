@@ -409,6 +409,7 @@ bin/kibana-plugin install file:///usr/share/kibana/x-pack-6.1.1.zip
 ```sh
 server.name: kibana
 server.host: "0"
+server.port: 5601
 elasticsearch.url: "http://XXX.XXX.XXX.XXX:9200"
 elasticsearch.username: "admin"
 elasticsearch.password: "admin"
