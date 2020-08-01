@@ -333,7 +333,7 @@ docker restart es
 curl -X GET "http://xxx.xxx.xxx.xxx:9200" -H "Content-Type:application/json" -u "admin:admin"
 
 # 访问集群提示：Search Guard not initialized (SG11).则需要执行   
-./sgadmin.sh -cn 集群名 -h IP地址 -cd ../sgconfig/ -ks kirk-keystore.jks -ts truststore.jks -nhnv
+./sgadmin.sh -cn 集群名 -h IP地址 -p 端口 -cd ../sgconfig/ -ks kirk-keystore.jks -kspass 123456 -ts truststore.jks -tspass 123456 -nhnv
 
 ```
 
