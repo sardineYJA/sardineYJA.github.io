@@ -101,7 +101,27 @@ docker push username/ubuntu:18.04  # 将自己的镜像推送到 Docker Hub
 ```
 
 
+## docker 网络模式
 
+- bridge 桥接模式
+- host 模式
+- container 模式
+- none 模式
+
+启动容器 -net 参数指定，默认桥接模式（即172.17.0.1网关）
+
+
+## docker 的 es ip
+
+
+bridge 桥接模式下 Docker Container 不具有一个公有 IP,即和宿主机的 eth0 不处于同一个网段。导致
+的结果是宿主机以外的世界不能直接和容器进行通信。（master 无法与容器节点通信，docker es 无法加入外部集群）
+
+network.host将设置network.bind_host和network.publish_host为相同的值。
+
+使用 network.host 参数满足不了需求，ES提供了更高级的配置：
+- network.bind_host: 0.0.0.0
+- network.publish_host: 10.17.76.175       表示发布地址，是唯一的，用来集群各节点的相互通信
 
 
 
@@ -260,7 +280,10 @@ chmod +x  plugins/search-guard-6/tools/install_demo_configuration.sh
 ```sh
 cluster.name: es-cluster
 node.name: es-data-175
-network.host: 0.0.0.0
+
+# network.host: 0.0.0.0
+network.bind_host: 0.0.0.0
+network.publish_host: 10.17.76.175
 
 node.master: true 
 node.data: true 
@@ -381,6 +404,67 @@ found existing node {es-node-03} with the same id but is a different node instan
 
 对容器打包时，需要将 data/ 目录删除，否则启动在 ZenDiscovery 会有相同 id 导致不能正确形成集群。
 （也可以启动后进入容器内删除，再重启）
+
+
+
+
+## 一台服务器上运行多个 docker ES 节点
+
+场景：在一个集群中有多台服务器，每个服务器有一个docker es节点或多个。
+
+问题：在一台服务器上运行多个 docker es 节点时（例如在 10.17.76.104 分别在端口 19301 ，19302 启动两个节点），这两个节点无法发现对方，但是集群是正常的而且两个节点也加入到集群中。
+
+两个节点会频繁打印下面的日志
+
+第一台：
+[o.e.c.NodeConnectionsService] [docker-es-104_data] failed to connect to node {docker-es-node-104_ingest}{pR5q3bE6T8WDcmXqTXK8VA}{WtitYLlwTJa-lk8ODv0WuQ}{10.17.76.104}{10.17.76.104:19302} (tried [1] times)
+org.elasticsearch.transport.ConnectTransportException: [docker-es-node-104_ingest][10.17.76.104:19302] connect_timeout[30s]
+
+
+第二台：
+[o.e.c.NodeConnectionsService] [docker-es-104_ingest] failed to connect to node {docker-es-104_data}{LsTniDUNTdGxEe8nKNPc7A}{KDy4NZ2WTu26vS47TYokKA}{10.17.76.104}{10.17.76.104:19301} (tried [7] times)
+org.elasticsearch.transport.ConnectTransportException: [docker-es-104_data][10.17.76.104:19301] connect_timeout[30s]
+
+
+配置文件，仅端口不同
+```sh
+cluster.name: test-cluster
+node.name: es-data
+
+network.bind_host: 0.0.0.0
+network.publish_host: 10.17.76.175 
+
+discovery.zen.ping.unicast.hosts: ["xxx.xxx.xxx.xxx:9300"]
+
+http.port: 19201
+transport.tcp.port: 19301
+```
+
+```sh
+cluster.name: test-cluster
+node.name: es-data
+
+network.bind_host: 0.0.0.0
+network.publish_host: 10.17.76.175 
+
+discovery.zen.ping.unicast.hosts: ["xxx.xxx.xxx.xxx:9300"]
+
+http.port: 19202
+transport.tcp.port: 19302
+```
+
+解决办法：
+防火墙添加容器网桥的ip和端口
+```
+iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 19201 -j ACCEPT
+iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 19301 -j ACCEPT
+
+iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 19202 -j ACCEPT
+iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 19302 -j ACCEPT
+```
+
+
+
 
 
 
