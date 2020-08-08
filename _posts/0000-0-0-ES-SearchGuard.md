@@ -1,4 +1,3 @@
-
 ---
 layout: post
 title: "ES7 Search Guard"
