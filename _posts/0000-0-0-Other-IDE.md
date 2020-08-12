@@ -25,7 +25,7 @@ jdk11,12安装则只有jdk，jdk下也没有jre:
 
 # Sublime
 
-## Sublime Text 打开远程目录
+## 在线安装 sftp
 
 Ctrl + Shift + p 命令面板
 
@@ -34,6 +34,23 @@ Ctrl + Shift + p 命令面板
 输入 sftp 回车 安装
 
 
+## 离线安装 
+
+安装 Package Control: https://github.com/wbond/package_control
+
+1. 把下载好的zip包解压，重命名为 Package Control 文件夹
+
+2. 打开Sublime3，菜单->Preferences->Browse Packages...然后Package Control文件夹放到该目录
+
+3. 重启Sublime3,如果菜单->Preferences有Package Setting和Package Control就说明安装成功
+
+4. Ctrl+Shift+p输入install选中Install Package回车就可以安装插件
+
+安装 sftp:
+
+
+
+## 打开远程目录
 
 View --> Side bar 打开左侧栏
 

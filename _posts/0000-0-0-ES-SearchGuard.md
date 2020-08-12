@@ -92,6 +92,8 @@ searchguard.allow_all_from_loopback: true
 
 一般使用Kibana管理权限，角色，用户
 
+hash.sh 会使用到 search-guard-6-6.1.1-20.1.jar, commons-cli-1.3.1.jar, bcprov-jdk15on-1.58.jar 
+
 ```sh
 ./tools/hash.sh -p 123456
 # 生成hash码
