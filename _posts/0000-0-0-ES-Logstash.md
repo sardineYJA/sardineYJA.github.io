@@ -103,7 +103,7 @@ output {
 		user => admin
 		password =>admin
 		ssl => false
-		sniffing => true
+		sniffing => true        # 表示可发现所有节点，不局限于 hosts
 	}
 }
 ```

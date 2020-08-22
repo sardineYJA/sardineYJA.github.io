@@ -55,9 +55,15 @@ elasticsearch/config/: truststore.jk, node-0-keystore.jks
 
 plugins/search-guard-6/sgconfig/: truststore.jks, kirk-keystore.jks
 
-证书一次生成，拷贝分发各个节点，之后一台执行即可，生成索引：
+证书一次生成，拷贝分发各个节点，之后一台执行即可，生成索引。
+
+> 执行 sgadmin 集群必须为 green
+
+> 注意：再次执行，再恢复原来设置，即添加的用户会被删除
+
+
 ```sh
-./sgadmin.sh -cn 集群名 -h IP地址 -p 9300 -cd ../sgconfig/ -ks kirk-keystore.jks -kspass 123456 -ts truststore.jks -tspass 123456 -nhnv
+./sgadmin.sh -cn 集群名 -h IP地址/localhost -p 9300 -cd ../sgconfig/ -ks kirk-keystore.jks -kspass 123456 -ts truststore.jks -tspass 123456 -nhnv
 
 # -nhnv 不验证主机名
 # -cd   指定存储目录

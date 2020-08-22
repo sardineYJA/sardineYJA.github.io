@@ -93,6 +93,40 @@ PUT _template/your-name_tpl
 - 更新频繁、聚合查询频繁的 keyword 类型的字段, 推荐设置 "eager_global_ordinals": true
 
 
+## 字段类型
+
+```sh
+PUT my_index
+{
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "username": {   ## 默认类型：username.keyword字段实现关键词搜索及数据聚合
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "name": { 
+          "type": "text",
+          "fields": {
+            "length": {  ## 为name定义的另外一个映射方式，其原始输入值还是name字段。
+              "type":     "token_count",     # 定义name.length字段，其类型为token_count
+              "analyzer": "standard"        
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+
+
 ## 修改 settings
 
 ```sh
@@ -144,6 +178,7 @@ POST _aliases
 - jieba_search   用于查询分词，分词粒度较粗
 - jieba_other    全角转半角、大写转小写、字符分词
 
+> es 启动加载动态词库后，如何词库不可用，实际上暂时不影响词库使用。如果将所有加载动态词库的节点重启一遍，则词库就会不可用了。
 
 
 ## 测试

@@ -321,14 +321,36 @@ transport.tcp.port: 19302
 ```
 
 解决办法：
-防火墙添加容器网桥的ip和端口
+防火墙添加容器网桥的ip和端口，将两个节点的TCP通信端口加上
+```sh
+iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 19301 -j ACCEPT      （TCP通信即可）
+iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 19302 -j ACCEPT      （TCP通信即可）
 ```
-iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 19201 -j ACCEPT
-iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 19301 -j ACCEPT
 
-iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 19202 -j ACCEPT
-iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 19302 -j ACCEPT
-```
+
+
+## 自定义链DOCKER
+
+查看root执行：iptables-save
+
+docker服务启动时定义的自定义链DOCKER由于某种原因被清掉，重启docker服务及可重新生成自定义链DOCKER
+
+> Error response from daemon: driver failed programming external connectivity on endpoint :  (iptables failed: iptables --wait -t filter -A DOCKER ! -i docker0 -o docker0 -p tcp -d 172.17.0.2 --dport  -j ACCEPT: iptables: No chain/target/match by that name.
+(exit status 1))
+Error: failed to start containers
+
+
+## docker 的 es ip
+
+bridge 桥接模式下 Docker Container 不具有一个公有 IP,即和宿主机的 eth0 不处于同一个网段。导致
+的结果是宿主机以外的世界不能直接和容器进行通信。（master 无法与容器节点通信，docker es 无法加入外部集群）
+
+network.host将设置network.bind_host和network.publish_host为相同的值。
+
+使用 network.host 参数满足不了需求，ES提供了更高级的配置：
+- network.bind_host: 0.0.0.0
+- network.publish_host: 10.17.76.175       表示发布地址，是唯一的，用来集群各节点的相互通信
+
 
 
 

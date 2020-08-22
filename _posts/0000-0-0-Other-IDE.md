@@ -72,6 +72,25 @@ File --> Open Folder --> 选择 test
 右键test --> SFTP/FTP --> Download Folder
 
 
+# notepad++
+
+## 将 tab 变成 2 个空格
+
+设置- > 首选项- > 语言- > Tab Settings- > Replace by space
+
+
+## CRLF 替换 LF
+
+每一行的结尾符号，Windows 下默认为 CRLF，而 Unix 下默认为 LF：
+
+1. Search -> Replace（或者 Ctrl+H）
+2. Find what: \r\n
+3. Replace with: \n
+4. 将 Search mode 选为 Extended
+5. Replace All
+
+
+
 # eclipse
 
 ## eclipse的Maven项目更换jdk版本

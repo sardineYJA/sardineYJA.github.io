@@ -156,7 +156,7 @@ ping test2       # ping 证明 test1 容器和 test2 容器建立了互联关系
 
 ```sh
 # https://hub.docker.com/ 默认
-docker login  [url]    # 登录，可加 仓库地址
+docker login  [url -u username -p password]    # 登录，可加 仓库地址 
 docker logout [url]    # 退出
 
 docker push ubuntu/ubuntu:18.04  # 将自己的镜像推送到 Docker Hub
@@ -171,18 +171,5 @@ docker push ubuntu/ubuntu:18.04  # 将自己的镜像推送到 Docker Hub
 - none 模式
 
 启动容器 -net 参数指定，默认桥接模式（即172.17.0.1网关）
-
-
-## docker 的 es ip
-
-
-bridge 桥接模式下 Docker Container 不具有一个公有 IP,即和宿主机的 eth0 不处于同一个网段。导致
-的结果是宿主机以外的世界不能直接和容器进行通信。（master 无法与容器节点通信，docker es 无法加入外部集群）
-
-network.host将设置network.bind_host和network.publish_host为相同的值。
-
-使用 network.host 参数满足不了需求，ES提供了更高级的配置：
-- network.bind_host: 0.0.0.0
-- network.publish_host: 10.17.76.175       表示发布地址，是唯一的，用来集群各节点的相互通信
 
 
