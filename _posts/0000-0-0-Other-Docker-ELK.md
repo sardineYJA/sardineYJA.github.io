@@ -353,6 +353,17 @@ network.host将设置network.bind_host和network.publish_host为相同的值。
 
 
 
+## 容器打包注意事项
+
+> [o.e.d.z.ZenDiscovery] failed to send join request to master
+reason [RemoteTransportException[[es-node-03][internal:discovery/zen/join]]; 
+nested: IllegalArgumentException can't add node {es-node-04}
+found existing node {es-node-03} with the same id but is a different node instance];
+
+对容器打包时，需要将 data/ 目录删除，否则启动在 ZenDiscovery 会有相同 id 导致不能正确形成集群。
+（也可以启动后进入容器内删除，再重启）
+
+
 
 
 

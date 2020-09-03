@@ -58,6 +58,8 @@ bin/logstash -f cofig/test.conf -r      # 修改配置文件无需关闭重启
 
 -l, --path.logs PATH     # 将内部日志写入到的目录
 
+--path.data PATH    # 多个logstash需要不同data目录，启动时指定则不用每次修改logstash.yml
+
 --log.level LEVEL   # 设置Logstash的日志级别，可能的值是：
 fatal：记录非常严重的错误消息，这通常会导致应用程序中止
 error：错误日志

@@ -79,7 +79,6 @@ PUT _template/your-name_tpl
 ```
 
 ## 字段
-
 ```sh
 "age": {
     "type": "integer",
@@ -91,7 +90,16 @@ PUT _template/your-name_tpl
 - 如不需要检索, 则可设置 "index": false
 - 如不需要排序、聚合分析功能, 则可设置 "doc_values": false / "fielddate": false
 - 更新频繁、聚合查询频繁的 keyword 类型的字段, 推荐设置 "eager_global_ordinals": true
+- 不需要评分 "norms": {"enabled": false}
 
+
+## keyword 中 ignore_above
+ignore_above 默认值是256，该参数的意思是，当字段文本的长度大于指定值时，不做倒排索引。
+即当字段文本的长度大于指定值时，聚合、全文搜索都查不到这条数据。
+
+ignore_above 最大值是 32766。
+
+> 注意 keyword 搜索中文大于 256 个
 
 ## 字段类型
 

@@ -1,4 +1,4 @@
----
+ ---
 layout: post
 title: "Logstash 常用解析插件"
 date: 2020-05-24
@@ -16,6 +16,28 @@ tag: ELK
 - 注意括号的使用，例如 grok 匹配字符串 "message" => {""}，匹配规则不要用大括号，正确 "message" => ""
 
 - 所有插件都支持 add_field, add_tag等参数选项（执行顺序为最后）
+
+
+## 其他语法
+
+```sh
+if [ftime] {...}     # 如果字段存在
+
+if ![ftime] {...}    # 如果字段不存在
+
+if ![json_str][key]  # json类型
+
+grok 匹配：
+match 自定义正则表达式 "(?<ftime_tmp>([\s\S]{19}))"    # (?<name>.*) 表示捕获并命名
+
+# 字段与tag的增删
+mutate {
+    add_field => {"%{key}" => "%{value}"}  # 获取某个字段的值:%{key}
+    remove_field => ["key"]
+    add_tag => ["test"]
+    remove_tag => ["test"]
+}
+```
 
 
 ## kv 解析
@@ -261,16 +283,39 @@ if "process_time" in [tags] {
 ```
 
 
-## 其他语法
+## http 转发
 
 ```sh
-if [ftime] {...}     # 如果字段存在
-
-if ![ftime] {...}    # 如果字段不存在
-
-if ![json_str][key]  # json类型
-
-match 自定义正则表达式 "(?<ftime_tmp>([\s\S]{19}))"    # (?<name>.*) 表示捕获并命名
+## 发送
+output {
+    http {
+        http_method => "post"
+        url => "http://xxx.xxx.xxx.xxx:12388"
+        content_type => "json_batch"
+        pool_max => 3000
+        pool_max_per_route => 300
+        automatic_retries => 5
+        connect_timeout => 30
+        socket_timemout => 100
+    }
+}
 ```
+
+```sh
+## 接收
+input {
+    http {
+        port => 12388
+        ssl => false
+    }
+}
+```
+
+
+## http 使用问题
+
+> 起初出现很多访问了不了 http outpu 地址的错误，验证发现地址端口是可通的。后增大参数后，出现出现了很多 429（表示Too many requests）。
+后发现可能是使用 logstash 的 pipeline 启动 conf 文件，将conf文件单独启动为 logstash 进程，http 就能正常转发。（原因待查）
+
 
 
