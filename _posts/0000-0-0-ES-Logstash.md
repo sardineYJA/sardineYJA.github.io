@@ -46,17 +46,13 @@ config.support_escapes: true
 ## 启动
 
 ```sh
-bin/logstash -f cofig/test.conf         # 启动
+bin/logstash -f config/test.conf &       # 后台启动
 
-nohup bin/logstash -f cofig/test.conf & # 后台启动
+bin/logstash -f config/test.conf -t      # 测试配置文件
 
-bin/logstash -f cofig/test.conf -t      # 测试配置文件
+bin/logstash -f config/test.conf -r      # 修改配置文件无需关闭重启
 
-bin/logstash -f cofig/test.conf -r      # 修改配置文件无需关闭重启
-
---path.data PATH         # 需要存储数据时使用此目录，默认值是Logstash主目录下的data目录
-
--l, --path.logs PATH     # 将内部日志写入到的目录
+--path.logs PATH    # 将内部日志写入到的目录
 
 --path.data PATH    # 多个logstash需要不同data目录，启动时指定则不用每次修改logstash.yml
 
@@ -66,8 +62,7 @@ error：错误日志
 warn：警告日志
 info：详细日志信息（这是默认信息）
 debug：调试日志信息（针对开发人员）
-trace ：记录除调试信息之外的细粒度消息
-
+trace：记录除调试信息之外的细粒度消息
 ```
 
 ```sh

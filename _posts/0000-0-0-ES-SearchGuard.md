@@ -140,6 +140,57 @@ SearchGuardLicense$Type.class
 ```
 
 
+## searchguard 用户接口
+```sh
+GET /_searchguard/api/roles                 # 获取全部用户的权限信息
+
+GET /_searchguard/api/roles/{rolename}      # 获取指定用户
+
+DELETE /_searchguard/api/roles/{rolename}   # 删除指定用户
+
+# 覆盖或创建用户权限，如果只是想增加某一条，需要先获取原先的dsl并追加后面，否则直接put则只剩这条
+PUT _searchguard/api/roles/{rolename}
+{
+  "cluster": [],
+  "indices": {
+    "log-sample*": {                    # 开启用户对log-sample*的查询
+      "*": [
+        "SEARCH",
+        "indices:admin/mappings/get",
+        "indices:admin/settings/update"
+      ],
+      "_fls_": [],
+      "_dls_": """{"bool":{"must_not":[],"must":[]}}"""
+    }
+  }
+}
+```
+
+```sh
+GET /_searchguard/api/internalusers/         # 获取用户的角色和hash后的密码
+
+GET /_searchguard/api/rolesmapping/          # 用户和角色映射
+
+GET /_searchguard/api/actiongroups/          # action 
+```
+
+
+## Authentication API
+
+```sh
+GET /_searchguard/api/sg_config
+```
+
+前提 elasticsearch.yml 需要开启：
+```sh
+searchguard.unsupported.restapi.allow_sgconfig_modification: true 
+```
+
+
+
+
+
+
 # 其他
 
 ## 权限管理等级
@@ -151,17 +202,6 @@ Permissions on field level (Enterprise)
 
 Since document types are deprecated in Elasticsearch 6, document type level permissions will be removed in Search Guard 7.
 
-
-## API
-
-```sh
-# GET PUT DELETE
-GET /_searchguard/api/internalusers/
-GET /_searchguard/api/internalusers/{username}
-GET /_searchguard/api/roles/{rolename}
-GET /_searchguard/api/rolesmapping/{rolename}
-GET /_searchguard/api/actiongroups/{actiongroup}
-```
 
 
 ## User cache settings

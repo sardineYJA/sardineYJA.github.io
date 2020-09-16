@@ -60,7 +60,8 @@ PUT _template/your-name_tpl
         },
         "content": {
           "type": "text",
-          "analyzer": "ik_max_word"
+          "analyzer": "ik_max_word",     # 创建索引用 ik_max_word
+          "search_analyzer": "ik_smart"  # 搜索索引用 ik_smart
         },
         "username": {   ## 默认类型：username.keyword字段实现关键词搜索及数据聚合
           "type": "text",

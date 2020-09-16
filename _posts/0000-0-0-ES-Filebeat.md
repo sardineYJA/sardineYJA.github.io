@@ -274,6 +274,20 @@ output.logstash:
 
 
 
+## 多行测试
+
+```sh
+multiline.pattern:  ^\[       # 多行匹配模式，后接正则表达式，默认无
+multiline.negate: true       # 定义上边pattern匹配到的行是否用于多行合并，也就是定义是不是作为日志的一部分
+multiline.match: after        # 定义多行内容被添加到模式匹配行之后还是之前，默认无，可以被设置为after或者before
+```
+
+正常而已，开头匹配，其他行没有匹配得到，则接到后面，达到多行日志收集。
+
+此时，将 negate 设置为 false。则表示匹配到的日志，接入到未匹配的日志后面。
+
+
+
 # 配置
 
 ```sh

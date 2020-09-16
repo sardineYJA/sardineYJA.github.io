@@ -112,3 +112,12 @@ while True:        # 通讯循环
 tcpc.close()       # 关闭客户套接字
 ```
 
+
+
+## python 代码编译
+```sh
+cd ./python_project/
+python3.6 -m compileall -b .
+find . -name "*.py" | xargs rm -rf
+find . -name "__pycache__" | xargs rm -rf
+```
