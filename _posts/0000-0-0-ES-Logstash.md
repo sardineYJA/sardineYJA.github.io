@@ -31,13 +31,20 @@ node.name: node124
 path.logs: /log/logstash
 
 ## 增大接收数量
-pipeline.batch.size: 8000
-pipeline.workers: 12
-pipeline.output.workers: 6
-pipeline.batch.delay: 6          # 毫秒
+pipeline.batch.size: 8000        # 每次发送的事件数
+pipeline.workers: 12             # pipeline线程数
+pipeline.output.workers: 6       # 实际output时的线程数
+pipeline.batch.delay: 6          # 发送延时 毫秒
 
 # \n，\t特殊符号才能识别
-config.support_escapes: true        
+config.support_escapes: true       
+
+## ES 监控
+http.host: "XXX.XXX.XXX.XXX"
+xpack.monitoring.enabled: true  
+xpack.monitoring.elasticsearch.url: "http://XXX.XXX.XXX.XXX:9200"
+xpack.monitoring.elasticsearch.username: "admin" 
+xpack.monitoring.elasticsearch.password: "admin"
 ```
 
 

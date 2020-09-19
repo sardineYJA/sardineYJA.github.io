@@ -192,5 +192,36 @@ server {
 它使用安全套接字层(SSL)进行信息交换，简单来说它是HTTP的安全版。
 
 
+## 一台 nginx 实现多层 nginx 代理测试
 
+nginx 代理获取 client 真实 IP
 
+```sh
+location /test_proxy/ {
+    proxy_pass http://test.com/test_proxy2/;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-NginX-Proxy true;
+    proxy_pass_request_headers on;
+    proxy_pass_header remote_user;
+    proxy_redirect off;
+}
+
+location /test_proxy2/ {
+    proxy_pass http://xx.xx.xx.xx:8888/;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-NginX-Proxy true;
+    proxy_pass_request_headers on;
+    proxy_pass_header remote_user;
+    proxy_redirect off;
+}
+```
+
+client 访问 http://test.com/test_proxy/ (第一次nginx代理) 
+-> 跳转到 http://test.com/test_proxy2/ (实现第二次nginx代理)
+-> 访问到程序 http://xx.xx.xx.xx:8888/
+
+此时到程序是 $proxy_add_x_forwarded_for 是有多个 ip ，第一个才是 client 的真实 ip
