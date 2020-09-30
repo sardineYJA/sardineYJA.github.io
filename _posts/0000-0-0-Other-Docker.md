@@ -34,6 +34,14 @@ runlike -p container_name
 docker logs es                # 查看日志
 docker logs -f --tail=200 es  # 实时查看日志
 # -f : 跟踪日志输出
+
+# 重新导入相同名称和 tag 的镜像，原镜像 tag 会变成 none:
+# 一次性删掉所有 none 的镜像
+docker images|grep none|awk '{print $3}'|xargs docker rmi
+
+# 获取容器 ip
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name_or_id
+
 ```
 
 

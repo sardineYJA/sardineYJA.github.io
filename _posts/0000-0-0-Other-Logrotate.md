@@ -55,23 +55,23 @@ Linux系统默认安装logrotate工具，它默认的配置文件在：
 
 ```sh
 /var/log/mysql.log /var/log/mysql/mysql.log /var/log/mysql/mysql-slow.log {
-        daily
-        rotate 7
-        missingok
-        create 640 mysql adm
-        compress
-        sharedscripts
-        postrotate
-                test -x /usr/bin/mysqladmin || exit 0
-                MYADMIN="/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf"
-                if [ -z "`$MYADMIN ping 2>/dev/null`" ]; then
-                  if killall -q -s0 -umysql mysqld; then
-                    exit 1
-                  fi
-                else
-                  $MYADMIN flush-logs
-                fi
-        endscript
+    daily
+    rotate 7
+    missingok
+    create 640 mysql adm
+    compress
+    sharedscripts
+    postrotate
+        test -x /usr/bin/mysqladmin || exit 0
+        MYADMIN="/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf"
+        if [ -z "`$MYADMIN ping 2>/dev/null`" ]; then
+          if killall -q -s0 -umysql mysqld; then
+            exit 1
+          fi
+        else
+          $MYADMIN flush-logs
+        fi
+    endscript
 }
 ```
 
@@ -109,3 +109,25 @@ logrotate which user/group should be used for rotation.
 默认路径：/var/log/mysql/mysql-slow.log，filebeat 还需要 mysql/ 目录的 o+rx 权限
 
 
+
+# Nginx 日志
+
+/etc/logrotate.d创建一个nginx的配置文件：
+```sh
+/usr/local/nginx/logs/*.log {
+    daily                   # 每天进行滚动
+    rotate 7                # 保留7次滚动的日志
+    missingok
+    notifempty              # 日志文件为空不进行滚动，如果想测试还是不要加这个
+    create 640 root root   
+    sharedscripts
+    postrotate
+        if [ -f /run/nginx.pid ]; then
+            kill -USR1 `cat /run/nginx.pid` # 切割日志完成后通知nginx重新打开日志文件，不终止nginx
+        fi                                  # 如果没有此脚本，则切割后，nginx日志还是写回以前那个
+    endscript
+}
+```
+> 注意 配置文件必须为linux文件格式即回车与window不同。
+
+测试：/usr/sbin/logrotate -f /etc/logrotate.d/nginx

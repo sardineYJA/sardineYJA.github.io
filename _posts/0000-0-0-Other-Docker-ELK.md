@@ -329,6 +329,7 @@ iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 19302 -j ACCEPT      （TCP通
 
 
 
+
 ## 自定义链DOCKER
 
 查看root执行：iptables-save
@@ -363,6 +364,20 @@ found existing node {es-node-03} with the same id but is a different node instan
 对容器打包时，需要将 data/ 目录删除，否则启动在 ZenDiscovery 会有相同 id 导致不能正确形成集群。
 （也可以启动后进入容器内删除，再重启）
 
+
+
+
+
+
+## docker searchguard admin
+
+> [WARN ][c.f.s.c.ConfigurationLoader] No data for config while retrieving configuration for [config, roles, rolesmapping, internalusers, actiongroups]  (index=searchguard)
+> [WARN ][c.f.s.c.ConfigurationLoader] No data for roles while retrieving configuration for [config, roles, rolesmapping, internalusers, actiongroups]  (index=searchguard)
+> [WARN ][c.f.s.c.ConfigurationLoader] No data for rolesmapping while retrieving configuration for [config, roles, rolesmapping, internalusers, actiongroups]  (index=searchguard)
+
+需要执行 sgadmin，初始化 searchguard。
+
+之前全部 docker ES 节点容器删掉，就算重新挂载 data 节点目录，发现账号密码全部没有，需要重新执行 sgadmin。
 
 
 

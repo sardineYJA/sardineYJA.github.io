@@ -81,6 +81,33 @@ do
 done
 ```
 
+## 用变量值做新变量名
+```sh
+LG_2020_NAME="yang"
+YEAR="2020"
+server_name=`eval echo '$'LG_"${YEAR}"_NAME`  # ==> yang
+```
+
+## 参数
+```sh
+echo "$@"          # 所有参数
+
+echo "${@:-1}"     # 最后一个参数
+ 
+echo "${@:2}"      # 除了第一个参数的其他所有参数
+```
+
+## 删除文件行
+```sh
+sed -i '1d' ./filename   # 删除文件第一行
+
+sed -i '$d' ./filename   # 删除文件最后一行
+```
+
+
+
+
+
 
 # 其他
 
@@ -130,6 +157,20 @@ iptables -A INPUT -s 172.17.0.0/16 -p tcp --dport 9200 -j ACCEPT
 
 # root 执行
 iptables-save      # 查看防火墙
+
+# 9200 只转发 10.0.0.0/8 的数据 ，否则直接丢掉
+-A FORWARD ! -s 10.0.0.0/8 -p tcp -m tcp --dport 9200 -j DROP
+
+```
+
+## 清空防火墙
+```sh
+iptables -L     # 看到如下信息
+Chain INPUT (policy DROP 0 packets, 0 bytes)  （注意 是DROP）
+iptables -F     # 就肯定立马断开连接
+# 清空防火墙
+iptables -P INPUT ACCEPT  # 把默认策略改成 ACCEPT
+iptables -F               # 再清空，如果不改掉，就清空防火墙，那么你服务器就打不开了，需要重新配置网络才行。
 ```
 
 ## 介绍

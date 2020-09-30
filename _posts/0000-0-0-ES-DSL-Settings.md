@@ -75,7 +75,9 @@ PUT _template/your-name_tpl
       }
     }
   }, 
-  "aliases": {}                # 别名
+  "aliases": {    # 别名
+    "test_write": {}
+  }                
 }
 ```
 
