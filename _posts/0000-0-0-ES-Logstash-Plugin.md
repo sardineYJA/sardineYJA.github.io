@@ -307,15 +307,53 @@ input {
     http {
         port => 12388
         ssl => false
+        tags => ["http_12388"]
     }
 }
+
+## 注意 http 接收端接收后，不再是json格式，需要转换成发送前的 json 格式
+filter {
+    if "http_12388" in [tags] {
+        json {
+            source => "message"
+            skip_on_invalid_json => true
+        }
+        mutate {
+            remove_field => ["headers"]
+        }
+    }
+}
+
 ```
-
-
-## http 使用问题
 
 > 起初出现很多访问了不了 http outpu 地址的错误，验证发现地址端口是可通的。后增大参数后，出现出现了很多 429（表示Too many requests）。
 后发现可能是使用 logstash 的 pipeline 启动 conf 文件，将conf文件单独启动为 logstash 进程，http 就能正常转发。（原因待查）
 
+原因可能是 logstash 之间转发使用 http 方式，如果数量达到每秒几百条就会出现上面情况，而且容易丢失数据，推荐换 TCP 方式。
 
+
+
+## tcp 方式
+
+```sh
+output {
+    tcp {
+        host  => "192.168.17.145"
+        port  => 8888
+        codec => json_lines
+    }
+}
+```
+
+```sh
+input {
+    tcp {
+        port  => 8888
+        tags => ["tcp_8888"]
+        codec => json_lines
+    }
+}
+```
+
+需要注意的是，output 默认的 codec 选项是 json，而 input 默认 codec 选项却是 plain，所以不指定各自的 codec ，对接肯定是失败的，两者需要指定相同 codec。
 
