@@ -55,6 +55,46 @@ GET test-index/_search
 }
 ```
 
+## 统计某个字段各个值的数量
+
+```sh
+GET index_name/_search
+{
+  "size": 0,
+  "query": {
+    "range": {
+      "@timestamp": {
+        "gte": "now-1d",
+        "lte": "now"
+      }
+    }
+  },
+  "aggs": {
+    "all_host": {
+      "terms": {
+        "field": "fields.host",
+        "size": 100
+      }
+    },
+
+    "stats_all_bucket": {  ####### 统计一下分桶的数量
+      "stats_bucket": {
+        "buckets_path": "all_host>_count"
+      }
+    }
+  }
+}
+```
+
+```sh
+## 结果
+"doc_count_error_upper_bound": 0     # 表示被遗漏的分桶中可能包含的文档数的最大数
+"sum_other_doc_count": 0             # 表示不在100个桶里面的文档，可以增大 size
+```
+
+> fields.host 的值为数组时 ["ip1", "ip2"] ,聚合时会对每个值都进行聚合。 
+
+
 ## 分桶 Bucket 
 
 ```json

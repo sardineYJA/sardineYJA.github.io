@@ -295,7 +295,7 @@ filebeat.prospectors:    # 每一个prospectors，起始于一个破折号"-"
 - type: log              # 默认log，从日志文件读取每一行。stdin，从标准输入读取
   enabled: true          # 每个prospectors的开关，默认true
   paths:                 # 日志文件路径列表，可用通配符，不递归
-    -/var/log/*.log
+    - /var/log/*.log
   tags: ["Nginx"]        # 标记tag，可用于分组
   fields:                # 添加附件字段，可以使values，arrays，dictionaries
     key: value

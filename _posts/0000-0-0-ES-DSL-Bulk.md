@@ -54,6 +54,13 @@ id 已存在情况下，index 是将第二篇文章覆盖第一篇，create 是�
 POST /test/doc/_bulk
 { "index" : {"_id" : "1", "retry_on_conflict": 3}}
 { "field1" : "value1" }
+
+# 最简单插入多条数据
+POST /index_name/doc/_bulk
+{"index": {}}
+{"field" : "value", "field" : "value"}
+{"index": {}}
+{"field" : "value", "field" : "value"}
 ```
 
 
