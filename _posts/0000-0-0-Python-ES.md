@@ -22,7 +22,7 @@ dsl = '{"size":100, "query":{"match_all":{}}}'
 data = json.dumps(dsl)
 req = urllib.request.Request(method='GET', url=url, data=bytes(data,encoding='utf-8'), headers=headers)
 res = urllib.request.urlopen(req, timeout=10)    # 超时单位s
-result = json.loads(res.read.decode('utf-8'))
+result = json.loads(res.read().decode('utf-8'))
 ```
 
 

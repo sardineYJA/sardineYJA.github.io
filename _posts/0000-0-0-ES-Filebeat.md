@@ -208,6 +208,16 @@ output.go:92: ERR Failed to publish events: write tcp filebeat的IP:41144  ->  l
 > 注意：修改all.yml是不会重加载的，需要重启
 
 
+## 释放文件句柄
+
+```sh
+lsof | grep filebeat
+
+close_older: 30m           # 文件在某个时间段内没有发生过更新，则关闭监控的文件handle，默认1小时
+force_close_files: true    # 文件名称有变化时，包括改名和删除，会自动关闭一个文件
+```
+
+
 ## 增加输出字段
 
 配置文件中增加字段，并通过环境变量配置ip地址，在es索引中增加“host_ip"字段，值为客户端的真实IP。（默认输出host字段，但却是服务器的hostname）

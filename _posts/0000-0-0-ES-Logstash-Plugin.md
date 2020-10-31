@@ -221,6 +221,26 @@ ruby {
 }
 ```
 
+## logstash 根据 id 生成 hash
+
+对 id 字段进行哈希，用于大数据索引切分多个索引又避免含重复数据
+
+```sh
+filter {
+  ruby {
+    code => "
+      id = event.get('id')
+      ha = id.hash
+      hash_num = ha % 20
+      if hash_num < 0:
+        hash_num = hash_num * (-1)
+      end 
+      event.set('hash', hash_num)
+    " 
+  }
+}
+```
+
 
 ## 时间处理模块案例
 

@@ -107,6 +107,7 @@ bin/hadoop fs 具体命令 或者 bin/hdfs dfs 具体命令
 -rmdir
 -du      统计文件夹的大小信息
 -setrep  设置HDFS中文件副本数量
+-text    读取文件 lzo 文件
 ```
 
 ## HDFS写入数据
