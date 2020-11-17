@@ -95,6 +95,41 @@ GET index_name/_search
 > fields.host 的值为数组时 ["ip1", "ip2"] ,聚合时会对每个值都进行聚合。 
 
 
+
+## 多重聚合并筛选
+
+```sh
+GET index_name/_search
+{
+  "size": 0,
+  "aggs": {
+    "per_month": {
+      "date_histogram": {          # 先对时间每月统计聚合
+        "field": "@timestamp",
+        "interval": "month"
+      },
+      "aggs": {
+        "per_month_offset": {      # 再对每月中的所有offset统计
+          "sum": {
+            "field": "offset"
+          }
+        },
+        "offset_bucket_filter": {
+          "bucket_selector": {
+            "buckets_path": {
+              "total_offset": "per_month_offset"
+            },
+            "script": "params.total_offset > 10000"   # 对其结果进行筛选
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+
+
 ## 分桶 Bucket 
 
 ```json
