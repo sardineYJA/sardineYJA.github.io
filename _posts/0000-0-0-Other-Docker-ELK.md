@@ -62,6 +62,12 @@ docker exec -it es /bin/bash
 
 # 容器默认用户：user:elasticsearch, group:root
 su elasticsearch
+
+# 将 docker 容器日志 UTC 时间修改为 UTC+8 时间
+docker exec --user root /bin/bash -c "cd / && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime"
+# 或者构建镜像时cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+mv localtime localtime_bak
+cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 ```
 
 

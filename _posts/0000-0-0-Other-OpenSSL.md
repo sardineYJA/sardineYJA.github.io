@@ -7,6 +7,38 @@ tag: Other
 
 ---
 
+## 简介
+
+SSL: 安全套接层(Secure Sockets Layer)
+
+对称加密：用一个密码加密文件，解密也用同样的密码
+
+非对称加密：加密用的一个密码，而解密用另外一组密码
+
+公钥和私钥都可以用来加密数据，相反用另一个解开：公钥加密数据，私钥解密称为加密解密；私钥加密数据，公钥解密一般被称为签名和验证签名。
+
+## 认证流程
+
+单向认证：只需要验证SSL服务器身份，不需要验证SSL客户端身份。
+
+双向认证：要求服务器和客户端双方都有证书，客户端需要校验服务端，服务端也需要校验客户端。
+
+
+## CA
+
+CA：Certificate Authority，证书授权中心。
+
+CA，公钥解密（验签），私钥加密（签名，生成签名文件crt）。
+
+CA 证书，将要发送公钥文件的发送者的公钥和文件信息进行私钥加密，即签名，生成签名证书。
+
+
+
+
+
+
+
+
 
 ## genrsa 生成私钥
 
@@ -201,10 +233,6 @@ openssl req -newkey rsa:2048 -days 1000 -nodes -keyout client.key -subj /CN=clie
 openssl x509 -req -in client.csr -days 1000 -CA ca.crt -CAkey ca.key -set_serial 01 > client.crt
 ```
 
-server.t.com 服务器域名，配置在 logstash 的 input 字段中
-
-client.t.com 客户端域名，配置在 filebeat.yml 文件中
-
 
 ## logstash 的 input config
 ```sh
@@ -252,9 +280,10 @@ output.logstash:
 - ssl_verify_mode: Specifies whether the Logstash server verifies the client certificate against the CA. You need to specify either peer or force_peer to make the server ask for the certificate and validate it. If you specify force_peer, and Filebeat doesn’t provide a certificate, the Logstash connection will be closed.
 
 
-修改 /etc/hosts，将域名与对应的 ip 加上，同时 filebeat 的 output 地址只能为域名形式。
-
 测试：`curl -v --cacert ca.crt https://server.t.com:5045`
+
+
+修改 /etc/hosts，将域名与对应的 ip 加上，同时 filebeat 的 output 地址只能为域名形式。发现只需将 logstash 的域名加入到 client host即可，因为client 需要解析 output 的域名，同时将 client 的证书复制到另一台 client 使用，也可以使用，所以 server 端并没有对 client 的 ip 进行限制。
 
 
 ## 错误案例

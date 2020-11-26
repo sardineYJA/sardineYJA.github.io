@@ -68,6 +68,17 @@ json {
 }
 ```
 
+注意：
+
+如果 `message => {"test": "1", "": "1"}` 此时数据符合 json 格式，但是却出现字段名为空的情况，此时并不会出现 `_jsonparsefailure` 的 tag。出现了下面数组越界的错误，
+甚至会导致 logstash 进入不可用状态，虽然进程活着。 
+
+> Exception in thread "Ruby-0-Thread-14@[main]>worker6: /Users/jake/workspace/logstash/logstash-core/lib/logstash/pipeline.rb:392" java.lang.ArrayIndexOutOfBoundsException: -1
+at java.util.ArrayList.elementData(ArrayList.java:418)
+at java.util.ArrayList.remove(ArrayList.java:495)
+
+
+
 
 
 ## grok 字符串匹配

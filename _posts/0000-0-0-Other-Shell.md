@@ -24,6 +24,9 @@ sed -i "s/要被取代的字串/${VALUE}/g" your.txt
 # 先将 / 替换成 \/ 的字符串，再去替换文件
 VALUE=`echo hh/hh | sed 's/\//\\\\\//g'`    # 这里 sed 使用的是单引号
 sed -i "s/要被取代的字串/${VALUE}/g" your.txt
+
+# 替换特定某一行
+sed "10c ${new_string}" your.txt    # 替换第10行内容
 ```
 
 ## 删除字符
