@@ -30,11 +30,6 @@ docker top container_name
 pip3 install runlike
 runlike -p container_name
 
-# 查看日志
-docker logs es                # 查看日志
-docker logs -f --tail=200 es  # 实时查看日志
-# -f : 跟踪日志输出
-
 # 重新导入相同名称和 tag 的镜像，原镜像 tag 会变成 none:
 # 一次性删掉所有 none 的镜像
 docker images|grep none|awk '{print $3}'|xargs docker rmi
@@ -42,6 +37,29 @@ docker images|grep none|awk '{print $3}'|xargs docker rmi
 # 获取容器 ip
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name_or_id
 
+```
+
+
+
+## 查看日志
+
+```sh
+# 查看日志
+docker logs es                # 查看日志
+docker logs -f --tail=200 es  # 实时查看日志
+# -f : 跟踪日志输出
+
+# 看指定时间后的日志，只显示最后100行
+docker logs -f -t --since="2018-02-08" --tail=100 CONTAINER_ID
+
+# 查看最近30分钟的日志
+docker logs --since 30m CONTAINER_ID
+
+# 查看某时间之后的日志
+docker logs -t --since="2018-02-08T13:23:37" CONTAINER_ID
+
+# 查看某时间段日志
+docker logs -t --since="2018-02-08T13:23:37" --until "2018-02-09T12:23:37" CONTAINER_ID
 ```
 
 

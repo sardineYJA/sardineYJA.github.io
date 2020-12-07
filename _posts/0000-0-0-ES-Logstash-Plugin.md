@@ -388,3 +388,30 @@ input {
 
 需要注意的是，output 默认的 codec 选项是 json，而 input 默认 codec 选项却是 plain，所以不指定各自的 codec ，对接肯定是失败的，两者需要指定相同 codec。
 
+
+
+# 插件
+
+github 地址：https://github.com/logstash-plugins
+
+下载地址：https://rubygems.org/gems/logstash-input-beats/versions/6.0.12-java
+
+
+```sh
+## 常用命令
+./logstash-plugin uninstall logstash-input-beats
+
+./logstash-plugin install logstash-input-beats-6.0.12-java.gem  
+```
+
+安装时出现下面错误：
+> Error Bundler::InstallError, retrying 1/10
+An error occurred while installing xxx (0.0.12), and Bundler cannot continue.
+
+```sh
+# 新建 logstash-input-beats-6.0.12-java 文件夹
+# 将 gem 文件放入，并同时创建 dependencies 文件夹，打包 zip 文件
+./logstash-plugin install file:///home/test/logstash-input-beats-6.0.12-java.zip
+```
+
+6.1.1 logstash 默认是 5 版本的 beats，这里重新安装 6 版本的原因是，之前遇到只有 input 和 output 插件的配置文件，但是运行20 分钟后都会内存溢出而无法工作，虽然进程依在（重新安装一个新 6.1.1 的 logstash 依然无法解决）。推测原因是 filebeat 过多都是比 logstash 高版本的。
