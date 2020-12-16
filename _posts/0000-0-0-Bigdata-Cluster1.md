@@ -111,7 +111,7 @@ xfs_growfs /dev/mapper/centos-root
 ## 拟网络编辑器
 
 VMnet8 (即NAT模式)，编辑->虚拟网络编辑器中，一般主机，VMnet1，VMnet8它们ip前两位一样,没必要则无需修改.为了方便，此版本作为备份。
-
+     
 
 # 服务器
 

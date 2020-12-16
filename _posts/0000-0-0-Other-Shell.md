@@ -122,6 +122,11 @@ set number            # 显示行号
 set backupcopy=yes    # 设置备份时的行为为覆盖，可使vi修改文件后，inode不变
 ```
 
+## vim 取消自动缩进
+
+拷贝前输入:set paste
+
+
 ## top
 - PID      进程id
 - USER     进程所有者的用户名
@@ -187,7 +192,23 @@ Filter 表：
 
 
 
+## 重复防火墙
 
+增加一条防火墙，自身并不会进行重复检测，可以在增加前进行检查：
+```sh
+#!/bin/bash
+add_iptables(){
+    check_rule=$(echo $@ | sed -e 's/-A/-C/g')
+    `$check_rule` ;check=$?
+    if [ "$check" -eq 0 ]; then
+        :;
+    else
+        echo "$@"
+        `$@`
+    fi
+}
+add_iptables "iptables -A ..."
+```
 
 
 
