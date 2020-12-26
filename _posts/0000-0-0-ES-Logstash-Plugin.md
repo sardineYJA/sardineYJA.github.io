@@ -27,6 +27,16 @@ if ![ftime] {...}    # 如果字段不存在
 
 if ![json_str][key]  # json类型
 
+if [loglevel] == "ERROR" # 判断某个字段的值
+
+
+# 某个字段的字段
+filter {
+    grok { 
+        match => { "fields[host]" => "xxx" }
+    }
+}
+
 grok 匹配：
 match 自定义正则表达式 "(?<ftime_tmp>([\s\S]{19}))"    # (?<name>.*) 表示捕获并命名
 
@@ -38,6 +48,27 @@ mutate {
     remove_tag => ["test"]
 }
 ```
+
+
+```sh
+# logstash 接收 filebeat 的元信息 
+
+# 下面可以接收 filebeat 的 IP 地址
+filter {
+    mutate {
+        add_field => { "remote_ip" => "%{[@metadata][ip_address]}" }
+        add_field => { "metadata" => "%{[@metadata]}" }
+    }
+}
+# 实际上字段值 remote_ip: xxxx
+
+
+## 当然也可以 filebeat.yml 中增加 ip 字段
+fields:
+    remote_ip: x.x.x.x
+# 实际上字段值 fields:{remote_ip:xxxx} ,与上面不同之处在于多了 fields
+```
+
 
 
 ## kv 解析
@@ -384,7 +415,7 @@ input {
         codec => json_lines
     }
 }
-```
+```账密
 
 需要注意的是，output 默认的 codec 选项是 json，而 input 默认 codec 选项却是 plain，所以不指定各自的 codec ，对接肯定是失败的，两者需要指定相同 codec。
 

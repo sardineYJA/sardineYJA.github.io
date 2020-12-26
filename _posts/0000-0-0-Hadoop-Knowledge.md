@@ -103,7 +103,7 @@ bin/hadoop fs 具体命令 或者 bin/hdfs dfs 具体命令
 -cat /2.txt
 -cp /test/2.txt /app/3.txt    HDFS的复制
 -mv /test/2.txt /app/         HDFS的移动
--rm
+-rm -r
 -rmdir
 -du      统计文件夹的大小信息
 -setrep  设置HDFS中文件副本数量

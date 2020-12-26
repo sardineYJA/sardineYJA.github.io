@@ -81,6 +81,17 @@ PUT _template/your-name_tpl
 }
 ```
 
+## template 优先级测试
+
+```sh
+1. 当 order 一样例如 0， index_patterns 为 "*" 和 "test-*"，发现如果字段名一样 logname 优先使用个 "*" 模板的类型，同时将两者之间不同字段名的合并形成 mapping。
+
+2. 当 order 不一样，数值大的模板会覆盖小的，注意的是如果第一个模板的 logname 为 keyword 类型，第二个为 text 类型可以正常覆盖，但是第二个模板 logname 为 {"properties":{"name":{..}}}, 类似一个 object 时，就会出现覆盖失败的情况。
+```
+
+
+
+
 ## 字段
 ```sh
 "age": {

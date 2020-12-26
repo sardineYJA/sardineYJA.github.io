@@ -10,9 +10,9 @@ tag: Java Web
 # SpringBoot
 
 
-项目下载：https://start.spring.io/
+离线下载：`https://start.spring.io/`，在选择依赖时，至少需要添加 Spring Web 才能正常启动。
 
-或新建项目 Spring Initializr，选择 Spring Web
+新建项目 Spring Initializr，选择 Spring Web。
 
 ## 部署运行
 

@@ -55,7 +55,7 @@ PATH加上：%MAVEN_HOME%\bin
 5. 修改settings.xml，复制到`~/.m2/`目录下
 
 ```xml
-修改<localRepository>D\:maven-repository</localRepository>
+修改<localRepository>D:\maven-repository</localRepository>
 ```
 
 6. 如觉得中央仓库下载jar很慢，可换阿里云，在settings.xml的mirrors添加子节点：

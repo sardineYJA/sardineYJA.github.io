@@ -300,6 +300,8 @@ multiline.match: after        # 定义多行内容被添加到模式匹配行之
 
 # 配置
 
+> 注意 filebeat.prospectors ，在部分 6 或 7 以后的高版本中，应该写成 filebeat.inputs
+
 ```sh
 filebeat.prospectors:    # 每一个prospectors，起始于一个破折号"-"
 - type: log              # 默认log，从日志文件读取每一行。stdin，从标准输入读取
