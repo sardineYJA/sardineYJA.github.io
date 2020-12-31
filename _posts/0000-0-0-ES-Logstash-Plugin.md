@@ -220,7 +220,7 @@ filter {
         }
     }
     date {
-        match => ["localtime", "yyyy-MM-dd'T'HH:mm:ssZZ"]
+        match => ["localtime", "yyyy-MM-dd'T'HH:mm:ssZZ"]   # 如果有三个毫秒: "yyyy-MM-dd'T'HH:mm:ss.SSSZZ"
         target => "ftime"
     }
 }
@@ -262,6 +262,53 @@ ruby {
     remove_field => ["temp_time"]
 }
 ```
+
+
+## ruby 快速解析
+```sh
+filter {
+    ruby {
+        code => "
+            msg = event.get('message')
+
+            Time = msg.scan(/# Time: (.*?)\n/)
+            if Time.length > 0:
+                event.set('Time', Time[0][0])
+            end
+
+            SQL = msg.scan(/# Time: .*\n(.*?);/)
+            if SQL.length > 0:
+                event.set('SQL', SQL[0][0])
+            end
+        "
+    }
+}
+
+# 1. scan 扫描前后 / 字符。
+# 2. 括号() 括起来的才是需要匹配的结果，如 SQL 前面的 .* 并不会讲匹配结果赋值 SQL，而(.*?)才会赋值。
+```
+
+## ruby 时间戳
+
+```sh
+filter {
+    ruby {
+        code => "
+            event.set('accept_time', Time.now)                   # 2020-12-30T09:28:16.603Z  (UTC时间)
+            event.set('accept_time', Time.now.to_i)              # 1609320496                (2020-12-30 17:28:16)
+            event.set('accept_time', Time.now.to_f)              # 1609320496.6035929
+            event.set('accept_time', (Time.now.to_f*1000).to_i)  # 1609320496603
+        "
+    }
+}
+```
+
+如果想获取 event 事件写入 ES 的时间，应该用 Time.now。如果用 @timestamp 会差一部分时间，因为 @timestamp 是 filebeat 发送的时间，并不是 logstash 接收 event 的时间。
+
+
+
+
+
 
 ## logstash 根据 id 生成 hash
 

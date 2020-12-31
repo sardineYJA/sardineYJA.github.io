@@ -85,13 +85,17 @@ mvn install:install-file \
 
 解决：Settings --> 搜Maven，修改项目的依赖目录
 
+```sh
+Maven home directory:    D:/apache-maven-3.6.3
+User setting file:       D:\apache-maven-3.6.3\conf\settings.xml
+Local repository:        D:\maven-repository
 ```
-User setting file: C:\Users\yang\.m2\settings.xml
-Local repository:  D:\maven-repository
-```
+> 上面三个地方要保持一致，否则容易导致找不到jar错误
+
 
 
 ## 命令
+```sh
 mvn clean           清理
 mvn compile         编译主程序
 mvn test-compile    编译测试程序
@@ -100,6 +104,7 @@ mvn package         打包
 mvn install         安装
 mvn site            生成站点
 mvn deploy          部署
+```
 
 ## 依赖范围
 坐标：`<scope>xxx</scope>`
