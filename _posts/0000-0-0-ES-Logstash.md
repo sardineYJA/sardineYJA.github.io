@@ -122,6 +122,23 @@ aciton 三种：
 
 
 
+## logstash 检测错误
+
+> [INFO ][logstash.outputs.elasticsearch] Running health check to see if an Elasticsearch connection is working {:healthcheck_url=>http://logstash_system:xxxxxx@localhost:9200/, :path=>"/"}
+> [WARN ][logstash.outputs.elasticsearch] Attempted to resurrect connection to dead ES instance, but got an error. {:url=>"http://logstash_system:xxxxxx@localhost:9200/", :error_type=>LogStash::Outputs::ElasticSearch::HttpClient::Pool::HostUnreachableError, :error=>"Elasticsearch Unreachable: [http://logstash_system:xxxxxx@localhost:9200/][Manticore::SocketException] Connection refused (Connection refused)"}
+
+logstash 启动后发现大量上面的日志，但是明明配置文件中没有使用任何 ES，并没有开启任何监控。
+
+
+health check 是因为安装了 X-Pack 的监控，默认的elasticsearch.url 就是那个 localhost:9200，
+需要对 logstash/logstash.yml 重新配置即可
+```sh
+xpack.monitoring.elasticsearch.url: "http://xxx.xxx.xxx.xxx:9200"]
+xpack.monitoring.elasticsearch.username: "xxx" 
+xpack.monitoring.elasticsearch.password: "xxx"
+```
+
+
 # log4j2.properties
 
 ## 以 logstash 的日志配置为参考

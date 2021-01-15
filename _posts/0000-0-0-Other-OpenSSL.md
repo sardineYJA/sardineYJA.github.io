@@ -269,6 +269,7 @@ output.logstash:
   ssl.key: "/ssl/client.key"
 ```
 
+
 参数：
 
 - ssl: When set to true, enables Logstash to use SSL/TLS.
