@@ -29,6 +29,11 @@ if ![json_str][key]  # json类型
 
 if [loglevel] == "ERROR" # 判断某个字段的值
 
+## 包含某个字符串
+if [@metadata][es_index_id] =~ "test_id" or [@metadata][es_index_id] =~ "stable_id" {
+
+}
+
 
 # 某个字段的字段
 filter {
@@ -321,7 +326,7 @@ filter {
       id = event.get('id')
       ha = id.hash
       hash_num = ha % 20
-      if hash_num < 0:
+      if hash_num < 0
         hash_num = hash_num * (-1)
       end 
       event.set('hash', hash_num)
@@ -499,3 +504,40 @@ An error occurred while installing xxx (0.0.12), and Bundler cannot continue.
 
 
 
+## dead_letter_queue
+
+开启 logstash.yml：
+```sh
+# 默认情况下，死信队列是禁用的。
+dead_letter_queue.enable: true
+
+# 指定其他路径，两个不同 logstash 实例不能使用同一个目录
+path.dead_letter_queue: "/../data/dead_letter_queue"
+
+# 写入死信队列时间间隔，单位ms，不能小于1000ms
+dead_letter_queue.flush_interval: 5000
+
+# 默认1G, 超过会丢弃
+dead_letter_queue.max_bytes: 1024mb
+```
+
+死信队列仅用于响应代码为400或404的情况，两者都表示无法重试的事件。
+开启后，以上情况日志不再报错，将错误数据写到 `./data/dead_letter_queue/` 目录下。
+
+
+```sh
+# 读取数据
+input {
+  dead_letter_queue {
+    commit_offsets => true
+    path => "/.../logstash/data/dead_letter_queue"
+    codec => plain{ charset => "UTF-8" }
+  }
+}
+
+output {
+  stdout {
+    codec => rubydebug { metadata => true }
+  }
+}
+```
