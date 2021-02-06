@@ -47,6 +47,14 @@ xpack.monitoring.elasticsearch.username: "admin"
 xpack.monitoring.elasticsearch.password: "admin"
 ```
 
+## 建议优化
+
+```sh
+1. logstash JVM 换 G1GC
+2. pipeline.batch.size: cpu核数*125
+3. pipeline.workers: cpu核数
+```
+
 
 # 使用案例
 
