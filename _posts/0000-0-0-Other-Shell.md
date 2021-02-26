@@ -114,6 +114,25 @@ sed -i '$d' ./filename   # 删除文件最后一行
 random=$(((RANDOM % 10) + 1 ))
 ```
 
+## awk 文本处理
+
+```sh
+# 每行按空格或TAB分割，输出文本中的1、4项
+awk '{print $1,$4}' log.txt
+
+# 以 \t 切分，并打印第1列。 打印完整输入记录 $0 
+cat log.txt | awk -F '\t' '{print $1}' 
+
+# ~ 和 !~ 匹配正则表达式和不匹配正则表达式
+# 输出第二列包含 "th"，并打印第二列与第四列
+$ awk '$2 ~ /th/ {print $2,$4}' log.txt 
+# 输入不包含 "th" 和 "he"
+$ awk '$2 !~ /th|he/ {print $2,$4}' log.txt 
+
+# 输出长度大于 80 的行
+awk 'length>80' log.txt
+```
+
 
 
 

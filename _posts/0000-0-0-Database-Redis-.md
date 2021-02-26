@@ -282,6 +282,26 @@ keep alive: 1                               #保持1个连接
 -I    空闲模式。立即打开50个空闲连接和等待。
 ```
 
+## 命令
+
+```sh
+# 选择 db，默认 0
+select 1     # 切换 db 1   默认0-15共16个
+
+set key1 value1    # 设置key
+get key1           # 获取key
+
+exists key1        # 是否存在 key
+
+del key1           # 删除一个key
+
+mset key1 value1 key2 value2   # 一次设置多个值
+
+mget key1 key2                 # 一次获取多个值
+
+
+```
+
 
 
 

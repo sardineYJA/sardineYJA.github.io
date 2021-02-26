@@ -7,7 +7,6 @@ tag: Other
 
 ---
 
-# Scala
 
 ## 安装
 

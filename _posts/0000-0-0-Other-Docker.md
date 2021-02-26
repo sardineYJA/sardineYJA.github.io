@@ -44,6 +44,12 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' con
 ## 查看日志
 
 ```sh
+# 日志会在以下位置
+# /var/lib/docker/containers/容器ID/容器ID-json.log
+
+# 查看日志文件所在目录
+docker inspect --format='{{.LogPath}}' <容器ID>
+
 # 查看日志
 docker logs es                # 查看日志
 docker logs -f --tail=200 es  # 实时查看日志
@@ -60,6 +66,21 @@ docker logs -t --since="2018-02-08T13:23:37" CONTAINER_ID
 
 # 查看某时间段日志
 docker logs -t --since="2018-02-08T13:23:37" --until "2018-02-09T12:23:37" CONTAINER_ID
+
+# 注意： --tail 读取最后n行，--since 是需要读取整个日志文件，如果日志文件过大，会导致  dokcer logs--since 进程一直存在且无法正常读取。
+```
+
+
+## 清理日志
+
+```sh
+docker inspect --format='{{.LogPath}}' <容器ID>
+
+# 如果docker容器正在运行，那么使用rm -rf 方式删除日志后，通过df -h会发现磁盘空间并没有释放
+
+# 原因：在Linux或者Unix系统中，通过rm或者文件管理器删除文件将会从文件系统的目录结构上解除链接(unlink).然而如果文件是被打开的（有一个进程正在使用），那么进程将仍然可以读取该文件，磁盘空间也一直被占用
+
+cat /dev/null > *-json.log # 也可以通过rm删除后重启docker
 ```
 
 

@@ -105,7 +105,7 @@ max(grade)        // 最大
 min(grade)        // 最小
 count(student_id) // 计算行数
 
-group by 字段：将指定字段值相同的记录作为一个分组
+group by 字段：将指定字段值相同的记录作为一个分组，也可以多个值 group by A,B,C
 如：在score表中查询每个学生的平均成绩
 select student_no,student_name,avg(grade)
 from score inner join student on score.student_id = student.student_id
