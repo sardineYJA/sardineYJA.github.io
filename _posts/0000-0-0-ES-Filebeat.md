@@ -296,6 +296,25 @@ multiline.match: after        # 定义多行内容被添加到模式匹配行之
 
 此时，将 negate 设置为 false。则表示匹配到的日志，接入到未匹配的日志后面。
 
+```sh
+multiline.max_lines: 500   # 合并最大行，默认500
+multiline.timeout: 5s      # 一次合并事件的超时时间，默认5s，防止合并消耗太多时间甚至卡死
+```
+
+如果超过了行数，则 filebeat 只发送了前 500 行，后面的不再发送。
+
+
+
+
+## inode 重用问题
+
+
+比如原来有一个文件A，Filebeat 处理过之后将其 inode，以及处理的offset（假设为n）记录到了 registry 文件中。后来这个文件删除了，但 registry 里面记录的状态还没有自动删除，此时如果有另外一个文件 B 正好复用了之前 A 的 inode，那 Filebeat 就会认为这个文件之前处理过，且已经处理到了 offset 为 n 处。如果 B 的文件比 A 小，即文件的 end offset都小于n，那 Filebeat 就会认为是原来的A文件被truncate掉了，此时会从头开始收集，没有问题。但如果B的 end offset 大于等于n，那 Filebeat 就认为是 A 文件有更新，然后就会从 offset 为 n 处开始处理，于是 B 的前 n 个字节的数据就丢失了，这样就会看到数据有被截断。
+
+解决问题:
+使用 clean_inactive 和 clean_removed 配置，指定了时间，就代表在这个时间之后，Filebeat 将从 registry 文件中自动删除过期的文件注册信息。
+
+
 
 
 # 配置

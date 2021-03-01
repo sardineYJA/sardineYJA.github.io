@@ -129,6 +129,21 @@ aciton 三种：
 - update: 必须指定document_id，ES不存在此id则返回失败，存在则更新doc。
 
 
+## 输出到文件
+
+```sh
+output {
+    file {
+        path => "/home/tmp/%{+YYYY-MM-dd}-%{host}.txt"
+        codec => line {
+            format => "%{message}"
+        }
+    }
+}
+
+```
+
+
 
 ## logstash 检测错误
 
